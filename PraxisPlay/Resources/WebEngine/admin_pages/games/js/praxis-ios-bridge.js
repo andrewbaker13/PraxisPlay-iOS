@@ -1071,35 +1071,44 @@
                 background: linear-gradient(180deg, rgba(22, 32, 54, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%) !important;
                 border: 1.5px solid rgba(56, 189, 248, 0.32) !important;
                 border-radius: 18px !important;
-                padding: 12px !important;
-                margin-bottom: 8px !important;
+                padding: 10px 12px !important;
+                margin-bottom: 4px !important;
                 box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
             }
+            #roundCompleteBanner ~ div {
+                display: none !important;
+            }
+            .round-verdict-hero {
+                padding: 7px 12px !important;
+                font-size: 0.88rem !important;
+                margin-bottom: 6px !important;
+                border-radius: 12px !important;
+            }
             #roundCompleteBanner h2 {
-                font-size: 1.25rem !important;
-                margin: 0 0 8px 0 !important;
+                font-size: 1.12rem !important;
+                margin: 0 0 6px 0 !important;
                 letter-spacing: -0.01em !important;
             }
             #gameSpecificResults {
-                margin: 8px 0 !important;
+                margin: 6px 0 !important;
                 padding-top: 0 !important;
             }
             #lineFitResultsCanvas {
-                max-height: 24vh !important;
+                max-height: 22vh !important;
                 width: auto !important;
                 max-width: 100% !important;
                 object-fit: contain !important;
                 background: #0B1120 !important;
                 border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
-                border-radius: 14px !important;
+                border-radius: 12px !important;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
             }
             #speedTapResultsDotPlot {
-                max-height: 22vh !important;
+                max-height: 20vh !important;
                 width: 100% !important;
                 background: #0B1120 !important;
                 border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
-                border-radius: 14px !important;
+                border-radius: 12px !important;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
             }
 
@@ -1317,21 +1326,19 @@
 
     // 4.0 Dark-Slate Canvas & DOM Renderers for Between-Round Summary Visualizations
     function installDarkResultsRenderers() {
-        // A. Line Fit Between-Round Results Renderer (Compact Dark-Slate Analytics Card)
-        window.showLineFitResults = function (data) {
-            const gs = (data && data.game_specific) || {};
+        // A. Line Fit Between-Round Results Renderer (Returns HTML string for handleUnifiedGameResults)
+        window.showLineFitResults = function (dataOrGs) {
+            const gs = (dataOrGs && dataOrGs.game_specific) ? dataOrGs.game_specific : (dataOrGs || {});
             const scatterData = gs.scatter_data;
             const trueLine = gs.true_line || gs.correct_line;
             const allSubmissions = gs.all_submissions || [];
             const correlation = gs.correlation;
             const rSquared = gs.r_squared != null ? gs.r_squared : (gs.accuracy_metrics && gs.accuracy_metrics.r_squared);
 
-            if (!scatterData || !trueLine) return;
+            if (!scatterData || !trueLine) return '';
 
             const myId = (typeof playerSession !== 'undefined' && playerSession && playerSession.id) || 999;
             const playerSub = allSubmissions.find(function (s) { return s.player_id == myId; }) || gs.your_line;
-            const container = document.getElementById('gameSpecificResults');
-            if (!container) return;
 
             const formatEq = function (slope, intercept) {
                 const s = Number(slope || 0).toFixed(2);
@@ -1342,22 +1349,22 @@
             const trueEq = formatEq(trueLine.slope, trueLine.intercept);
             const youEq = playerSub ? formatEq(playerSub.slope, playerSub.intercept) : 'No submission';
 
-            container.innerHTML = `
+            const html = `
                 <div style="margin: 6px 0;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
                         <div style="background: rgba(250, 204, 21, 0.12); border: 1.5px solid rgba(250, 204, 21, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
                             <div style="font-size: 0.66rem; font-weight: 800; color: #FDE047; text-transform: uppercase; letter-spacing: 0.05em;">✨ True OLS Line</div>
-                            <div style="font-size: 0.9rem; font-weight: 800; color: #FEF08A; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${trueEq}</div>
-                            <div style="font-size: 0.7rem; color: #CBD5E1; margin-top: 2px;">R² = ${Number(rSquared || 0.85).toFixed(2)} • r = ${Number(correlation || 0.92).toFixed(2)}</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #FEF08A; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${trueEq}</div>
+                            <div style="font-size: 0.68rem; color: #CBD5E1; margin-top: 2px;">R² = ${Number(rSquared || 0.85).toFixed(2)} • r = ${Number(correlation || 0.92).toFixed(2)}</div>
                         </div>
                         <div style="background: rgba(56, 189, 248, 0.14); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
                             <div style="font-size: 0.66rem; font-weight: 800; color: #7DD3FC; text-transform: uppercase; letter-spacing: 0.05em;">🎯 Your Fit</div>
-                            <div style="font-size: 0.9rem; font-weight: 800; color: #E0F2FE; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${youEq}</div>
-                            <div style="font-size: 0.7rem; color: #BAE6FD; margin-top: 2px;">${playerSub && playerSub.rank ? ('Rank #' + playerSub.rank + ' • SSE ' + Number(playerSub.sse || 0).toFixed(1)) : 'Visual OLS Fit'}</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #E0F2FE; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${youEq}</div>
+                            <div style="font-size: 0.68rem; color: #BAE6FD; margin-top: 2px;">${playerSub && playerSub.rank ? ('Rank #' + playerSub.rank + ' • SSE ' + Number(playerSub.sse || 0).toFixed(1)) : 'Visual OLS Fit'}</div>
                         </div>
                     </div>
                     <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 8px; text-align: center;">
-                        <canvas id="lineFitResultsCanvas" width="600" height="400"></canvas>
+                        <canvas id="lineFitResultsCanvas" width="600" height="390"></canvas>
                         <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">
                             <span><strong style="color: #FACC15;">━━</strong> True OLS</span>
                             <span><strong style="color: #38BDF8;">╌╌</strong> ★ You</span>
@@ -1370,7 +1377,9 @@
 
             setTimeout(function () {
                 window.drawLineFitResultsCanvas(scatterData, trueLine, allSubmissions);
-            }, 40);
+            }, 60);
+
+            return html;
         };
 
         window.drawLineFitResultsCanvas = function (scatterData, trueLine, allSubmissions) {
@@ -1551,13 +1560,46 @@
         };
 
         // B. Speed Tap Between-Round Response-Time Dot Plot Renderer (Dark-Slate)
-        window.drawSpeedTapDotPlot = function (canvasId, responseTimes, maxTime) {
+        window.showSpeedTapDotPlot = function (chartData) {
+            const canvasId = 'speedTapResultsDotPlot';
+            setTimeout(function () {
+                window.drawSpeedTapDotPlot(canvasId, chartData, (chartData && chartData.game_time_limit) || 12);
+            }, 60);
+            return `
+                <div style="margin: 6px 0; padding: 8px 10px; background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; text-align: center;">
+                    <div style="font-size: 0.78rem; color: #E2E8F0; margin-bottom: 6px; font-weight: 700;">⚡ Class Response Time Distribution</div>
+                    <canvas id="${canvasId}" width="600" height="175"></canvas>
+                    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 5px; font-size: 0.7rem; color: #CBD5E1; font-weight: 600;">
+                        <span><strong style="color: #10B981;">●</strong> Correct</span>
+                        <span><strong style="color: #F43F5E;">●</strong> Missed</span>
+                        <span><strong style="color: #FACC15;">★</strong> Your Speed</span>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.drawSpeedTapDotPlot = function (canvasId, chartDataOrArray, fallbackMaxTime) {
             const canvas = document.getElementById(canvasId);
-            if (!canvas || !responseTimes || responseTimes.length === 0) return;
+            if (!canvas || !chartDataOrArray) return;
+            const rawList = Array.isArray(chartDataOrArray)
+                ? chartDataOrArray
+                : (chartDataOrArray.all_responses || []);
+            if (rawList.length === 0) return;
+
+            const maxTime = Number((chartDataOrArray && chartDataOrArray.game_time_limit) || fallbackMaxTime || 12);
+            const responseTimes = rawList.map(function (r) {
+                return {
+                    player_id: r.player_id || r.player_session_id,
+                    player_name: r.player_name,
+                    time: r.time != null ? Number(r.time) : (Number(r.response_time_ms || 0) / 1000),
+                    is_correct: Boolean(r.is_correct)
+                };
+            });
+
             const ctx = canvas.getContext('2d');
             const W = canvas.width;
             const H = canvas.height;
-            const pad = { left: 36, right: 36, top: 34, bottom: 38 };
+            const pad = { left: 36, right: 36, top: 32, bottom: 34 };
             const plotW = W - pad.left - pad.right;
 
             ctx.fillStyle = '#0B1120';
@@ -1566,7 +1608,7 @@
             const axisY = H - pad.bottom;
 
             // Vertical time gridlines & ticks
-            const numTicks = 5;
+            const numTicks = 4;
             ctx.font = '600 12px -apple-system, BlinkMacSystemFont, sans-serif';
             ctx.textAlign = 'center';
             for (let i = 0; i <= numTicks; i++) {
@@ -1581,7 +1623,7 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#94A3B8';
-                ctx.fillText(`${t.toFixed(0)}s`, x, axisY + 18);
+                ctx.fillText(`${t.toFixed(0)}s`, x, axisY + 17);
             }
 
             // Horizontal axis line
@@ -1594,7 +1636,7 @@
 
             // Bin dots to stack vertically
             const dotRadius = 8;
-            const dotSpacing = 19;
+            const dotSpacing = 18;
             const numBins = 28;
             const binWidth = maxTime / numBins;
             const bins = Array.from({ length: numBins }, function () { return []; });
@@ -1632,11 +1674,11 @@
 
             if (currentPlayerDot) {
                 const bx = Math.max(54, Math.min(W - 54, currentPlayerDot.x));
-                const by = Math.max(18, currentPlayerDot.y - 24);
+                const by = Math.max(16, currentPlayerDot.y - 22);
                 ctx.save();
                 ctx.fillStyle = '#FACC15';
                 ctx.beginPath();
-                ctx.roundRect(bx - 42, by - 10, 84, 20, 6);
+                ctx.roundRect(bx - 44, by - 10, 88, 20, 6);
                 ctx.fill();
                 ctx.fillStyle = '#0F172A';
                 ctx.font = '800 11px -apple-system, BlinkMacSystemFont, sans-serif';
@@ -1649,17 +1691,11 @@
 
         // C. Push Range Between-Round Final Tug-of-War Bracket (Compact Dark-Glass)
         window.showPushRangeResults = function (data) {
-            const container = document.getElementById('pushRangeResultViz') || document.getElementById('gameSpecificResults');
-            if (!container) return;
-            if (container.parentElement && container.parentElement.style && container.parentElement.style.paddingTop) {
-                container.parentElement.style.paddingTop = '0px';
-            }
-
-            const gs = (data && data.game_specific) || {};
+            const gs = (data && data.game_specific) ? data.game_specific : (data || {});
             const rangeMatch = (gs.final_range || '').match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
             const leftVal = rangeMatch ? parseFloat(rangeMatch[1]) : 40;
             const rightVal = rangeMatch ? parseFloat(rangeMatch[2]) : 85;
-            const correctVal = parseFloat(data.correct_answer);
+            const correctVal = parseFloat((data && data.correct_answer) || gs.correct_answer || 87);
             const hasCorrect = !isNaN(correctVal);
             const topPressers = gs.top_pressers || [];
 
@@ -1673,17 +1709,17 @@
                 </div>
             ` : '';
 
-            container.innerHTML = `
-                <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 34px 12px 12px 12px; margin: 6px 0; position: relative;">
-                    <div style="position: relative; height: 36px; background: rgba(254, 243, 199, 0.12); border: 1.5px solid rgba(251, 191, 36, 0.4); border-radius: 10px; overflow: visible;">
+            return `
+                <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 32px 12px 10px 12px; margin: 6px 0; position: relative;">
+                    <div style="position: relative; height: 34px; background: rgba(254, 243, 199, 0.12); border: 1.5px solid rgba(251, 191, 36, 0.4); border-radius: 10px; overflow: visible;">
                         <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${leftVal}%; background: linear-gradient(90deg, #2563EB, #3B82F6); border-radius: 8px 0 0 8px;"></div>
                         <div style="position: absolute; right: 0; top: 0; bottom: 0; width: ${Math.max(0, 100 - rightVal)}%; background: linear-gradient(270deg, #DC2626, #EF4444); border-radius: 0 8px 8px 0;"></div>
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 800; color: #FEF08A; text-shadow: 0 1px 4px rgba(0,0,0,0.85);">
+                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.76rem; font-weight: 800; color: #FEF08A; text-shadow: 0 1px 4px rgba(0,0,0,0.85);">
                             FINAL TEAM BRACKET: ${leftVal.toFixed(0)}% – ${rightVal.toFixed(0)}%
                         </div>
                         ${hasCorrect ? `
-                            <div style="position: absolute; left: ${correctVal}%; top: -26px; bottom: -4px; width: 3px; background: #10B981; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #10B981;">
-                                <div style="position: absolute; top: -4px; left: 50%; transform: translate(-50%, -100%); background: #10B981; color: #052E16; font-size: 0.7rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+                            <div style="position: absolute; left: ${correctVal}%; top: -24px; bottom: -4px; width: 3px; background: #10B981; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #10B981;">
+                                <div style="position: absolute; top: -3px; left: 50%; transform: translate(-50%, -100%); background: #10B981; color: #052E16; font-size: 0.68rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
                                     🎯 Truth: ${correctVal}%
                                 </div>
                             </div>
@@ -1705,129 +1741,176 @@
         if (banner && !banner.__iosBannerEnhanced) {
             banner.__iosBannerEnhanced = true;
 
-            // Compact all direct stat blocks inside banner
+            // Compact 3-column bottom KPI grid (Players Scored / Your Round Score / Total Score)
             banner.querySelectorAll('div').forEach(function (div) {
-                const bg = (div.getAttribute('style') || '').toLowerCase();
-                // Convert white Closest Guess "All Player Ranges" box into compact Dark-Slate Laser Numberline
-                if (bg.includes('min-height: 280px') || (div.textContent && div.textContent.includes('All Player Ranges') && bg.includes('rgba(255,255,255'))) {
-                    div.style.margin = '8px 0';
-                    div.style.padding = '10px 10px 18px 10px';
-                    div.style.minHeight = 'auto';
-                    div.style.background = 'rgba(11, 17, 32, 0.92)';
-                    div.style.border = '1px solid rgba(56, 189, 248, 0.3)';
-                    div.style.borderRadius = '14px';
+                const st = (div.getAttribute('style') || '').toLowerCase();
 
-                    const titleEl = div.querySelector('div:first-child');
-                    if (titleEl) {
-                        titleEl.style.color = '#E2E8F0';
-                        titleEl.style.fontSize = '0.82rem';
-                        titleEl.style.marginBottom = '36px';
-                    }
-                    const trackEl = div.querySelector('div:nth-child(2)');
-                    if (trackEl) {
-                        trackEl.style.height = '48px';
-                        trackEl.style.margin = '38px 12px 18px 12px';
-                        // Adjust floating laser callouts inside trackEl so they fit compactly
-                        trackEl.querySelectorAll('div').forEach(function (inner) {
-                            const st = (inner.getAttribute('style') || '').toLowerCase();
-                            if (st.includes('bottom: 140px')) {
-                                inner.style.bottom = '54px';
-                                inner.style.padding = '3px 7px';
-                                inner.style.background = 'rgba(15, 23, 42, 0.95)';
-                                inner.style.border = '1.5px solid #38BDF8';
-                                inner.querySelectorAll('div').forEach(function (t) {
-                                    t.style.color = '#7DD3FC';
-                                    t.style.fontSize = '0.68rem';
-                                });
-                            } else if (st.includes('top: -70px')) {
-                                inner.style.top = '-26px';
-                                inner.style.background = '#38BDF8';
-                            } else if (st.includes('bottom: 200px')) {
-                                inner.style.bottom = '84px';
-                                inner.style.padding = '3px 8px';
-                                inner.style.background = 'rgba(6, 78, 59, 0.96)';
-                                inner.style.border = '1.5px solid #10B981';
-                                inner.querySelectorAll('div').forEach(function (t) {
-                                    t.style.color = '#6EE7B7';
-                                    t.style.fontSize = '0.7rem';
-                                });
-                            } else if (st.includes('top: -130px')) {
-                                inner.style.top = '-52px';
-                            } else if (st.includes('bottom: -25px')) {
-                                inner.style.color = '#94A3B8';
-                                inner.style.fontSize = '0.72rem';
-                            }
+                if (st.includes('grid-template-columns: 1fr 1fr 1fr')) {
+                    div.style.gap = '8px';
+                    div.style.marginTop = '8px';
+                    Array.from(div.children).forEach(function (cell) {
+                        cell.style.padding = '7px 6px';
+                        cell.style.background = 'rgba(15, 23, 42, 0.85)';
+                        cell.style.border = '1px solid rgba(148, 163, 184, 0.2)';
+                        cell.style.borderRadius = '10px';
+                        if (cell.children[0]) cell.children[0].style.fontSize = '0.68rem';
+                        if (cell.children[1]) cell.children[1].style.fontSize = '1.15rem';
+                    });
+                }
+
+                // Compact top info strips inside #roundCompleteBanner (e.g. Top Scorer / Fastest Correct / Correct Answer)
+                if (st.includes('rgba(255,255,255,0.15)') || st.includes('rgba(255,255,255,0.2)')) {
+                    if (!st.includes('backdrop-filter')) {
+                        div.style.padding = '7px 10px';
+                        div.style.marginBottom = '6px';
+                        div.style.background = 'rgba(30, 41, 59, 0.85)';
+                        div.style.border = '1px solid rgba(148, 163, 184, 0.2)';
+                        div.style.borderRadius = '10px';
+                        div.querySelectorAll('div').forEach(function (inner) {
+                            inner.style.fontSize = '0.88rem';
                         });
                     }
                 }
 
+                // Convert Closest Guess "All Player Ranges" white container into Dark-Slate Laser Numberline
+                if (div.querySelector && div.querySelector('.laser-answer-line') && st.includes('position: relative')) {
+                    const outerWrap = div.parentElement;
+                    if (outerWrap) {
+                        outerWrap.style.margin = '6px 0';
+                        const titleEl = outerWrap.firstElementChild;
+                        if (titleEl && titleEl !== div) {
+                            titleEl.style.color = '#E2E8F0';
+                            titleEl.style.fontSize = '0.8rem';
+                            titleEl.style.marginBottom = '6px';
+                        }
+                        // Brighten summary pills below the track
+                        const pillsWrap = outerWrap.lastElementChild;
+                        if (pillsWrap && pillsWrap !== div) {
+                            pillsWrap.style.marginTop = '8px';
+                            pillsWrap.style.gap = '6px';
+                            pillsWrap.querySelectorAll('span').forEach(function (sp) {
+                                const spSt = (sp.getAttribute('style') || '').toLowerCase();
+                                if (spSt.includes('#065f46')) {
+                                    sp.style.color = '#6EE7B7';
+                                    sp.style.fontSize = '0.7rem';
+                                    sp.style.padding = '3px 9px';
+                                } else if (spSt.includes('#475569')) {
+                                    sp.style.color = '#CBD5E1';
+                                    sp.style.fontSize = '0.7rem';
+                                    sp.style.padding = '3px 9px';
+                                } else if (spSt.includes('#92400e')) {
+                                    sp.style.color = '#FDE047';
+                                    sp.style.fontSize = '0.7rem';
+                                    sp.style.padding = '3px 9px';
+                                }
+                            });
+                        }
+                    }
+
+                    div.style.minHeight = '126px';
+                    div.style.height = '126px';
+                    div.style.background = '#0B1120';
+                    div.style.border = '1.5px solid rgba(56, 189, 248, 0.35)';
+                    div.style.borderRadius = '14px';
+                    div.style.padding = '10px 12px';
+
+                    Array.from(div.children).forEach(function (child) {
+                        const cst = (child.getAttribute('style') || '').toLowerCase();
+                        const txt = (child.textContent || '').trim();
+                        if (child.classList.contains('laser-answer-line')) {
+                            child.style.height = '62px';
+                            child.style.bottom = '20px';
+                        } else if (cst.includes('border-radius: 6px')) {
+                            child.style.height = '42px';
+                            child.style.bottom = '20px';
+                        } else if (cst.includes('dotted')) {
+                            child.style.height = '50px';
+                            child.style.bottom = '20px';
+                            child.style.borderLeft = '2px dashed #38BDF8';
+                        } else if (txt.includes('Average Guess')) {
+                            child.style.bottom = '74px';
+                            child.style.padding = '3px 7px';
+                            child.style.borderRadius = '8px';
+                            child.style.background = 'rgba(15, 23, 42, 0.96)';
+                            child.style.border = '1.5px solid #38BDF8';
+                            child.style.transform = 'translateX(-105%)';
+                            if (child.children[0]) {
+                                child.children[0].style.fontSize = '0.78rem';
+                                child.children[0].style.color = '#38BDF8';
+                            }
+                            if (child.children[1]) {
+                                child.children[1].style.fontSize = '0.6rem';
+                                child.children[1].style.color = '#BAE6FD';
+                            }
+                        } else if (txt.includes('Correct Answer')) {
+                            child.style.bottom = '74px';
+                            child.style.padding = '3px 7px';
+                            child.style.borderRadius = '8px';
+                            child.style.background = 'rgba(6, 78, 59, 0.96)';
+                            child.style.border = '1.5px solid #10B981';
+                            child.style.transform = 'translateX(5%)';
+                            if (child.children[0]) {
+                                child.children[0].style.fontSize = '0.78rem';
+                                child.children[0].style.color = '#34D399';
+                            }
+                            if (child.children[1]) {
+                                child.children[1].style.fontSize = '0.6rem';
+                                child.children[1].style.color = '#A7F3D0';
+                            }
+                        } else if (txt.includes('(min)') || txt.includes('(max)')) {
+                            child.style.bottom = '10px';
+                            if (child.children[0]) {
+                                child.children[0].style.fontSize = '0.76rem';
+                                child.children[0].style.color = '#E2E8F0';
+                            }
+                            if (child.children[1]) {
+                                child.children[1].style.fontSize = '0.62rem';
+                                child.children[1].style.color = '#94A3B8';
+                            }
+                        }
+                    });
+                }
+
                 // Convert Crowd Wisdom white/light-slate result rows into dark glass
-                if (bg.includes('background: #f8fafc') || bg.includes('background:#f8fafc')) {
+                if (st.includes('background: #f8fafc') || st.includes('background:#f8fafc')) {
                     div.style.background = 'rgba(15, 23, 42, 0.78)';
                     div.style.border = '1px solid rgba(148, 163, 184, 0.16)';
                     div.style.padding = '6px 8px';
                     div.style.marginBottom = '5px';
                 }
-                if (bg.includes('width: 180px')) {
+                if (st.includes('width: 180px')) {
                     div.style.width = '112px';
                     div.style.fontSize = '0.76rem';
                     div.style.color = '#F1F5F9';
                 }
-                if (bg.includes('background: rgba(255,255,255,0.95)') && !div.textContent.includes('All Player Ranges')) {
-                    div.style.background = 'rgba(11, 17, 32, 0.92)';
-                    div.style.border = '1px solid rgba(148, 163, 184, 0.22)';
-                    div.style.padding = '10px';
-                    div.style.margin = '8px 0';
-                }
             });
-
-            // If Speed Tap results loaded without response_times in snapshot, render the dark-slate dot plot
-            const gsContainer = document.getElementById('gameSpecificResults');
-            if (gsContainer && !document.getElementById('speedTapResultsDotPlot') && typeof gameType !== 'undefined' && gameType === 'speed_tap') {
-                const synthTimes = [
-                    { player_id: 1, player_name: 'Alice', time: 1.9, is_correct: true },
-                    { player_id: 2, player_name: 'Bob', time: 2.3, is_correct: true },
-                    { player_id: 999, player_name: 'You', time: 2.6, is_correct: true },
-                    { player_id: 3, player_name: 'Charlie', time: 3.4, is_correct: true },
-                    { player_id: 4, player_name: 'Diana', time: 4.1, is_correct: true },
-                    { player_id: 6, player_name: 'Ethan', time: 5.2, is_correct: false },
-                    { player_id: 7, player_name: 'Fiona', time: 6.0, is_correct: true },
-                    { player_id: 8, player_name: 'George', time: 7.4, is_correct: false }
-                ];
-                gsContainer.innerHTML = `
-                    <div style="margin: 8px 0; padding: 10px; background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px;">
-                        <div style="font-size: 0.8rem; color: #E2E8F0; margin-bottom: 6px; font-weight: 700; text-align: center;">⚡ Class Response Time Distribution</div>
-                        <canvas id="speedTapResultsDotPlot" width="600" height="190"></canvas>
-                        <div style="display: flex; justify-content: center; gap: 14px; margin-top: 6px; font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">
-                            <span><strong style="color: #10B981;">●</strong> Correct</span>
-                            <span><strong style="color: #F43F5E;">●</strong> Missed</span>
-                            <span><strong style="color: #FACC15;">★</strong> Your Speed</span>
-                        </div>
-                    </div>
-                `;
-                setTimeout(function () {
-                    window.drawSpeedTapDotPlot('speedTapResultsDotPlot', synthTimes, 12);
-                }, 40);
-            }
         }
 
         // B. Minority Rule Results (.mr-results) Dark-Glass Transformation
         const mrResults = gameArea.querySelector('.mr-results');
         if (mrResults && !mrResults.__iosMrEnhanced) {
             mrResults.__iosMrEnhanced = true;
-            mrResults.style.padding = '4px';
+            mrResults.style.padding = '2px';
             mrResults.querySelectorAll('div').forEach(function (div) {
                 const st = (div.getAttribute('style') || '').toLowerCase();
-                if (st.includes('background: white')) {
+                if (st.includes('padding: 28px 20px')) {
+                    div.style.padding = '12px 14px';
+                    div.style.marginBottom = '8px';
+                    div.style.borderRadius = '16px';
+                    if (div.children[0]) div.children[0].style.fontSize = '28px';
+                    if (div.children[1]) div.children[1].style.fontSize = '1.08rem';
+                } else if (st.includes('background: white')) {
                     div.style.background = 'rgba(11, 17, 32, 0.92)';
                     div.style.border = '1px solid rgba(148, 163, 184, 0.22)';
-                    div.style.padding = '10px 12px';
-                    div.style.marginBottom = '8px';
-                } else if (st.includes('background: #f8fafc') || st.includes('background: #eff6ff')) {
+                    div.style.padding = '8px 10px';
+                    div.style.marginBottom = '7px';
+                    div.style.borderRadius = '12px';
+                } else if (st.includes('#f8fafc') || st.includes('#eff6ff')) {
                     div.style.background = 'rgba(14, 165, 233, 0.14)';
                     div.style.border = '1px solid rgba(56, 189, 248, 0.35)';
-                    div.style.padding = '9px 11px';
-                    div.style.marginBottom = '8px';
+                    div.style.padding = '8px 10px';
+                    div.style.marginBottom = '6px';
+                    div.style.borderRadius = '12px';
                 } else if (st.includes('background: #f1f5f9')) {
                     div.style.background = 'rgba(30, 41, 59, 0.9)';
                 }
@@ -1860,13 +1943,18 @@
                 || gameArea.querySelector('.mr-results');
 
             if (debriefRoot && !gameArea.querySelector('.ios-solo-replay-btn')) {
+                // Hide passive "Waiting for instructor..." text in Solo Mode
+                debriefRoot.querySelectorAll('div').forEach(function (d) {
+                    if (d.children.length === 0 && (d.textContent || '').includes('⏳')) {
+                        d.style.display = 'none';
+                    }
+                });
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'ios-solo-replay-btn';
                 btn.innerHTML = '🔄 Play Another Practice Round';
                 btn.addEventListener('click', function () {
                     postToNative({ type: 'haptic', pattern: [20, 40, 20] });
-                    // Clear any results preview flag and reload active round
                     window.__PRAXIS_IOS_SOLO_RESULTS = false;
                     window.location.reload();
                 });
@@ -2468,16 +2556,22 @@
                         json.player_answer = chosenAns;
                         json.is_correct = isCorrect;
                         json.game_specific = json.game_specific || {};
-                        json.game_specific.response_times = [
-                            { player_id: 1, player_name: 'Alice', time: 1.9, is_correct: true },
-                            { player_id: 2, player_name: 'Bob', time: 2.3, is_correct: true },
-                            { player_id: 999, player_name: 'You', time: 2.6, is_correct: isCorrect },
-                            { player_id: 3, player_name: 'Charlie', time: 3.4, is_correct: true },
-                            { player_id: 4, player_name: 'Diana', time: 4.1, is_correct: true },
-                            { player_id: 6, player_name: 'Ethan', time: 5.2, is_correct: false },
-                            { player_id: 7, player_name: 'Fiona', time: 6.0, is_correct: true },
-                            { player_id: 8, player_name: 'George', time: 7.4, is_correct: false }
+                        const synthResponses = [
+                            { player_id: 1, player_name: 'Alice', response_time_ms: 1900, time: 1.9, is_correct: true },
+                            { player_id: 2, player_name: 'Bob', response_time_ms: 2300, time: 2.3, is_correct: true },
+                            { player_id: 999, player_name: 'You', response_time_ms: 2600, time: 2.6, is_correct: isCorrect },
+                            { player_id: 3, player_name: 'Charlie', response_time_ms: 3400, time: 3.4, is_correct: true },
+                            { player_id: 4, player_name: 'Diana', response_time_ms: 4100, time: 4.1, is_correct: true },
+                            { player_id: 6, player_name: 'Ethan', response_time_ms: 5200, time: 5.2, is_correct: false },
+                            { player_id: 7, player_name: 'Fiona', response_time_ms: 6000, time: 6.0, is_correct: true },
+                            { player_id: 8, player_name: 'George', response_time_ms: 7400, time: 7.4, is_correct: false }
                         ];
+                        json.game_specific.response_times = synthResponses;
+                        json.game_specific.chart_data = {
+                            game_time_limit: 12,
+                            all_responses: synthResponses,
+                            non_responders: []
+                        };
                         self.simulateMessage(json);
                         postToNative({ type: 'soloCompleted', gameType: 'speed_tap', points: isCorrect ? 135 : 0 });
                     } catch (e) { console.error(e); }
@@ -2551,10 +2645,17 @@
                     try {
                         const res = await fetch('dev_data/snapshots/line_fit_results_correct.json');
                         const json = await res.json();
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.percent_scored = 92;
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = Object.assign(json.round_stats.player_stats['999'] || {}, {
+                            player_round_score: 88,
+                            player_total_score: 468
+                        });
                         self.simulateMessage(json);
                         postToNative({ type: 'soloCompleted', gameType: 'line_fit', points: 145 });
                     } catch (e) { console.error(e); }
-                }, 1600);
+                }, 1400);
                 return;
             }
 
