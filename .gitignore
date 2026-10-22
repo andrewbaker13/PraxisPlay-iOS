@@ -16,3 +16,13 @@ xcuserdata/
 *.perspectivev3
 !default.perspectivev3
 .DS_Store
+
+# Local Apple Code Signing Credentials (NEVER COMMIT)
+.signing/
+*.key
+*.p12
+*.p8
+*.cer
+*.mobileprovision
+*.certSigningRequest
+*.csr
