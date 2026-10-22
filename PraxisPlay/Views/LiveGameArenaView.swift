@@ -65,31 +65,37 @@ struct LiveGameArenaView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 13, weight: .bold))
                     Text(isSoloMode ? "Arcade" : "Lobby")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 13, weight: .bold))
+                        .lineLimit(1)
                 }
                 .foregroundStyle(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 11)
+                .padding(.vertical, 7)
                 .background(Color.white.opacity(0.14))
                 .clipShape(Capsule())
             }
+            .fixedSize(horizontal: true, vertical: false)
 
             // Room / Mode Identity & Connection Status
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
+                HStack(spacing: 5) {
                     Circle()
                         .fill(statusDotColor)
                         .frame(width: 8, height: 8)
                     Text(roomBadgeText)
-                        .font(.system(size: 14, weight: .heavy, design: .monospaced))
+                        .font(.system(size: 13, weight: .heavy, design: .monospaced))
                         .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                     Text("•")
                         .foregroundStyle(.white.opacity(0.4))
                     Text(telemetry.connectionStatus.rawValue)
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
 
                 Text(playerSubtitleText)
@@ -97,18 +103,19 @@ struct LiveGameArenaView: View {
                     .foregroundStyle(.white.opacity(0.65))
                     .lineLimit(1)
             }
-
-            Spacer(minLength: 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             // Live Score & Rank Pill
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 VStack(alignment: .trailing, spacing: 0) {
                     Text("SCORE")
                         .font(.system(size: 9, weight: .heavy))
                         .foregroundStyle(.white.opacity(0.6))
+                        .lineLimit(1)
                     Text("\(telemetry.score)")
                         .font(.system(size: 15, weight: .black, design: .rounded))
                         .foregroundStyle(Color(red: 0.38, green: 0.65, blue: 0.98))
+                        .lineLimit(1)
                 }
 
                 if telemetry.rank != "-" && !telemetry.rank.isEmpty {
@@ -120,16 +127,19 @@ struct LiveGameArenaView: View {
                         Text("RANK")
                             .font(.system(size: 9, weight: .heavy))
                             .foregroundStyle(.white.opacity(0.6))
+                            .lineLimit(1)
                         Text("#\(telemetry.rank.replacingOccurrences(of: "#", with: ""))")
                             .font(.system(size: 15, weight: .black, design: .rounded))
                             .foregroundStyle(Color(red: 0.20, green: 0.83, blue: 0.60))
+                            .lineLimit(1)
                     }
                 }
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(Color.white.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .fixedSize(horizontal: true, vertical: false)
 
             // Quick Actions Menu
             Menu {

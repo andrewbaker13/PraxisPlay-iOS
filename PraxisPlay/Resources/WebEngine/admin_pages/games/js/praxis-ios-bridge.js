@@ -144,6 +144,28 @@
     function enhanceSoloArcadeIfNeeded() {
         if (!window.DEV_MODE || typeof MockWebSocket === 'undefined') return;
 
+        // Ensure Line Fit scatter data renders reliably once line-fit.js lazy-loads
+        if (window.DEV_STATE && window.DEV_STATE.indexOf('line_fit') !== -1) {
+            fetch('dev_data/snapshots/line_fit_active.json')
+                .then(function (r) { return r.json(); })
+                .then(function (snap) {
+                    if (!snap || !snap.scatter_data_message) return;
+                    let attempts = 0;
+                    const poll = setInterval(function () {
+                        attempts++;
+                        if (typeof handleLineFitData === 'function' && typeof lineFitState !== 'undefined' && lineFitState.canvas) {
+                            clearInterval(poll);
+                            if (!lineFitState.scatterData) {
+                                handleLineFitData(JSON.parse(JSON.stringify(snap.scatter_data_message)));
+                            }
+                        } else if (attempts > 40) {
+                            clearInterval(poll);
+                        }
+                    }, 150);
+                })
+                .catch(function () {});
+        }
+
         const originalSend = MockWebSocket.prototype.send;
         MockWebSocket.prototype.send = function (rawData) {
             let msg = {};
@@ -159,6 +181,10 @@
 
             if (action === 'identify' || action === 'speed_tap') {
                 return originalSend.call(this, rawData);
+            }
+
+            if (action === 'line_fit_propose') {
+                return;
             }
 
             // Closest Guess submission in Solo Mode
@@ -217,7 +243,7 @@
             }
 
             // Line Fit submission in Solo Mode
-            if (action === 'submit_line' || action === 'line_fit_submit') {
+            if (action === 'submit_line' || action === 'line_fit_submit' || action === 'line_fit_confirm') {
                 setTimeout(async function () {
                     try {
                         const res = await fetch('dev_data/snapshots/line_fit_results_correct.json');
