@@ -80,27 +80,20 @@ struct LiveGameArenaView: View {
 
             // Room / Mode Identity & Connection Status
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 5) {
+                HStack(spacing: 6) {
                     Circle()
                         .fill(statusDotColor)
-                        .frame(width: 8, height: 8)
+                        .frame(width: 7, height: 7)
                     Text(roomBadgeText)
-                        .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                        .font(.system(size: 13, weight: .heavy, design: .rounded))
                         .foregroundStyle(.white)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.75)
-                    Text("•")
-                        .foregroundStyle(.white.opacity(0.4))
-                    Text(telemetry.connectionStatus.rawValue)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.72)
                 }
 
-                Text(playerSubtitleText)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.65))
+                Text("\(telemetry.connectionStatus.rawValue) • \(playerSubtitleText)")
+                    .font(.system(size: 10.5, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.68))
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
