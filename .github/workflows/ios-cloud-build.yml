@@ -25,6 +25,8 @@ jobs:
             brew install xcodegen
           fi
           xcodegen generate
+          # Ensure objectVersion is compatible with Xcode 15.4+ as well as Xcode 16+
+          sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' PraxisPlay.xcodeproj/project.pbxproj
 
       - name: Compile & Verify iOS App (Simulator Build)
         run: |
