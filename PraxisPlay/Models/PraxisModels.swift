@@ -4,14 +4,14 @@ import SwiftUI
 // MARK: - Active Launch Configuration
 enum ArenaLaunchMode: Identifiable, Equatable {
     case liveSession(RecentRoomSession)
-    case soloPractice(SoloGameMode)
+    case soloPractice(SoloGameMode, showResults: Bool = false)
 
     var id: String {
         switch self {
         case .liveSession(let session):
             return "live-\(session.roomCode)-\(session.playerSessionId)"
-        case .soloPractice(let mode):
-            return "solo-\(mode.id)"
+        case .soloPractice(let mode, let showResults):
+            return "solo-\(mode.id)-\(showResults ? "res" : "act")"
         }
     }
 }

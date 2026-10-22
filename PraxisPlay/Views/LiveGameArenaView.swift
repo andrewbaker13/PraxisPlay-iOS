@@ -200,7 +200,7 @@ struct LiveGameArenaView: View {
     private var roomBadgeText: String {
         switch launchMode {
         case .liveSession(let s): return s.roomCode
-        case .soloPractice(let m): return m.title.uppercased()
+        case .soloPractice(let m, _): return m.title.uppercased()
         }
     }
 
@@ -208,7 +208,7 @@ struct LiveGameArenaView: View {
         switch launchMode {
         case .liveSession(let s):
             return "\(s.playerName) • \(s.courseName)"
-        case .soloPractice(let m):
+        case .soloPractice(let m, _):
             return m.marketingConcept
         }
     }
@@ -231,7 +231,7 @@ struct LiveGameArenaView: View {
                 roomCode: s.roomCode,
                 connectionStatus: .connecting
             )
-        case .soloPractice(let m):
+        case .soloPractice(let m, _):
             telemetry = HUDTelemetryState(
                 score: 380,
                 rank: "2",

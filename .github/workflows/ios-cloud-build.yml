@@ -111,6 +111,26 @@ jobs:
           sleep 4
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/11-Word-Guess-Recall.png
 
+          # Screen 12: Line Fit Between-Round Regression Summary Visualization
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo line_fit --results
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/12-Line-Fit-Results-Viz.png
+
+          # Screen 13: Closest Guess Between-Round Laser Numberline Visualization
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo closest_guess --results
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/13-Closest-Guess-Results-Viz.png
+
+          # Screen 14: Speed Tap Between-Round Response-Time Dot Plot
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo speed_tap --results
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/14-Speed-Tap-Results-DotPlot.png
+
+          # Screen 15: Minority Rule Between-Round Blue Ocean Market Split Debrief
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo minority_rule --results
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/15-Minority-Rule-Debrief.png
+
           xcrun simctl shutdown "$SIM_UDID" || true
 
       - name: Upload Live iPhone 15 Pro Screenshots

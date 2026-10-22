@@ -148,8 +148,9 @@ struct PraxisWebEngineView: UIViewRepresentable {
         case .liveSession(let session):
             let encodedRoom = session.roomCode.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? session.roomCode
             targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=\(encodedRoom)"
-        case .soloPractice(let mode):
-            targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=SOLO&dev=1&state=\(mode.snapshotState)"
+        case .soloPractice(let mode, let showResults):
+            let resFlag = showResults ? "&results=1" : ""
+            targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=SOLO&dev=1&state=\(mode.snapshotState)\(resFlag)"
         }
 
         if let url = URL(string: targetURLString) {
@@ -198,15 +199,17 @@ struct PraxisWebEngineView: UIViewRepresentable {
             })();
             """
 
-        case .soloPractice(let soloMode):
+        case .soloPractice(let soloMode, let showResults):
             let snapshot = jsEscaped(soloMode.snapshotState)
             let gameId = jsEscaped(soloMode.id)
             let playerName = jsEscaped(store.studentDisplayName.isEmpty ? "You (Solo Practice)" : store.studentDisplayName)
+            let resBool = showResults ? "true" : "false"
 
             return """
             (function() {
                 window.__PRAXIS_IOS_NATIVE = true;
                 window.__PRAXIS_IOS_SOLO = true;
+                window.__PRAXIS_IOS_SOLO_RESULTS = \(resBool);
                 window.__PRAXIS_IOS_SOLO_STATE = "\(snapshot)";
                 window.DEV_MODE = true;
                 window.DEV_STATE = "\(snapshot)";

@@ -35,7 +35,8 @@ struct PraxisPlayApp: App {
         if host == "solo",
            let modeId = queryItems.first(where: { $0.name == "mode" })?.value,
            let mode = SoloGameMode.allModes.first(where: { $0.id == modeId }) {
-            sessionStore.launchSoloMode(mode)
+            let showResults = queryItems.first(where: { $0.name == "results" })?.value == "1"
+            sessionStore.launchSoloMode(mode, showResults: showResults)
             return
         }
 

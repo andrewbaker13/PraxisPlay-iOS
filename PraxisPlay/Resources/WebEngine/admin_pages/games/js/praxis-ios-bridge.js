@@ -1012,6 +1012,260 @@
                 min-width: 130px !important;
                 border-radius: 12px !important;
             }
+
+            /* ── 10. BETWEEN-ROUND DEBRIEFS, VISUALIZATIONS & TRANSITIONS ── */
+            /* Hide Student QR Code Box (Students are already on their iPhones) */
+            .qr-code-box {
+                display: none !important;
+            }
+
+            /* Compact Pre-Game & Between-Round Waiting State */
+            .waiting-state {
+                padding: 20px 12px !important;
+            }
+            .waiting-state h2 {
+                font-size: 1.25rem !important;
+                font-weight: 800 !important;
+                color: #F8FAFC !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* Countdown Overlay (5, 4, 3, 2, 1, GO!) */
+            #countdownOverlay {
+                background: rgba(9, 13, 22, 0.88) !important;
+                backdrop-filter: blur(22px) !important;
+                -webkit-backdrop-filter: blur(22px) !important;
+            }
+            #countdownNumber {
+                font-size: 92px !important;
+                font-weight: 900 !important;
+                letter-spacing: -0.03em !important;
+            }
+            #countdownRoundInfo {
+                font-size: 1.2rem !important;
+                color: #CBD5E1 !important;
+                margin-top: 16px !important;
+            }
+
+            /* Locked-In Stamp & Suspense Shimmer (game-utils.js) */
+            .locked-in-stamp-card {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.24) 0%, rgba(5, 150, 105, 0.28) 100%) !important;
+                border: 1.5px solid #10B981 !important;
+                color: #ECFDF5 !important;
+                border-radius: 14px !important;
+                padding: 10px 14px !important;
+                box-shadow: 0 8px 22px rgba(16, 185, 129, 0.25) !important;
+            }
+            .locked-in-stamp-sub {
+                color: #A7F3D0 !important;
+            }
+            .suspense-shimmer-bar {
+                background: rgba(15, 23, 42, 0.85) !important;
+                border: 1px solid rgba(56, 189, 248, 0.35) !important;
+                color: #BAE6FD !important;
+                border-radius: 12px !important;
+            }
+
+            /* Unified Round Complete Banner (#roundCompleteBanner) */
+            #roundCompleteBanner {
+                background: linear-gradient(180deg, rgba(22, 32, 54, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%) !important;
+                border: 1.5px solid rgba(56, 189, 248, 0.32) !important;
+                border-radius: 18px !important;
+                padding: 12px !important;
+                margin-bottom: 8px !important;
+                box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+            }
+            #roundCompleteBanner h2 {
+                font-size: 1.25rem !important;
+                margin: 0 0 8px 0 !important;
+                letter-spacing: -0.01em !important;
+            }
+            #gameSpecificResults {
+                margin: 8px 0 !important;
+                padding-top: 0 !important;
+            }
+            #lineFitResultsCanvas {
+                max-height: 24vh !important;
+                width: auto !important;
+                max-width: 100% !important;
+                object-fit: contain !important;
+                background: #0B1120 !important;
+                border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
+                border-radius: 14px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+            }
+            #speedTapResultsDotPlot {
+                max-height: 22vh !important;
+                width: 100% !important;
+                background: #0B1120 !important;
+                border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
+                border-radius: 14px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+            }
+
+            /* Budget Blitz Results Debrief (.bb-results) */
+            .bb-results {
+                padding: 4px !important;
+            }
+            .bb-res-banner {
+                padding: 12px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
+            }
+            .bb-res-title {
+                font-size: 1.15rem !important;
+            }
+            .bb-res-grid {
+                gap: 7px !important;
+                margin-bottom: 8px !important;
+            }
+            .bb-res-stat {
+                background: var(--ios-surface) !important;
+                border: 1px solid var(--ios-border) !important;
+                border-radius: 12px !important;
+                padding: 8px 6px !important;
+            }
+            .bb-res-stat-label {
+                color: #94A3B8 !important;
+                font-size: 0.65rem !important;
+            }
+            .bb-res-stat-val {
+                color: #38BDF8 !important;
+                font-size: 1.15rem !important;
+            }
+            .bb-res-card {
+                background: var(--ios-surface-deep) !important;
+                border: 1px solid var(--ios-border) !important;
+                border-radius: 14px !important;
+                padding: 10px 12px !important;
+                margin-bottom: 8px !important;
+                color: #F8FAFC !important;
+            }
+            .bb-res-card h4 {
+                color: #94A3B8 !important;
+                margin: 0 0 6px 0 !important;
+                font-size: 0.75rem !important;
+            }
+            .bb-alloc-row {
+                border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+                padding: 5px 0 !important;
+                font-size: 0.84rem !important;
+                color: #E2E8F0 !important;
+            }
+            .bb-alloc-opt {
+                background: rgba(16, 185, 129, 0.18) !important;
+                border: 1px solid rgba(16, 185, 129, 0.4) !important;
+                color: #6EE7B7 !important;
+            }
+            .bb-alloc-you {
+                background: rgba(56, 189, 248, 0.16) !important;
+                border: 1px solid rgba(56, 189, 248, 0.35) !important;
+                color: #7DD3FC !important;
+            }
+            .bb-takeaway {
+                background: rgba(14, 165, 233, 0.14) !important;
+                border: 1px solid rgba(56, 189, 248, 0.35) !important;
+                border-left: 4px solid #38BDF8 !important;
+                color: #E0F2FE !important;
+                padding: 9px 11px !important;
+                border-radius: 12px !important;
+                font-size: 0.82rem !important;
+                margin-bottom: 6px !important;
+            }
+            .bb-wait {
+                color: #94A3B8 !important;
+                margin-top: 6px !important;
+                font-size: 0.82rem !important;
+            }
+
+            /* Buy a Clue Results Debrief (.bac-results) */
+            .bac-results {
+                padding: 4px !important;
+            }
+            .bac-res-banner {
+                padding: 12px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
+            }
+            .bac-res-title {
+                font-size: 1.15rem !important;
+            }
+            .bac-ledger {
+                gap: 7px !important;
+                margin-bottom: 8px !important;
+            }
+            .bac-ledger-cell {
+                background: var(--ios-surface) !important;
+                border: 1px solid var(--ios-border) !important;
+                border-radius: 12px !important;
+                padding: 8px 6px !important;
+            }
+            .bac-ledger-cell span {
+                color: #94A3B8 !important;
+                font-size: 0.65rem !important;
+            }
+            .bac-ledger-cell strong {
+                color: #F8FAFC !important;
+                font-size: 1.15rem !important;
+            }
+            .bac-ledger-net {
+                background: rgba(56, 189, 248, 0.14) !important;
+                border-color: rgba(56, 189, 248, 0.4) !important;
+            }
+            .bac-ledger-net strong {
+                color: #38BDF8 !important;
+            }
+            .bac-res-card {
+                background: var(--ios-surface-deep) !important;
+                border: 1px solid var(--ios-border) !important;
+                color: #E2E8F0 !important;
+                border-radius: 12px !important;
+                padding: 9px 11px !important;
+                margin-bottom: 7px !important;
+                font-size: 0.84rem !important;
+            }
+            .bac-res-card p {
+                color: #94A3B8 !important;
+                margin: 4px 0 0 0 !important;
+            }
+            .bac-takeaway {
+                background: rgba(245, 158, 11, 0.14) !important;
+                border: 1px solid rgba(245, 158, 11, 0.4) !important;
+                border-left: 4px solid #F59E0B !important;
+                color: #FEF3C7 !important;
+                padding: 9px 11px !important;
+                border-radius: 12px !important;
+                font-size: 0.82rem !important;
+                margin-bottom: 6px !important;
+            }
+            .bac-wait {
+                color: #94A3B8 !important;
+                margin-top: 6px !important;
+                font-size: 0.82rem !important;
+            }
+
+            /* Solo Practice Play Again Action Button */
+            .ios-solo-replay-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                margin-top: 10px;
+                padding: 12px 16px;
+                border-radius: 14px;
+                border: 1.5px solid rgba(56, 189, 248, 0.5);
+                background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+                color: #FFFFFF;
+                font-size: 0.96rem;
+                font-weight: 800;
+                cursor: pointer;
+                box-shadow: 0 6px 20px rgba(14, 165, 233, 0.35);
+                transition: transform 0.08s ease;
+            }
+            .ios-solo-replay-btn:active {
+                transform: scale(0.97);
+            }
         `;
         (document.head || document.documentElement).appendChild(style);
     }
@@ -1023,7 +1277,7 @@
     // ─────────────────────────────────────────────────────────────────────────
     document.addEventListener('touchstart', function (e) {
         const target = e.target && e.target.closest
-            ? e.target.closest('.answer-btn, .crowd-wisdom-btn, .push-button, .bb-btn, .bac-option, .mr-option-card, .buzzer-btn, #confirmBtn, #redrawBtn, #bbLockBtn, #bacLockBtn, #bacBuyBtn, #mrSubmitBtn, .submit-guess-btn, .submit-word-btn, .ios-cg-step-btn, .ios-wg-key')
+            ? e.target.closest('.answer-btn, .crowd-wisdom-btn, .push-button, .bb-btn, .bac-option, .mr-option-card, .buzzer-btn, #confirmBtn, #redrawBtn, #bbLockBtn, #bacLockBtn, #bacBuyBtn, #mrSubmitBtn, .submit-guess-btn, .submit-word-btn, .ios-cg-step-btn, .ios-wg-key, .ios-solo-replay-btn')
             : null;
         if (target && !target.disabled && !target.classList.contains('disabled')) {
             postToNative({ type: 'haptic', pattern: [16] });
@@ -1038,16 +1292,20 @@
     });
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 4. Interactive Touch Upgrades for Line Fit, Closest Guess & Word Guess
+    // 4. Interactive Touch Upgrades & Between-Round Visualization Renderers
     // ─────────────────────────────────────────────────────────────────────────
     function installIOSTouchEnhancements() {
         const gameArea = document.getElementById('gameArea');
         if (!gameArea) return;
 
+        installDarkResultsRenderers();
+
         const enhanceCurrentGameDOM = function () {
+            installDarkResultsRenderers();
             enhanceLineFitTouchAndTheme();
             enhanceClosestGuessTouchControls();
             enhanceWordGuessTouchKeyboard();
+            enhanceBetweenRoundResultsDOM();
         };
 
         const domObserver = new MutationObserver(function () {
@@ -1055,6 +1313,566 @@
         });
         domObserver.observe(gameArea, { childList: true, subtree: true });
         enhanceCurrentGameDOM();
+    }
+
+    // 4.0 Dark-Slate Canvas & DOM Renderers for Between-Round Summary Visualizations
+    function installDarkResultsRenderers() {
+        // A. Line Fit Between-Round Results Renderer (Compact Dark-Slate Analytics Card)
+        window.showLineFitResults = function (data) {
+            const gs = (data && data.game_specific) || {};
+            const scatterData = gs.scatter_data;
+            const trueLine = gs.true_line || gs.correct_line;
+            const allSubmissions = gs.all_submissions || [];
+            const correlation = gs.correlation;
+            const rSquared = gs.r_squared != null ? gs.r_squared : (gs.accuracy_metrics && gs.accuracy_metrics.r_squared);
+
+            if (!scatterData || !trueLine) return;
+
+            const myId = (typeof playerSession !== 'undefined' && playerSession && playerSession.id) || 999;
+            const playerSub = allSubmissions.find(function (s) { return s.player_id == myId; }) || gs.your_line;
+            const container = document.getElementById('gameSpecificResults');
+            if (!container) return;
+
+            const formatEq = function (slope, intercept) {
+                const s = Number(slope || 0).toFixed(2);
+                const i = Number(intercept || 0);
+                return `y = ${s}x ${i >= 0 ? '+' : '-'} ${Math.abs(i).toFixed(1)}`;
+            };
+
+            const trueEq = formatEq(trueLine.slope, trueLine.intercept);
+            const youEq = playerSub ? formatEq(playerSub.slope, playerSub.intercept) : 'No submission';
+
+            container.innerHTML = `
+                <div style="margin: 6px 0;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                        <div style="background: rgba(250, 204, 21, 0.12); border: 1.5px solid rgba(250, 204, 21, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
+                            <div style="font-size: 0.66rem; font-weight: 800; color: #FDE047; text-transform: uppercase; letter-spacing: 0.05em;">✨ True OLS Line</div>
+                            <div style="font-size: 0.9rem; font-weight: 800; color: #FEF08A; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${trueEq}</div>
+                            <div style="font-size: 0.7rem; color: #CBD5E1; margin-top: 2px;">R² = ${Number(rSquared || 0.85).toFixed(2)} • r = ${Number(correlation || 0.92).toFixed(2)}</div>
+                        </div>
+                        <div style="background: rgba(56, 189, 248, 0.14); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
+                            <div style="font-size: 0.66rem; font-weight: 800; color: #7DD3FC; text-transform: uppercase; letter-spacing: 0.05em;">🎯 Your Fit</div>
+                            <div style="font-size: 0.9rem; font-weight: 800; color: #E0F2FE; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${youEq}</div>
+                            <div style="font-size: 0.7rem; color: #BAE6FD; margin-top: 2px;">${playerSub && playerSub.rank ? ('Rank #' + playerSub.rank + ' • SSE ' + Number(playerSub.sse || 0).toFixed(1)) : 'Visual OLS Fit'}</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 8px; text-align: center;">
+                        <canvas id="lineFitResultsCanvas" width="600" height="400"></canvas>
+                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">
+                            <span><strong style="color: #FACC15;">━━</strong> True OLS</span>
+                            <span><strong style="color: #38BDF8;">╌╌</strong> ★ You</span>
+                            <span><strong style="color: #10B981;">━━</strong> Top 3</span>
+                            <span><strong style="color: #64748B;">━━</strong> Class (${allSubmissions.length})</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(function () {
+                window.drawLineFitResultsCanvas(scatterData, trueLine, allSubmissions);
+            }, 40);
+        };
+
+        window.drawLineFitResultsCanvas = function (scatterData, trueLine, allSubmissions) {
+            const canvas = document.getElementById('lineFitResultsCanvas');
+            if (!canvas || !scatterData) return;
+            const ctx = canvas.getContext('2d');
+            const margins = { top: 24, right: 28, bottom: 42, left: 52 };
+            const plotW = canvas.width - margins.left - margins.right;
+            const plotH = canvas.height - margins.top - margins.bottom;
+
+            const bounds = scatterData.bounds || {
+                x_min: scatterData.x_bounds ? scatterData.x_bounds[0] : 0,
+                x_max: scatterData.x_bounds ? scatterData.x_bounds[1] : 10,
+                y_min: scatterData.y_bounds ? scatterData.y_bounds[0] : 0,
+                y_max: scatterData.y_bounds ? scatterData.y_bounds[1] : 100
+            };
+
+            const toCanvas = function (x, y) {
+                const xNorm = (x - bounds.x_min) / ((bounds.x_max - bounds.x_min) || 1);
+                const yNorm = (y - bounds.y_min) / ((bounds.y_max - bounds.y_min) || 1);
+                return {
+                    x: margins.left + xNorm * plotW,
+                    y: margins.top + (1 - yNorm) * plotH
+                };
+            };
+
+            const drawClippedLine = function (slope, intercept) {
+                const pts = [];
+                const yAtXMin = slope * bounds.x_min + intercept;
+                if (yAtXMin >= bounds.y_min && yAtXMin <= bounds.y_max) pts.push({ x: bounds.x_min, y: yAtXMin });
+                const yAtXMax = slope * bounds.x_max + intercept;
+                if (yAtXMax >= bounds.y_min && yAtXMax <= bounds.y_max) pts.push({ x: bounds.x_max, y: yAtXMax });
+                if (Math.abs(slope) > 0.0001) {
+                    const xAtYMin = (bounds.y_min - intercept) / slope;
+                    if (xAtYMin > bounds.x_min && xAtYMin < bounds.x_max) pts.push({ x: xAtYMin, y: bounds.y_min });
+                    const xAtYMax = (bounds.y_max - intercept) / slope;
+                    if (xAtYMax > bounds.x_min && xAtYMax < bounds.x_max) pts.push({ x: xAtYMax, y: bounds.y_max });
+                }
+                if (pts.length >= 2) {
+                    const p1 = toCanvas(pts[0].x, pts[0].y);
+                    const p2 = toCanvas(pts[1].x, pts[1].y);
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                    return p2;
+                }
+                return null;
+            };
+
+            // 1. Dark-Slate Canvas Fill
+            ctx.fillStyle = '#0B1120';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Subtle Gridlines
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 4; i++) {
+                const gx = margins.left + (plotW * i) / 4;
+                const gy = margins.top + (plotH * i) / 4;
+                ctx.beginPath();
+                ctx.moveTo(gx, margins.top);
+                ctx.lineTo(gx, margins.top + plotH);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(margins.left, gy);
+                ctx.lineTo(margins.left + plotW, gy);
+                ctx.stroke();
+            }
+
+            // 3. Axes & Labels
+            ctx.strokeStyle = '#64748B';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margins.left, margins.top + plotH);
+            ctx.lineTo(margins.left + plotW, margins.top + plotH);
+            ctx.moveTo(margins.left, margins.top);
+            ctx.lineTo(margins.left, margins.top + plotH);
+            ctx.stroke();
+
+            const labels = scatterData.axis_labels || { x: 'X', y: 'Y' };
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(labels.x || 'X', margins.left + plotW / 2, canvas.height - 8);
+
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#94A3B8';
+            ctx.textBaseline = 'top';
+            ctx.fillText(bounds.x_min.toFixed(1), margins.left, margins.top + plotH + 6);
+            ctx.fillText(((bounds.x_min + bounds.x_max) / 2).toFixed(1), margins.left + plotW / 2, margins.top + plotH + 6);
+            ctx.fillText(bounds.x_max.toFixed(1), margins.left + plotW, margins.top + plotH + 6);
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(bounds.y_max.toFixed(0), margins.left - 8, margins.top);
+            ctx.fillText(((bounds.y_min + bounds.y_max) / 2).toFixed(0), margins.left - 8, margins.top + plotH / 2);
+            ctx.fillText(bounds.y_min.toFixed(0), margins.left - 8, margins.top + plotH);
+
+            // 4. Other Class Submissions
+            const myId = (typeof playerSession !== 'undefined' && playerSession && playerSession.id) || 999;
+            let playerSub = null;
+            (allSubmissions || []).forEach(function (sub) {
+                if (sub.player_id == myId) playerSub = sub;
+                if (sub.rank > 3 && sub.player_id != myId) {
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.30)';
+                    ctx.lineWidth = 1.75;
+                    ctx.setLineDash([]);
+                    drawClippedLine(sub.slope, sub.intercept);
+                }
+            });
+
+            // 5. Top 3 Class Submissions (Emerald)
+            (allSubmissions || []).forEach(function (sub) {
+                if (sub.rank <= 3 && sub.player_id != myId) {
+                    ctx.strokeStyle = '#10B981';
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([]);
+                    drawClippedLine(sub.slope, sub.intercept);
+                }
+            });
+
+            // 6. True OLS Regression Line (Glowing Gold)
+            if (trueLine) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(250, 204, 21, 0.55)';
+                ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#FACC15';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([]);
+                drawClippedLine(trueLine.slope, trueLine.intercept);
+                ctx.restore();
+            }
+
+            // 7. Player's Own Line (Glowing Dashed Cyan + ★ YOU Badge)
+            if (playerSub) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(56, 189, 248, 0.6)';
+                ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#38BDF8';
+                ctx.lineWidth = 3.5;
+                ctx.setLineDash([8, 5]);
+                const endPt = drawClippedLine(playerSub.slope, playerSub.intercept);
+                ctx.restore();
+
+                if (endPt) {
+                    const bx = Math.max(margins.left + 40, Math.min(margins.left + plotW - 36, endPt.x - 28));
+                    const by = Math.max(margins.top + 16, Math.min(margins.top + plotH - 16, endPt.y - 18));
+                    ctx.save();
+                    ctx.fillStyle = '#0EA5E9';
+                    ctx.beginPath();
+                    ctx.roundRect(bx - 28, by - 11, 56, 22, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = '800 11px -apple-system, BlinkMacSystemFont, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('★ YOU', bx, by);
+                    ctx.restore();
+                }
+            }
+
+            // 8. Scatter Points
+            (scatterData.points || []).forEach(function (pt) {
+                const x = Array.isArray(pt) ? pt[0] : pt.x;
+                const y = Array.isArray(pt) ? pt[1] : pt.y;
+                const c = toCanvas(x, y);
+                ctx.save();
+                ctx.fillStyle = '#0B1120';
+                ctx.strokeStyle = '#38BDF8';
+                ctx.lineWidth = 2.75;
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, 6.5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            });
+        };
+
+        // B. Speed Tap Between-Round Response-Time Dot Plot Renderer (Dark-Slate)
+        window.drawSpeedTapDotPlot = function (canvasId, responseTimes, maxTime) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || !responseTimes || responseTimes.length === 0) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+            const pad = { left: 36, right: 36, top: 34, bottom: 38 };
+            const plotW = W - pad.left - pad.right;
+
+            ctx.fillStyle = '#0B1120';
+            ctx.fillRect(0, 0, W, H);
+
+            const axisY = H - pad.bottom;
+
+            // Vertical time gridlines & ticks
+            const numTicks = 5;
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= numTicks; i++) {
+                const t = (maxTime / numTicks) * i;
+                const x = pad.left + (i / numTicks) * plotW;
+
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, pad.top - 8);
+                ctx.lineTo(x, axisY);
+                ctx.stroke();
+
+                ctx.fillStyle = '#94A3B8';
+                ctx.fillText(`${t.toFixed(0)}s`, x, axisY + 18);
+            }
+
+            // Horizontal axis line
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, axisY);
+            ctx.lineTo(W - pad.right, axisY);
+            ctx.stroke();
+
+            // Bin dots to stack vertically
+            const dotRadius = 8;
+            const dotSpacing = 19;
+            const numBins = 28;
+            const binWidth = maxTime / numBins;
+            const bins = Array.from({ length: numBins }, function () { return []; });
+            let currentPlayerDot = null;
+            const myId = (typeof playerSession !== 'undefined' && playerSession && playerSession.id) || 999;
+
+            responseTimes.forEach(function (item) {
+                const clamped = Math.max(0, Math.min(maxTime, Number(item.time) || 0));
+                const bIdx = Math.min(Math.floor(clamped / binWidth), numBins - 1);
+                bins[bIdx].push(item);
+            });
+
+            bins.forEach(function (bin) {
+                bin.forEach(function (item, stackIdx) {
+                    const clamped = Math.max(0, Math.min(maxTime, Number(item.time) || 0));
+                    const x = pad.left + (clamped / maxTime) * plotW;
+                    const y = axisY - 14 - stackIdx * dotSpacing;
+                    const isMe = (item.player_id == myId);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(x, y, isMe ? dotRadius + 2 : dotRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = item.is_correct ? '#10B981' : '#F43F5E';
+                    ctx.fill();
+                    ctx.lineWidth = isMe ? 3 : 1.5;
+                    ctx.strokeStyle = isMe ? '#FACC15' : '#0B1120';
+                    ctx.stroke();
+                    ctx.restore();
+
+                    if (isMe) {
+                        currentPlayerDot = { x: x, y: y, time: clamped };
+                    }
+                });
+            });
+
+            if (currentPlayerDot) {
+                const bx = Math.max(54, Math.min(W - 54, currentPlayerDot.x));
+                const by = Math.max(18, currentPlayerDot.y - 24);
+                ctx.save();
+                ctx.fillStyle = '#FACC15';
+                ctx.beginPath();
+                ctx.roundRect(bx - 42, by - 10, 84, 20, 6);
+                ctx.fill();
+                ctx.fillStyle = '#0F172A';
+                ctx.font = '800 11px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`★ YOU (${currentPlayerDot.time.toFixed(1)}s)`, bx, by);
+                ctx.restore();
+            }
+        };
+
+        // C. Push Range Between-Round Final Tug-of-War Bracket (Compact Dark-Glass)
+        window.showPushRangeResults = function (data) {
+            const container = document.getElementById('pushRangeResultViz') || document.getElementById('gameSpecificResults');
+            if (!container) return;
+            if (container.parentElement && container.parentElement.style && container.parentElement.style.paddingTop) {
+                container.parentElement.style.paddingTop = '0px';
+            }
+
+            const gs = (data && data.game_specific) || {};
+            const rangeMatch = (gs.final_range || '').match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+            const leftVal = rangeMatch ? parseFloat(rangeMatch[1]) : 40;
+            const rightVal = rangeMatch ? parseFloat(rangeMatch[2]) : 85;
+            const correctVal = parseFloat(data.correct_answer);
+            const hasCorrect = !isNaN(correctVal);
+            const topPressers = gs.top_pressers || [];
+
+            const pressersHTML = topPressers.length > 0 ? `
+                <div style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+                    ${topPressers.slice(0, 3).map(function (p, i) {
+                        const medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
+                        const color = p.team === 'left' ? '#60A5FA' : '#F87171';
+                        return `<span style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 999px; padding: 3px 9px; font-size: 0.72rem; color: #E2E8F0; font-weight: 700;">${medal} <span style="color:${color};">${p.player_name}</span> (${p.presses} taps)</span>`;
+                    }).join('')}
+                </div>
+            ` : '';
+
+            container.innerHTML = `
+                <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 34px 12px 12px 12px; margin: 6px 0; position: relative;">
+                    <div style="position: relative; height: 36px; background: rgba(254, 243, 199, 0.12); border: 1.5px solid rgba(251, 191, 36, 0.4); border-radius: 10px; overflow: visible;">
+                        <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${leftVal}%; background: linear-gradient(90deg, #2563EB, #3B82F6); border-radius: 8px 0 0 8px;"></div>
+                        <div style="position: absolute; right: 0; top: 0; bottom: 0; width: ${Math.max(0, 100 - rightVal)}%; background: linear-gradient(270deg, #DC2626, #EF4444); border-radius: 0 8px 8px 0;"></div>
+                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 800; color: #FEF08A; text-shadow: 0 1px 4px rgba(0,0,0,0.85);">
+                            FINAL TEAM BRACKET: ${leftVal.toFixed(0)}% – ${rightVal.toFixed(0)}%
+                        </div>
+                        ${hasCorrect ? `
+                            <div style="position: absolute; left: ${correctVal}%; top: -26px; bottom: -4px; width: 3px; background: #10B981; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #10B981;">
+                                <div style="position: absolute; top: -4px; left: 50%; transform: translate(-50%, -100%); background: #10B981; color: #052E16; font-size: 0.7rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+                                    🎯 Truth: ${correctVal}%
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${pressersHTML}
+                </div>
+            `;
+        };
+    }
+
+    // 4.1 Post-Process Between-Round Debrief DOM (#roundCompleteBanner, Closest Guess Viz, Minority Rule, Solo Replay)
+    function enhanceBetweenRoundResultsDOM() {
+        const gameArea = document.getElementById('gameArea');
+        if (!gameArea) return;
+
+        // A. Compact & Dark-Mode #roundCompleteBanner
+        const banner = document.getElementById('roundCompleteBanner');
+        if (banner && !banner.__iosBannerEnhanced) {
+            banner.__iosBannerEnhanced = true;
+
+            // Compact all direct stat blocks inside banner
+            banner.querySelectorAll('div').forEach(function (div) {
+                const bg = (div.getAttribute('style') || '').toLowerCase();
+                // Convert white Closest Guess "All Player Ranges" box into compact Dark-Slate Laser Numberline
+                if (bg.includes('min-height: 280px') || (div.textContent && div.textContent.includes('All Player Ranges') && bg.includes('rgba(255,255,255'))) {
+                    div.style.margin = '8px 0';
+                    div.style.padding = '10px 10px 18px 10px';
+                    div.style.minHeight = 'auto';
+                    div.style.background = 'rgba(11, 17, 32, 0.92)';
+                    div.style.border = '1px solid rgba(56, 189, 248, 0.3)';
+                    div.style.borderRadius = '14px';
+
+                    const titleEl = div.querySelector('div:first-child');
+                    if (titleEl) {
+                        titleEl.style.color = '#E2E8F0';
+                        titleEl.style.fontSize = '0.82rem';
+                        titleEl.style.marginBottom = '36px';
+                    }
+                    const trackEl = div.querySelector('div:nth-child(2)');
+                    if (trackEl) {
+                        trackEl.style.height = '48px';
+                        trackEl.style.margin = '38px 12px 18px 12px';
+                        // Adjust floating laser callouts inside trackEl so they fit compactly
+                        trackEl.querySelectorAll('div').forEach(function (inner) {
+                            const st = (inner.getAttribute('style') || '').toLowerCase();
+                            if (st.includes('bottom: 140px')) {
+                                inner.style.bottom = '54px';
+                                inner.style.padding = '3px 7px';
+                                inner.style.background = 'rgba(15, 23, 42, 0.95)';
+                                inner.style.border = '1.5px solid #38BDF8';
+                                inner.querySelectorAll('div').forEach(function (t) {
+                                    t.style.color = '#7DD3FC';
+                                    t.style.fontSize = '0.68rem';
+                                });
+                            } else if (st.includes('top: -70px')) {
+                                inner.style.top = '-26px';
+                                inner.style.background = '#38BDF8';
+                            } else if (st.includes('bottom: 200px')) {
+                                inner.style.bottom = '84px';
+                                inner.style.padding = '3px 8px';
+                                inner.style.background = 'rgba(6, 78, 59, 0.96)';
+                                inner.style.border = '1.5px solid #10B981';
+                                inner.querySelectorAll('div').forEach(function (t) {
+                                    t.style.color = '#6EE7B7';
+                                    t.style.fontSize = '0.7rem';
+                                });
+                            } else if (st.includes('top: -130px')) {
+                                inner.style.top = '-52px';
+                            } else if (st.includes('bottom: -25px')) {
+                                inner.style.color = '#94A3B8';
+                                inner.style.fontSize = '0.72rem';
+                            }
+                        });
+                    }
+                }
+
+                // Convert Crowd Wisdom white/light-slate result rows into dark glass
+                if (bg.includes('background: #f8fafc') || bg.includes('background:#f8fafc')) {
+                    div.style.background = 'rgba(15, 23, 42, 0.78)';
+                    div.style.border = '1px solid rgba(148, 163, 184, 0.16)';
+                    div.style.padding = '6px 8px';
+                    div.style.marginBottom = '5px';
+                }
+                if (bg.includes('width: 180px')) {
+                    div.style.width = '112px';
+                    div.style.fontSize = '0.76rem';
+                    div.style.color = '#F1F5F9';
+                }
+                if (bg.includes('background: rgba(255,255,255,0.95)') && !div.textContent.includes('All Player Ranges')) {
+                    div.style.background = 'rgba(11, 17, 32, 0.92)';
+                    div.style.border = '1px solid rgba(148, 163, 184, 0.22)';
+                    div.style.padding = '10px';
+                    div.style.margin = '8px 0';
+                }
+            });
+
+            // If Speed Tap results loaded without response_times in snapshot, render the dark-slate dot plot
+            const gsContainer = document.getElementById('gameSpecificResults');
+            if (gsContainer && !document.getElementById('speedTapResultsDotPlot') && typeof gameType !== 'undefined' && gameType === 'speed_tap') {
+                const synthTimes = [
+                    { player_id: 1, player_name: 'Alice', time: 1.9, is_correct: true },
+                    { player_id: 2, player_name: 'Bob', time: 2.3, is_correct: true },
+                    { player_id: 999, player_name: 'You', time: 2.6, is_correct: true },
+                    { player_id: 3, player_name: 'Charlie', time: 3.4, is_correct: true },
+                    { player_id: 4, player_name: 'Diana', time: 4.1, is_correct: true },
+                    { player_id: 6, player_name: 'Ethan', time: 5.2, is_correct: false },
+                    { player_id: 7, player_name: 'Fiona', time: 6.0, is_correct: true },
+                    { player_id: 8, player_name: 'George', time: 7.4, is_correct: false }
+                ];
+                gsContainer.innerHTML = `
+                    <div style="margin: 8px 0; padding: 10px; background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px;">
+                        <div style="font-size: 0.8rem; color: #E2E8F0; margin-bottom: 6px; font-weight: 700; text-align: center;">⚡ Class Response Time Distribution</div>
+                        <canvas id="speedTapResultsDotPlot" width="600" height="190"></canvas>
+                        <div style="display: flex; justify-content: center; gap: 14px; margin-top: 6px; font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">
+                            <span><strong style="color: #10B981;">●</strong> Correct</span>
+                            <span><strong style="color: #F43F5E;">●</strong> Missed</span>
+                            <span><strong style="color: #FACC15;">★</strong> Your Speed</span>
+                        </div>
+                    </div>
+                `;
+                setTimeout(function () {
+                    window.drawSpeedTapDotPlot('speedTapResultsDotPlot', synthTimes, 12);
+                }, 40);
+            }
+        }
+
+        // B. Minority Rule Results (.mr-results) Dark-Glass Transformation
+        const mrResults = gameArea.querySelector('.mr-results');
+        if (mrResults && !mrResults.__iosMrEnhanced) {
+            mrResults.__iosMrEnhanced = true;
+            mrResults.style.padding = '4px';
+            mrResults.querySelectorAll('div').forEach(function (div) {
+                const st = (div.getAttribute('style') || '').toLowerCase();
+                if (st.includes('background: white')) {
+                    div.style.background = 'rgba(11, 17, 32, 0.92)';
+                    div.style.border = '1px solid rgba(148, 163, 184, 0.22)';
+                    div.style.padding = '10px 12px';
+                    div.style.marginBottom = '8px';
+                } else if (st.includes('background: #f8fafc') || st.includes('background: #eff6ff')) {
+                    div.style.background = 'rgba(14, 165, 233, 0.14)';
+                    div.style.border = '1px solid rgba(56, 189, 248, 0.35)';
+                    div.style.padding = '9px 11px';
+                    div.style.marginBottom = '8px';
+                } else if (st.includes('background: #f1f5f9')) {
+                    div.style.background = 'rgba(30, 41, 59, 0.9)';
+                }
+                if (st.includes('color: #1e293b') || st.includes('color: #334155')) {
+                    div.style.color = '#F1F5F9';
+                }
+            });
+        }
+
+        // C. Finale Screen ("That's a Wrap!" .results-display) Dark-Glass Polish
+        const finalDisplay = gameArea.querySelector('.results-display');
+        if (finalDisplay && !finalDisplay.__iosFinalEnhanced) {
+            finalDisplay.__iosFinalEnhanced = true;
+            finalDisplay.querySelectorAll('h2, h3, p, div').forEach(function (el) {
+                const st = (el.getAttribute('style') || '').toLowerCase();
+                if (st.includes('color: #64748b')) el.style.color = '#94A3B8';
+                if (st.includes('color: #1e293b')) el.style.color = '#F8FAFC';
+                if (st.includes('background: #f8fafc')) {
+                    el.style.background = 'rgba(30, 41, 59, 0.85)';
+                    el.style.border = '1px solid rgba(148, 163, 184, 0.2)';
+                }
+            });
+        }
+
+        // D. Solo Practice Mode: Inject Interactive "🔄 Play Another Round" Button on Any Debrief Screen
+        if (window.DEV_MODE) {
+            const debriefRoot = document.getElementById('roundCompleteBanner')
+                || gameArea.querySelector('.bb-results')
+                || gameArea.querySelector('.bac-results')
+                || gameArea.querySelector('.mr-results');
+
+            if (debriefRoot && !gameArea.querySelector('.ios-solo-replay-btn')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'ios-solo-replay-btn';
+                btn.innerHTML = '🔄 Play Another Practice Round';
+                btn.addEventListener('click', function () {
+                    postToNative({ type: 'haptic', pattern: [20, 40, 20] });
+                    // Clear any results preview flag and reload active round
+                    window.__PRAXIS_IOS_SOLO_RESULTS = false;
+                    window.location.reload();
+                });
+                debriefRoot.appendChild(btn);
+            }
+        }
     }
 
     // 4A. Line Fit: Dark-Slate Analytics Renderer + 60fps Live Touch-Drag
@@ -1635,8 +2453,36 @@
             const data = msg.data || {};
             const self = this;
 
-            if (action === 'identify' || action === 'speed_tap') {
+            if (action === 'identify') {
                 return originalSend.call(this, rawData);
+            }
+
+            if (action === 'speed_tap') {
+                const chosenAns = data.answer || 'Retention Rate';
+                const isCorrect = (chosenAns === 'Retention Rate');
+                setTimeout(async function () {
+                    try {
+                        const file = isCorrect ? 'speed_tap_results_correct.json' : 'speed_tap_results_incorrect.json';
+                        const res = await fetch('dev_data/snapshots/' + file);
+                        const json = await res.json();
+                        json.player_answer = chosenAns;
+                        json.is_correct = isCorrect;
+                        json.game_specific = json.game_specific || {};
+                        json.game_specific.response_times = [
+                            { player_id: 1, player_name: 'Alice', time: 1.9, is_correct: true },
+                            { player_id: 2, player_name: 'Bob', time: 2.3, is_correct: true },
+                            { player_id: 999, player_name: 'You', time: 2.6, is_correct: isCorrect },
+                            { player_id: 3, player_name: 'Charlie', time: 3.4, is_correct: true },
+                            { player_id: 4, player_name: 'Diana', time: 4.1, is_correct: true },
+                            { player_id: 6, player_name: 'Ethan', time: 5.2, is_correct: false },
+                            { player_id: 7, player_name: 'Fiona', time: 6.0, is_correct: true },
+                            { player_id: 8, player_name: 'George', time: 7.4, is_correct: false }
+                        ];
+                        self.simulateMessage(json);
+                        postToNative({ type: 'soloCompleted', gameType: 'speed_tap', points: isCorrect ? 135 : 0 });
+                    } catch (e) { console.error(e); }
+                }, 1400);
+                return;
             }
 
             if (action === 'line_fit_propose' || action === 'line_fit_redraw') {
@@ -1864,5 +2710,32 @@
 
             return originalSend.call(this, rawData);
         };
+
+        // Optional Direct Results Preview Mode (used by deep links with &results=1)
+        if (window.__PRAXIS_IOS_SOLO_RESULTS || window.location.search.indexOf('results=1') !== -1) {
+            setTimeout(function () {
+                if (typeof websocket === 'undefined' || !websocket) return;
+                const st = String(window.DEV_STATE || '');
+                if (st.indexOf('line_fit') === 0) {
+                    websocket.send(JSON.stringify({ action: 'submit_line', data: { slope: 4.6, intercept: 54.5 } }));
+                } else if (st.indexOf('closest_guess') === 0) {
+                    websocket.send(JSON.stringify({ action: 'submit_guess', data: { guess_min: 65, guess_max: 75 } }));
+                } else if (st.indexOf('speed_tap') === 0) {
+                    websocket.send(JSON.stringify({ action: 'speed_tap', data: { answer: 'Retention Rate' } }));
+                } else if (st.indexOf('minority_rule') === 0) {
+                    websocket.send(JSON.stringify({ action: 'minority_rule_submit', data: { option_index: 1 } }));
+                } else if (st.indexOf('budget_blitz') === 0) {
+                    websocket.send(JSON.stringify({ action: 'budget_blitz_submit', data: { allocation_by_channel_id: { paid_search: 2, creator_reels: 2, retargeting_crm: 1 } } }));
+                } else if (st.indexOf('buy_a_clue') === 0) {
+                    websocket.send(JSON.stringify({ action: 'buy_a_clue_submit', data: { option_id: 'B' } }));
+                } else if (st.indexOf('push_range') === 0) {
+                    fetch('dev_data/snapshots/push_range_results_correct.json')
+                        .then(function (r) { return r.json(); })
+                        .then(function (j) { websocket.simulateMessage(j); });
+                } else if (st.indexOf('crowd_wisdom') === 0) {
+                    websocket.send(JSON.stringify({ action: 'crowd_wisdom_answer', data: { option_index: 1 } }));
+                }
+            }, 900);
+        }
     }
 })();

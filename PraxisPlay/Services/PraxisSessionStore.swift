@@ -259,9 +259,9 @@ final class PraxisSessionStore: ObservableObject {
     }
 
     // MARK: - Launch Solo Practice Arcade Mode
-    func launchSoloMode(_ mode: SoloGameMode) {
+    func launchSoloMode(_ mode: SoloGameMode, showResults: Bool = false) {
         HapticsManager.shared.playImpact(style: .medium)
-        activeArenaLaunch = .soloPractice(mode)
+        activeArenaLaunch = .soloPractice(mode, showResults: showResults)
     }
 
     func recordSoloScore(gameType: String, points: Int) {

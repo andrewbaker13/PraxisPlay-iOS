@@ -43,9 +43,10 @@ struct MainTabView: View {
             let args = CommandLine.arguments
             if let idx = args.firstIndex(of: "--solo"), idx + 1 < args.count {
                 let modeId = args[idx + 1]
+                let showResults = args.contains("--results")
                 if let mode = SoloGameMode.allModes.first(where: { $0.id == modeId }) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        sessionStore.launchSoloMode(mode)
+                        sessionStore.launchSoloMode(mode, showResults: showResults)
                     }
                 }
             }
