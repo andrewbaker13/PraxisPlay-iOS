@@ -674,6 +674,14 @@
                 border: 1px solid var(--ios-border) !important;
                 border-radius: 12px !important;
             }
+            #bracketWidthLabel {
+                color: #E2E8F0 !important;
+            }
+            #bracketBadge {
+                background: rgba(56, 189, 248, 0.16) !important;
+                border: 1px solid rgba(56, 189, 248, 0.38) !important;
+                color: #7DD3FC !important;
+            }
             .submit-guess-btn {
                 padding: 12px !important;
                 font-size: 1.02rem !important;
@@ -710,9 +718,13 @@
                 background: rgba(16, 185, 129, 0.32) !important;
                 border: 1.5px solid #10B981 !important;
             }
-            .numberline-labels {
-                color: #94A3B8 !important;
-                font-size: 0.78rem !important;
+            .numberline-labels,
+            .numberline-labels span,
+            .numberline-labels div,
+            #numberlineMin,
+            #numberlineMax {
+                color: #CBD5E1 !important;
+                font-size: 0.82rem !important;
             }
 
             /* ── 6. CROWD WISDOM: Dark-Glass Live Distribution Bars ── */
@@ -887,6 +899,9 @@
             }
             .ios-wg-keyboard {
                 margin-top: 10px;
+                padding: 0 2px;
+                width: 100%;
+                box-sizing: border-box;
                 display: flex;
                 flex-direction: column;
                 gap: 6px;
@@ -895,18 +910,21 @@
             .ios-wg-row {
                 display: flex;
                 justify-content: center;
-                gap: 4px;
+                gap: 3px;
+                width: 100%;
             }
             .ios-wg-key {
-                flex: 1;
-                max-width: 34px;
-                height: 40px;
-                border-radius: 8px;
+                flex: 1 1 0;
+                min-width: 0;
+                max-width: 31px;
+                height: 39px;
+                padding: 0;
+                border-radius: 7px;
                 background: linear-gradient(180deg, rgba(51, 65, 85, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
                 border: 1px solid rgba(148, 163, 184, 0.28);
                 box-shadow: 0 2px 0 rgba(2, 6, 23, 0.9);
                 color: #F8FAFC;
-                font-size: 0.92rem;
+                font-size: 0.88rem;
                 font-weight: 700;
                 display: flex;
                 align-items: center;
@@ -915,9 +933,9 @@
                 transition: transform 0.06s ease, background 0.1s ease;
             }
             .ios-wg-key.ios-wg-wide {
-                max-width: 56px;
-                flex: 1.6;
-                font-size: 0.8rem;
+                max-width: 48px;
+                flex: 1.45 1 0;
+                font-size: 0.78rem;
                 font-weight: 800;
             }
             .ios-wg-key.ios-wg-go {
