@@ -4,6 +4,8 @@
   "question_text": "What marketing framework uses Product, Price, Place, and Promotion?",
   "game_config": {
     "answer": "MARKETING MIX",
+    "word_pattern": [9, 3],
+    "letter_count": 12,
     "hint": "Also known as the 4 P's"
   },
   "current_round": 2,

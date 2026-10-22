@@ -400,10 +400,12 @@
             }
             .guess-range-bracket {
                 height: 48px !important;
+                margin-left: 16px !important;
+                margin-right: 16px !important;
             }
             .bracket-left-edge .edge-value, .bracket-right-edge .edge-value {
-                font-size: 1.35rem !important;
-                top: -32px !important;
+                font-size: 1.15rem !important;
+                top: -28px !important;
             }
             .push-button-container {
                 margin: 10px 0 !important;
@@ -529,11 +531,10 @@
                     let attempts = 0;
                     const poll = setInterval(function () {
                         attempts++;
-                        if (typeof handleLineFitData === 'function' && typeof lineFitState !== 'undefined' && lineFitState.canvas) {
+                        const canvasEl = document.getElementById('scatterCanvas');
+                        if (typeof handleLineFitData === 'function' && canvasEl) {
                             clearInterval(poll);
-                            if (!lineFitState.scatterData) {
-                                handleLineFitData(JSON.parse(JSON.stringify(snap.scatter_data_message)));
-                            }
+                            handleLineFitData(JSON.parse(JSON.stringify(snap.scatter_data_message)));
                         } else if (attempts > 40) {
                             clearInterval(poll);
                         }
