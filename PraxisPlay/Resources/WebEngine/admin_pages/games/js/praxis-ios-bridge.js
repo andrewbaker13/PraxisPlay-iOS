@@ -1905,7 +1905,7 @@
                     div.style.padding = '8px 10px';
                     div.style.marginBottom = '7px';
                     div.style.borderRadius = '12px';
-                } else if (st.includes('#f8fafc') || st.includes('#eff6ff')) {
+                } else if (st.includes('#f8fafc') || st.includes('#eff6ff') || st.includes('#f0f9ff') || st.includes('#e0f2fe')) {
                     div.style.background = 'rgba(14, 165, 233, 0.14)';
                     div.style.border = '1px solid rgba(56, 189, 248, 0.35)';
                     div.style.padding = '8px 10px';
@@ -1914,8 +1914,8 @@
                 } else if (st.includes('background: #f1f5f9')) {
                     div.style.background = 'rgba(30, 41, 59, 0.9)';
                 }
-                if (st.includes('color: #1e293b') || st.includes('color: #334155')) {
-                    div.style.color = '#F1F5F9';
+                if (st.includes('color: #1e293b') || st.includes('color: #334155') || st.includes('color: #0c4a6e') || st.includes('color: #0369a1')) {
+                    div.style.color = '#E0F2FE';
                 }
             });
         }
