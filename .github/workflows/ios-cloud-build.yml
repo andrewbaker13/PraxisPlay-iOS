@@ -86,6 +86,31 @@ jobs:
           sleep 4
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/06-Speed-Tap-Live-Round.png
 
+          # Screen 7: Buy a Clue (Value of Information)
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo buy_a_clue
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/07-Buy-A-Clue-VoI.png
+
+          # Screen 8: Closest Guess (Confidence Intervals)
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo closest_guess
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/08-Closest-Guess-Interval.png
+
+          # Screen 9: Crowd Wisdom (Social Proof & Distribution)
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo crowd_wisdom
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/09-Crowd-Wisdom-Live.png
+
+          # Screen 10: Push Range (Team Tug-of-War)
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo push_range
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/10-Push-Range-Tug.png
+
+          # Screen 11: Word Guess (Concept Recall)
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo word_guess
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/11-Word-Guess-Recall.png
+
           xcrun simctl shutdown "$SIM_UDID" || true
 
       - name: Upload Live iPhone 15 Pro Screenshots

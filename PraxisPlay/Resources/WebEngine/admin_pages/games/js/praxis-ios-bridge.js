@@ -50,7 +50,7 @@
     };
     window.triggerHapticAndAudioAlert = window.triggerHapticAlert;
 
-    // 2. Inject iOS-native CSS refinements (hide duplicate web header/footer since SwiftUI renders native HUD)
+    // 2. Inject iOS-native CSS refinements (single-screen viewport-centered layout for all 9 games)
     function injectIOSStyles() {
         const style = document.createElement('style');
         style.id = 'praxis-ios-native-styles';
@@ -58,12 +58,14 @@
             * {
                 -webkit-tap-highlight-color: transparent;
                 touch-action: manipulation;
+                box-sizing: border-box;
             }
-            body {
+            html, body {
                 -webkit-user-select: none;
                 user-select: none;
-                padding-top: 8px !important;
-                padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+                margin: 0 !important;
+                padding: 4px 6px env(safe-area-inset-bottom, 12px) 6px !important;
+                min-height: 100vh !important;
                 overflow-x: hidden;
             }
             input, textarea {
@@ -71,15 +73,382 @@
                 user-select: text !important;
                 font-size: 16px !important; /* Prevents iOS auto-zoom on input focus */
             }
-            .game-header {
-                display: none !important;
-            }
-            footer {
+            .game-header, footer {
                 display: none !important;
             }
             .game-container {
-                margin-top: 0 !important;
-                padding-top: 4px !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                max-width: 720px !important;
+                min-height: calc(100vh - 18px) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                gap: 10px !important;
+            }
+            .game-area {
+                margin-bottom: 0 !important;
+                padding: 12px !important;
+                border-radius: 16px !important;
+                min-height: auto !important;
+                box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16) !important;
+            }
+            /* Collapse bottom leaderboard into a 1-tap pill during active gameplay so the game card centers cleanly */
+            .leaderboard {
+                padding: 10px 14px !important;
+                border-radius: 14px !important;
+                margin-top: 2px !important;
+                cursor: pointer;
+                user-select: none;
+            }
+            .leaderboard h3 {
+                margin: 0 !important;
+                font-size: 0.9rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+            .leaderboard h3::after {
+                content: 'Tap to expand ▾';
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #64748b;
+            }
+            .leaderboard.ios-expanded h3::after {
+                content: 'Hide ▴';
+            }
+            .leaderboard #leaderboardList {
+                display: none;
+                margin-top: 10px !important;
+                max-height: 220px;
+                overflow-y: auto;
+            }
+            .leaderboard.ios-expanded #leaderboardList {
+                display: block !important;
+            }
+
+            /* ── Universal Compact Question & Timer Header ── */
+            .question-display {
+                margin-bottom: 10px !important;
+            }
+            .question-text {
+                font-size: 1.08rem !important;
+                line-height: 1.32 !important;
+                margin-bottom: 6px !important;
+            }
+            .timer {
+                font-size: 1.55rem !important;
+                line-height: 1.1 !important;
+                margin: 2px 0 !important;
+            }
+
+            /* ── 1. Budget Blitz: 3-column compact channel row so Lock button is centered on screen ── */
+            .bb-area {
+                padding: 2px !important;
+            }
+            .bb-header {
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+                flex-wrap: nowrap !important;
+            }
+            .bb-header .timer {
+                font-size: 1.45rem !important;
+                padding: 6px 10px !important;
+                flex-shrink: 0 !important;
+            }
+            .bb-prompt {
+                font-size: 0.92rem !important;
+                line-height: 1.28 !important;
+                padding: 8px 10px !important;
+                min-width: 0 !important;
+            }
+            .bb-remaining {
+                font-size: 1.05rem !important;
+                padding: 6px 10px !important;
+                flex-shrink: 0 !important;
+                line-height: 1.1 !important;
+            }
+            .bb-channels {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                margin-bottom: 8px !important;
+            }
+            .bb-channel {
+                padding: 8px 6px !important;
+                border-width: 2px !important;
+                border-radius: 10px !important;
+            }
+            .bb-channel-name {
+                font-size: 0.78rem !important;
+                line-height: 1.15 !important;
+                min-height: 2.2em !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin-bottom: 2px !important;
+            }
+            .bb-channel-tokens {
+                font-size: 1.65rem !important;
+            }
+            .bb-channel-stats {
+                font-size: 0.7rem !important;
+                margin: 4px 0 !important;
+                line-height: 1.2 !important;
+            }
+            .bb-controls {
+                gap: 4px !important;
+            }
+            .bb-btn {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 1.25rem !important;
+                border-radius: 8px !important;
+            }
+            .bb-outcome {
+                padding: 6px 10px !important;
+                font-size: 0.95rem !important;
+                margin-bottom: 6px !important;
+            }
+            .bb-table {
+                padding: 4px 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 0.82rem !important;
+            }
+            .bb-lock {
+                padding: 12px !important;
+                font-size: 1rem !important;
+            }
+
+            /* ── 2. Minority Rule: Compact prompt & 4 option cards + Lock button above the fold ── */
+            .mr-area {
+                padding: 2px !important;
+            }
+            .mr-area > div:first-child {
+                margin-bottom: 8px !important;
+            }
+            .mr-area > div:nth-child(2) {
+                padding: 10px 12px !important;
+                margin-bottom: 10px !important;
+            }
+            .mr-area > div:nth-child(2) > div {
+                font-size: 0.96rem !important;
+                line-height: 1.32 !important;
+            }
+            .mr-option-card {
+                padding: 10px 12px !important;
+                margin-bottom: 7px !important;
+                border-radius: 11px !important;
+                gap: 10px !important;
+            }
+            .mr-option-card .mr-badge {
+                width: 30px !important;
+                height: 30px !important;
+                font-size: 14px !important;
+            }
+            .mr-option-card > div:nth-child(2) {
+                font-size: 0.92rem !important;
+                line-height: 1.25 !important;
+            }
+            #mrActionContainer {
+                margin-top: 10px !important;
+            }
+            #mrSubmitBtn {
+                padding: 12px !important;
+                font-size: 1rem !important;
+            }
+
+            /* ── 3. Line Fit: Fit question, scatter plot canvas, instructions & Confirm/Redraw in 1 screen ── */
+            .line-fit-area {
+                padding: 2px !important;
+            }
+            .line-fit-container {
+                margin: 6px auto !important;
+            }
+            #scatterCanvas {
+                max-height: 36vh !important;
+                width: auto !important;
+                max-width: 100% !important;
+                object-fit: contain !important;
+            }
+            #lineStats {
+                padding: 6px 10px !important;
+                margin-bottom: 6px !important;
+            }
+            #lineEquation {
+                font-size: 0.95rem !important;
+            }
+            #lineCorrelation {
+                font-size: 0.85rem !important;
+            }
+            .canvas-instructions {
+                margin-top: 6px !important;
+                padding: 6px 10px !important;
+                font-size: 0.92rem !important;
+            }
+            .line-fit-controls {
+                margin-top: 8px !important;
+                gap: 8px !important;
+            }
+            .line-fit-btn {
+                padding: 10px 16px !important;
+                font-size: 0.98rem !important;
+                min-width: 125px !important;
+            }
+
+            /* ── 4. Buy a Clue: Compact rules, options & Clue/Lock buttons on 1 screen ── */
+            .bac-area {
+                padding: 2px !important;
+            }
+            .bac-header {
+                gap: 8px !important;
+                margin-bottom: 6px !important;
+                flex-wrap: nowrap !important;
+            }
+            .bac-prompt {
+                font-size: 0.95rem !important;
+                line-height: 1.28 !important;
+                padding: 8px 10px !important;
+                min-width: 0 !important;
+            }
+            .bac-rules {
+                padding: 6px 8px !important;
+                margin-bottom: 6px !important;
+                font-size: 0.82rem !important;
+            }
+            .bac-clue {
+                padding: 8px 10px !important;
+                margin-bottom: 6px !important;
+                font-size: 0.9rem !important;
+            }
+            .bac-options {
+                gap: 6px !important;
+                margin-bottom: 8px !important;
+            }
+            .bac-option {
+                padding: 10px 12px !important;
+                font-size: 0.94rem !important;
+                border-width: 2px !important;
+            }
+            .bac-actions {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 6px !important;
+            }
+            .bac-buy, .bac-lock {
+                padding: 10px 8px !important;
+                font-size: 0.9rem !important;
+            }
+
+            /* ── 5. Closest Guess: Keep inputs, Submit button & number line centered ── */
+            .closest-guess-area {
+                padding: 2px !important;
+            }
+            .range-inputs {
+                margin: 8px auto !important;
+                gap: 8px !important;
+            }
+            .range-input-group input {
+                padding: 10px !important;
+                font-size: 1.25rem !important;
+            }
+            .submit-guess-btn {
+                padding: 11px !important;
+                font-size: 1.05rem !important;
+                margin-top: 6px !important;
+            }
+            .numberline-container {
+                margin: 10px 0 4px 0 !important;
+                padding: 12px 10px !important;
+            }
+            .numberline {
+                height: 85px !important;
+                margin: 10px 0 !important;
+            }
+            .range-box {
+                height: 70px !important;
+            }
+
+            /* ── 6. Crowd Wisdom: Compact buttons & live distribution bars ── */
+            .crowd-wisdom-area {
+                padding: 4px !important;
+            }
+            .timer-points-row {
+                margin: 8px 0 !important;
+            }
+            .distribution-container {
+                margin-top: 8px !important;
+            }
+            .distribution-row {
+                padding: 6px !important;
+                margin-bottom: 6px !important;
+            }
+            .distribution-label, .crowd-wisdom-btn {
+                width: 135px !important;
+                padding: 8px 10px !important;
+                font-size: 0.86rem !important;
+            }
+
+            /* ── 7. Push Range: Keep bar, PUSH button & compact team rosters visible ── */
+            .push-range-area {
+                padding: 2px !important;
+            }
+            .push-range-visualization {
+                margin: 8px 0 !important;
+                padding: 8px !important;
+            }
+            .push-range-bar {
+                height: 42px !important;
+            }
+            .guess-range-bracket {
+                height: 48px !important;
+            }
+            .bracket-left-edge .edge-value, .bracket-right-edge .edge-value {
+                font-size: 1.35rem !important;
+                top: -32px !important;
+            }
+            .push-button-container {
+                margin: 10px 0 !important;
+            }
+            .push-button {
+                padding: 14px 36px !important;
+                width: 100% !important;
+                max-width: 320px !important;
+            }
+            .push-button .push-main {
+                font-size: 1.5rem !important;
+            }
+            .push-range-teams {
+                gap: 8px !important;
+                margin: 8px 0 0 0 !important;
+            }
+            .team-panel {
+                padding: 8px !important;
+                max-height: 130px !important;
+                overflow-y: auto !important;
+            }
+            .team-panel h4 {
+                font-size: 0.9rem !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* ── 8. Speed Tap & 9. Word Guess ── */
+            .answer-options {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                margin: 8px 0 !important;
+            }
+            .answer-btn {
+                padding: 12px 10px !important;
+                font-size: 0.98rem !important;
+                min-height: 54px !important;
+            }
+            .word-guess-area {
+                padding: 2px !important;
+            }
+            .word-guess-grid {
+                margin: 8px 0 !important;
+            }
+            .word-guess-input-area {
+                margin-top: 10px !important;
             }
         `;
         (document.head || document.documentElement).appendChild(style);
@@ -126,6 +495,13 @@
     document.addEventListener('DOMContentLoaded', function () {
         const scoreEl = document.getElementById('playerScore');
         const rankEl = document.getElementById('playerRank');
+        const lbEl = document.getElementById('leaderboard');
+        if (lbEl) {
+            lbEl.addEventListener('click', function () {
+                lbEl.classList.toggle('ios-expanded');
+                postToNative({ type: 'haptic', pattern: [15] });
+            });
+        }
         const observer = new MutationObserver(function () {
             syncHUDToNative();
         });
