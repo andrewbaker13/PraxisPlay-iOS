@@ -27,6 +27,9 @@
             if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.praxisNative) {
                 window.webkit.messageHandlers.praxisNative.postMessage(payload);
             }
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ source: 'praxisNative', payload: payload }, '*');
+            }
         } catch (err) {
             console.warn('[Praxis-iOS] Native postMessage error:', err);
         }

@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Praxis Play">
+    <title>Praxis Play — iPadOS Interactive Experience</title>
+    <link rel="icon" type="image/svg+xml" href="../../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    <style>
+        :root {
+            --bg-top: #090D16;
+            --bg-bot: #16223B;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --accent-blue: #3B82F6;
+            --accent-cyan: #38BDF8;
+            --accent-mint: #34D399;
+            --accent-amber: #FBBF24;
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bot) 100%);
+            color: #F8FAFC;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Main Shell Layout */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Top Navigation Bar */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: max(12px, env(safe-area-inset-top)) 22px 12px 22px;
+            background: rgba(9, 13, 22, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+            z-index: 20;
+        }
+        .brand-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        .brand-pill span.badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38BDF8;
+        }
+
+        /* Scrollable Tab Content */
+        .tab-view {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px 22px 100px 22px;
+        }
+        .tab-pane {
+            display: none;
+            margin: 0 auto;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Tab 1: Join Live Classroom (640px centered iPad console) */
+        #tab-join {
+            max-width: 640px;
+        }
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.09em;
+            color: #38BDF8;
+            background: rgba(56, 189, 248, 0.14);
+            padding: 5px 13px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+        }
+        .hero-banner h1 {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 0 0 8px 0;
+        }
+        .hero-banner p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.72);
+            margin: 0;
+        }
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+        .field-label {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .room-input {
+            width: 100%;
+            font-size: 28px;
+            font-weight: 900;
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            text-align: center;
+            text-transform: uppercase;
+            padding: 14px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            outline: none;
+            margin-bottom: 16px;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .room-input:focus, .name-input:focus {
+            border-color: #3B82F6;
+        }
+        .name-input {
+            width: 100%;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            outline: none;
+            margin-bottom: 16px;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .primary-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(90deg, #3B82F6, #2563EB);
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        .arcade-callout {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(147, 51, 234, 0.16);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            cursor: pointer;
+        }
+
+        /* Tab 2: Solo Practice Arcade (960px 2-Column iPad Grid) */
+        #tab-arcade {
+            max-width: 960px;
+        }
+        .mastery-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .filter-pill {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .filter-pill.active {
+            background: #3B82F6;
+            border-color: #60A5FA;
+            color: #FFFFFF;
+        }
+        .arcade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .mode-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .mode-card-top {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .mode-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .mode-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.18);
+            color: #38BDF8;
+            margin-bottom: 4px;
+        }
+        .mode-title {
+            font-size: 19px;
+            font-weight: 900;
+            margin: 0 0 2px 0;
+        }
+        .mode-concept {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.72);
+            margin: 0;
+        }
+        .mode-desc {
+            font-size: 13px;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.72);
+            margin: 0;
+        }
+        .mode-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+        .launch-btn {
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: none;
+            color: #FFFFFF;
+            font-size: 13.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .viz-btn {
+            padding: 11px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            background: rgba(15, 23, 42, 0.85);
+            color: #38BDF8;
+            font-size: 12.5px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Bottom Native iOS Tab Bar */
+        .bottom-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            padding: 10px 24px max(12px, env(safe-area-inset-bottom)) 24px;
+            background: rgba(9, 13, 22, 0.92);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 30;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            color: #3B82F6;
+        }
+        .tab-btn .icon {
+            font-size: 20px;
+        }
+
+        /* Full-Screen Native Game Arena Modal (Matches LiveGameArenaView.swift) */
+        .arena-modal {
+            position: fixed;
+            inset: 0;
+            background: #090D16;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
+        .arena-modal.open {
+            display: flex;
+        }
+        .arena-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: max(10px, env(safe-area-inset-top)) 16px 10px 16px;
+            background: rgba(9, 13, 22, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-wrap: wrap;
+        }
+        .hud-exit-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .hud-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.07);
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .hud-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #38BDF8;
+            box-shadow: 0 0 6px #38BDF8;
+        }
+        .hud-round-pill {
+            color: #38BDF8;
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            padding-left: 6px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hud-quick-switcher {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hud-select {
+            background: rgba(30, 41, 59, 0.95);
+            color: #F8FAFC;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            outline: none;
+        }
+        .hud-toggle-viz {
+            background: rgba(56, 189, 248, 0.16);
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 10px;
+            padding: 6px 11px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hud-score-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 11px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+        .hud-delta-pill {
+            display: none;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.22);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #34D399;
+            font-size: 11px;
+            font-weight: 900;
+        }
+        .hud-streak-pill {
+            display: none;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(249, 115, 22, 0.22);
+            border: 1px solid rgba(249, 115, 22, 0.5);
+            color: #FB923C;
+            font-size: 11px;
+            font-weight: 900;
+        }
+        .arena-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #090D16;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="nav-bar">
+            <div class="brand-pill">
+                <span>🎮 Praxis Play</span>
+                <span class="badge">iPadOS Universal</span>
+            </div>
+            <div style="font-size: 12px; color: #94A3B8; font-weight: 600;">
+                Tip: Tap <strong>Solo Arcade</strong> below or use the top switcher inside any game
+            </div>
+        </header>
+
+        <main class="tab-view">
+            <!-- TAB 1: SOLO PRACTICE ARCADE (Default active so user can test all 9 games immediately) -->
+            <section id="tab-arcade" class="tab-pane active">
+                <div class="mastery-card">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.08em; color: #38BDF8; margin-bottom: 4px;">
+                            INTERACTIVE iPadOS DRILL DECK
+                        </div>
+                        <div style="font-size: 20px; font-weight: 900; margin-bottom: 4px;">
+                            All 9 Marketing Analytics Game Modes + Between-Round Charts
+                        </div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.7);">
+                            Tap <strong>Play Live Round</strong> to test touch controls, or tap <strong>📊 Results Viz</strong> to inspect the between-round summary visualization.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-row" id="categoryFilters">
+                    <button class="filter-pill active" data-cat="All">All 9 Modes</button>
+                    <button class="filter-pill" data-cat="Quantitative">Quantitative</button>
+                    <button class="filter-pill" data-cat="Strategy">Strategy</button>
+                    <button class="filter-pill" data-cat="Speed & Recall">Speed & Recall</button>
+                </div>
+
+                <div class="arcade-grid" id="arcadeGrid"></div>
+            </section>
+
+            <!-- TAB 2: JOIN LIVE CLASSROOM -->
+            <section id="tab-join" class="tab-pane">
+                <div class="hero-banner">
+                    <div class="hero-kicker">⚡ MKTPRAXIS LIVE CLASSROOM CONTROLLER</div>
+                    <h1>Make Analytics Competitive</h1>
+                    <p>Enter a live 4-character room code from your instructor dashboard on mktpraxis.com.</p>
+                </div>
+
+                <div class="glass-card">
+                    <label class="field-label">ROOM CODE</label>
+                    <input type="text" id="liveRoomInput" class="room-input" placeholder="AB12" maxlength="8">
+
+                    <label class="field-label">YOUR DISPLAY NAME</label>
+                    <input type="text" id="liveNameInput" class="name-input" placeholder="e.g. Andrew (iPad)" value="Andrew (iPad)">
+
+                    <div id="joinErrorBox" style="display:none; padding:12px; border-radius:12px; background:rgba(239,68,68,0.22); border:1px solid rgba(239,68,68,0.5); color:#FCA5A5; font-size:13px; font-weight:700; margin-bottom:14px;"></div>
+
+                    <button class="primary-btn" id="joinLiveBtn">▶ Join Live Game</button>
+                </div>
+
+                <div class="arcade-callout" onclick="switchTab('arcade')">
+                    <div style="font-size: 28px;">✨</div>
+                    <div>
+                        <div style="font-size: 15px; font-weight: 900;">Want to test all 9 games & between-round charts right now?</div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.75);">Switch to the Solo Practice Arcade tab →</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-tab-bar">
+            <button class="tab-btn active" id="tabBtnArcade" onclick="switchTab('arcade')">
+                <span class="icon">🕹️</span>
+                <span>Solo Arcade</span>
+            </button>
+            <button class="tab-btn" id="tabBtnJoin" onclick="switchTab('join')">
+                <span class="icon">📡</span>
+                <span>Join Live Room</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- FULL-SCREEN NATIVE GAME ARENA MODAL -->
+    <div class="arena-modal" id="arenaModal">
+        <div class="arena-hud">
+            <button class="hud-exit-btn" onclick="closeArena()">✕ Exit</button>
+
+            <div class="hud-center">
+                <span class="hud-dot"></span>
+                <span id="hudRoomLabel">SOLO ARCADE</span>
+                <span class="hud-round-pill" id="hudRoundLabel">R1/3</span>
+            </div>
+
+            <div class="hud-quick-switcher">
+                <select id="hudModeSelect" class="hud-select" onchange="onQuickSwitchMode(this.value)"></select>
+                <button class="hud-toggle-viz" id="hudVizToggleBtn" onclick="toggleResultsPreview()">📊 Show Results Viz</button>
+            </div>
+
+            <div class="hud-right">
+                <div class="hud-score-box">
+                    <span style="color:#FACC15;">★</span>
+                    <span id="hudScoreVal">380</span>
+                </div>
+                <span class="hud-delta-pill" id="hudDeltaPill">+88</span>
+                <span class="hud-streak-pill" id="hudStreakPill">🔥 2x</span>
+            </div>
+        </div>
+        <iframe class="arena-iframe" id="arenaFrame" src="about:blank"></iframe>
+    </div>
+
+    <script>
+        const SOLO_MODES = [
+            {
+                id: 'line_fit',
+                title: 'Line Fit Challenge',
+                badge: 'REGRESSION & OLS',
+                category: 'Quantitative',
+                concept: 'Ordinary Least Squares & Trend Estimation',
+                desc: 'Drag glowing cyan handles at 60fps to fit an OLS regression line to noisy Ad Spend vs. Revenue data, then inspect the Dark-Slate OLS Results Plot.',
+                icon: '📈',
+                grad: 'linear-gradient(135deg, #2563EB, #06B6D4)',
+                snapshot: 'line_fit_active'
+            },
+            {
+                id: 'closest_guess',
+                title: 'Closest Guess',
+                badge: 'CONFIDENCE INTERVALS',
+                category: 'Quantitative',
+                concept: ' Quantitative Estimation & Uncertainty Calibration',
+                desc: 'Use dual thumb sliders and -5/-1/+1/+5 steppers to bracket the true benchmark, then inspect the Dark-Slate Laser Numberline.',
+                icon: '🎯',
+                grad: 'linear-gradient(135deg, #16A34A, #14B8A6)',
+                snapshot: 'closest_guess_active'
+            },
+            {
+                id: 'speed_tap',
+                title: 'Speed Tap',
+                badge: 'RAPID RECALL',
+                category: 'Speed & Recall',
+                concept: 'Core Marketing Metrics & Definitions',
+                desc: 'Race a decaying points clock in a 2×2 dark-glass grid, then inspect the Class Response Time Dot Plot.',
+                icon: '⚡',
+                grad: 'linear-gradient(135deg, #EAB308, #F97316)',
+                snapshot: 'speed_tap_active'
+            },
+            {
+                id: 'minority_rule',
+                title: 'Minority Rule',
+                badge: 'GAME THEORY',
+                category: 'Strategy',
+                concept: 'Blue Ocean Strategy & Differentiation',
+                desc: 'Pick the differentiation strategy fewest competitors choose, then inspect the Blue Ocean Market Distribution debrief.',
+                icon: '🧭',
+                grad: 'linear-gradient(135deg, #4F46E5, #2563EB)',
+                snapshot: 'minority_rule_active'
+            },
+            {
+                id: 'budget_blitz',
+                title: 'Budget Blitz',
+                badge: 'RESOURCE ALLOCATION',
+                category: 'Quantitative',
+                concept: 'Diminishing Marginal Returns & ROAS',
+                desc: 'Allocate 5 budget tokens across Paid Search, Creator Reels, and CRM using marginal return curves.',
+                icon: '💰',
+                grad: 'linear-gradient(135deg, #10B981, #0D9488)',
+                snapshot: 'budget_blitz_active'
+            },
+            {
+                id: 'buy_a_clue',
+                title: 'Buy a Clue',
+                badge: 'VALUE OF INFORMATION',
+                category: 'Strategy',
+                concept: 'Marketing Research Economics (EVSI)',
+                desc: 'Decide whether to spend 25 points on research before locking in your Customer Lifetime Value forecast.',
+                icon: '🔍',
+                grad: 'linear-gradient(135deg, #F97316, #D97706)',
+                snapshot: 'buy_a_clue_active'
+            },
+            {
+                id: 'word_guess',
+                title: 'Word Guess',
+                badge: 'CONCEPT RECALL',
+                category: 'Speed & Recall',
+                concept: 'Strategic Frameworks & Terminology',
+                desc: 'Tap the built-in 3-row dark-glass QWERTY keypad (no system keyboard covering the screen!) to solve the concept.',
+                icon: '🔤',
+                grad: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+                snapshot: 'word_guess_active'
+            },
+            {
+                id: 'crowd_wisdom',
+                title: 'Crowd Wisdom',
+                badge: 'SOCIAL PROOF & BIAS',
+                category: 'Strategy',
+                concept: 'Herding vs. Independent Judgment',
+                desc: 'Balance live classroom poll distributions against independent analytical reasoning.',
+                icon: '👥',
+                grad: 'linear-gradient(135deg, #9333EA, #EC4899)',
+                snapshot: 'crowd_wisdom_active'
+            },
+            {
+                id: 'push_range',
+                title: 'Push Range',
+                badge: 'TEAM TUG-OF-WAR',
+                category: 'Speed & Recall',
+                concept: 'Collaborative Market Sizing',
+                desc: 'Rapid-fire team tug-of-war to push Left and Right bracket walls around the true market value.',
+                icon: '↔️',
+                grad: 'linear-gradient(135deg, #EF4444, #F97316)',
+                snapshot: 'push_range_active'
+            }
+        ];
+
+        let currentCategory = 'All';
+        let currentModeId = 'line_fit';
+        let showingResultsViz = false;
+
+        function renderArcadeGrid() {
+            const grid = document.getElementById('arcadeGrid');
+            const filtered = currentCategory === 'All'
+                ? SOLO_MODES
+                : SOLO_MODES.filter(m => m.category === currentCategory);
+
+            grid.innerHTML = filtered.map(m => `
+                <div class="mode-card">
+                    <div>
+                        <div class="mode-card-top">
+                            <div class="mode-icon" style="background: ${m.grad};">${m.icon}</div>
+                            <div>
+                                <span class="mode-badge">${m.badge}</span>
+                                <h3 class="mode-title">${m.title}</h3>
+                                <p class="mode-concept">${m.concept}</p>
+                            </div>
+                        </div>
+                        <p class="mode-desc" style="margin-top: 12px;">${m.desc}</p>
+                    </div>
+                    <div class="mode-actions">
+                        <button class="launch-btn" style="background: ${m.grad};" onclick="launchSolo('${m.id}', false)">
+                            <span>▶ Play Live Round</span>
+                            <span>→</span>
+                        </button>
+                        <button class="viz-btn" onclick="launchSolo('${m.id}', true)">
+                            📊 Results Viz
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Populate quick switcher dropdown
+        const modeSelect = document.getElementById('hudModeSelect');
+        modeSelect.innerHTML = SOLO_MODES.map(m => `<option value="${m.id}">${m.icon} ${m.title}</option>`).join('');
+
+        document.querySelectorAll('#categoryFilters .filter-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#categoryFilters .filter-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.getAttribute('data-cat');
+                renderArcadeGrid();
+            });
+        });
+
+        function switchTab(tab) {
+            document.getElementById('tab-arcade').classList.toggle('active', tab === 'arcade');
+            document.getElementById('tab-join').classList.toggle('active', tab === 'join');
+            document.getElementById('tabBtnArcade').classList.toggle('active', tab === 'arcade');
+            document.getElementById('tabBtnJoin').classList.toggle('active', tab === 'join');
+        }
+
+        function launchSolo(modeId, showResults) {
+            const mode = SOLO_MODES.find(m => m.id === modeId) || SOLO_MODES[0];
+            currentModeId = mode.id;
+            showingResultsViz = Boolean(showResults);
+            modeSelect.value = mode.id;
+            updateVizToggleBtn();
+
+            document.getElementById('hudRoomLabel').textContent = 'SOLO ARCADE';
+            document.getElementById('hudDeltaPill').style.display = 'none';
+            const resParam = showingResultsViz ? '&results=1' : '';
+            const frame = document.getElementById('arenaFrame');
+            frame.src = `game-play.html?room=SOLO&dev=1&state=${encodeURIComponent(mode.snapshot)}${resParam}&t=${Date.now()}`;
+            document.getElementById('arenaModal').classList.add('open');
+        }
+
+        function onQuickSwitchMode(modeId) {
+            launchSolo(modeId, showingResultsViz);
+        }
+
+        function toggleResultsPreview() {
+            launchSolo(currentModeId, !showingResultsViz);
+        }
+
+        function updateVizToggleBtn() {
+            const btn = document.getElementById('hudVizToggleBtn');
+            if (showingResultsViz) {
+                btn.textContent = '🎮 Back to Live Round';
+                btn.style.background = 'rgba(16, 185, 129, 0.22)';
+                btn.style.color = '#34D399';
+                btn.style.borderColor = '#10B981';
+            } else {
+                btn.textContent = '📊 Show Results Viz';
+                btn.style.background = 'rgba(56, 189, 248, 0.16)';
+                btn.style.color = '#38BDF8';
+                btn.style.borderColor = 'rgba(56, 189, 248, 0.45)';
+            }
+        }
+
+        function closeArena() {
+            document.getElementById('arenaModal').classList.remove('open');
+            document.getElementById('arenaFrame').src = 'about:blank';
+        }
+
+        // Listen for HUD Telemetry & Round Complete events from praxis-ios-bridge.js
+        window.addEventListener('message', function(e) {
+            if (!e.data || e.data.source !== 'praxisNative') return;
+            const p = e.data.payload || {};
+            if (p.type === 'hudUpdate') {
+                if (p.score != null) document.getElementById('hudScoreVal').textContent = p.score;
+                if (p.roundNumber && p.totalRounds) {
+                    document.getElementById('hudRoundLabel').textContent = `R${p.roundNumber}/${p.totalRounds}`;
+                }
+            } else if (p.type === 'round_complete') {
+                if (p.totalScore != null) document.getElementById('hudScoreVal').textContent = p.totalScore;
+                if (p.roundNumber && p.totalRounds) {
+                    document.getElementById('hudRoundLabel').textContent = `R${p.roundNumber}/${p.totalRounds}`;
+                }
+                const deltaEl = document.getElementById('hudDeltaPill');
+                if (p.roundPoints > 0) {
+                    deltaEl.textContent = `+${p.roundPoints}`;
+                    deltaEl.style.display = 'inline-block';
+                }
+                const streakEl = document.getElementById('hudStreakPill');
+                if (p.streak >= 2) {
+                    streakEl.textContent = `🔥 ${p.streak}x`;
+                    streakEl.style.display = 'inline-block';
+                }
+            } else if (p.type === 'round_started') {
+                document.getElementById('hudDeltaPill').style.display = 'none';
+                if (p.roundNumber && p.totalRounds) {
+                    document.getElementById('hudRoundLabel').textContent = `R${p.roundNumber}/${p.totalRounds}`;
+                }
+            }
+        });
+
+        // Live Classroom Join Handler (Connects directly to drbaker-backend.onrender.com)
+        document.getElementById('joinLiveBtn').addEventListener('click', async function() {
+            const roomCode = (document.getElementById('liveRoomInput').value || '').trim().toUpperCase();
+            const playerName = (document.getElementById('liveNameInput').value || 'iPad Student').trim();
+            const errBox = document.getElementById('joinErrorBox');
+            errBox.style.display = 'none';
+
+            if (roomCode.length < 3) {
+                errBox.textContent = 'Please enter a valid 4-character room code.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const btn = document.getElementById('joinLiveBtn');
+            btn.textContent = 'Joining Room…';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('https://drbaker-backend.onrender.com/api/game/join/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        room_code: roomCode,
+                        guest_name: playerName,
+                        guest_tag: String(Math.floor(1000 + Math.random() * 9000))
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || data.detail || 'Could not find active room ' + roomCode);
+                }
+                sessionStorage.setItem('gameSession', JSON.stringify(data.game_session || { room_code: roomCode }));
+                sessionStorage.setItem('playerSession', JSON.stringify(data.player_session || { id: data.player_id, display_name: playerName }));
+                sessionStorage.setItem('isGuest', 'true');
+                sessionStorage.setItem('waitingToEnter', data.waiting_to_enter ? 'true' : 'false');
+
+                document.getElementById('hudRoomLabel').textContent = 'ROOM ' + roomCode;
+                const frame = document.getElementById('arenaFrame');
+                frame.src = `game-play.html?room=${encodeURIComponent(roomCode)}&native_ios=1&t=${Date.now()}`;
+                document.getElementById('arenaModal').classList.add('open');
+            } catch (err) {
+                errBox.textContent = err.message;
+                errBox.style.display = 'block';
+            } finally {
+                btn.textContent = '▶ Join Live Game';
+                btn.disabled = false;
+            }
+        });
+
+        renderArcadeGrid();
+    </script>
+</body>
+</html>
