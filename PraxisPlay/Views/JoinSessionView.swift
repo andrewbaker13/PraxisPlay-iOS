@@ -38,6 +38,8 @@ struct JoinSessionView: View {
                 .padding(.horizontal, 18)
                 .padding(.top, 12)
                 .padding(.bottom, 36)
+                .frame(maxWidth: 640)
+                .frame(maxWidth: .infinity)
             }
             .background(
                 LinearGradient(

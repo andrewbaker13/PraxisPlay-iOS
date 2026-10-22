@@ -1275,6 +1275,71 @@
             .ios-solo-replay-btn:active {
                 transform: scale(0.97);
             }
+
+            /* ── 11. iPadOS TABLET RESPONSIVE SCALING (@media min-width: 768px) ── */
+            @media (min-width: 768px) {
+                .game-container {
+                    max-width: 760px !important;
+                    padding: 12px 24px !important;
+                    gap: 14px !important;
+                }
+                .game-area {
+                    padding: 24px 28px !important;
+                    border-radius: 26px !important;
+                }
+                .question-text {
+                    font-size: 1.24rem !important;
+                    margin-bottom: 10px !important;
+                }
+                .answer-options {
+                    gap: 14px !important;
+                }
+                .answer-btn {
+                    min-height: 92px !important;
+                    padding: 16px 14px !important;
+                    font-size: 1.04rem !important;
+                    border-radius: 18px !important;
+                }
+                #scatterCanvas {
+                    max-height: 44vh !important;
+                }
+                #lineFitResultsCanvas {
+                    max-height: 36vh !important;
+                }
+                #speedTapResultsDotPlot {
+                    max-height: 26vh !important;
+                }
+                .letter-box {
+                    width: 44px !important;
+                    height: 52px !important;
+                    font-size: 22px !important;
+                    border-radius: 10px !important;
+                }
+                .ios-wg-row {
+                    gap: 6px !important;
+                }
+                .ios-wg-key {
+                    max-width: 48px !important;
+                    height: 48px !important;
+                    font-size: 1.02rem !important;
+                    border-radius: 9px !important;
+                }
+                .ios-wg-key.ios-wg-wide {
+                    max-width: 74px !important;
+                    font-size: 0.9rem !important;
+                }
+                .bb-channel, .mr-option-card, .bac-option {
+                    padding: 13px 16px !important;
+                }
+                #roundCompleteBanner {
+                    padding: 18px 22px !important;
+                    border-radius: 22px !important;
+                }
+                .ios-solo-replay-btn {
+                    padding: 14px 20px !important;
+                    font-size: 1.05rem !important;
+                }
+            }
         `;
         (document.head || document.documentElement).appendChild(style);
     }

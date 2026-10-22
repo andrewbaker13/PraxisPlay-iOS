@@ -2,9 +2,21 @@ import SwiftUI
 
 struct SoloArcadeView: View {
     @ObservedObject var sessionStore = PraxisSessionStore.shared
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var selectedCategory: String = "All"
 
     private let categories = ["All", "Quantitative", "Strategy", "Speed & Recall"]
+
+    private var gridColumns: [GridItem] {
+        if horizontalSizeClass == .regular {
+            return [
+                GridItem(.flexible(minimum: 300), spacing: 16, alignment: .top),
+                GridItem(.flexible(minimum: 300), spacing: 16, alignment: .top)
+            ]
+        } else {
+            return [GridItem(.flexible(), spacing: 16)]
+        }
+    }
 
     var filteredModes: [SoloGameMode] {
         switch selectedCategory {
@@ -53,7 +65,7 @@ struct SoloArcadeView: View {
                     }
 
                     // MARK: - 9 Minigame Cards
-                    LazyVStack(spacing: 16) {
+                    LazyVGrid(columns: gridColumns, spacing: 16) {
                         ForEach(filteredModes) { mode in
                             SoloGameCardView(
                                 mode: mode,
@@ -67,6 +79,8 @@ struct SoloArcadeView: View {
                 .padding(.horizontal, 18)
                 .padding(.top, 12)
                 .padding(.bottom, 36)
+                .frame(maxWidth: 960)
+                .frame(maxWidth: .infinity)
             }
             .background(
                 LinearGradient(
