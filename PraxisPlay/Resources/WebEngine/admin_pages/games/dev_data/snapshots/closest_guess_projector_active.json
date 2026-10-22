@@ -1,0 +1,52 @@
+{
+  "type": "game_started",
+  "game_type": "closest_guess",
+  "question_text": "What percentage of consumers say they are more likely to buy from brands that personalize their experience?",
+  "game_config": {
+    "numberline_min": 0,
+    "numberline_max": 100,
+    "max_range_width": 20
+  },
+  "current_round": 1,
+  "total_rounds": 5,
+  "game_time_limit": 45,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson"},
+    {"player_id": 2, "player_name": "Bob Martinez"},
+    {"player_id": 3, "player_name": "Charlie Davis"},
+    {"player_id": 4, "player_name": "Diana Chen"},
+    {"player_id": 5, "player_name": "Ethan Wilson"},
+    {"player_id": 6, "player_name": "Fiona Taylor"},
+    {"player_id": 7, "player_name": "George Lee"},
+    {"player_id": 8, "player_name": "Hannah Patel"},
+    {"player_id": 9, "player_name": "Isaac Brown"},
+    {"player_id": 10, "player_name": "Jenny Kim"}
+  ],
+  "submitted_ranges": [
+    {"player_id": 1, "player_name": "Alice", "min": 68, "max": 74},
+    {"player_id": 2, "player_name": "Bob", "min": 62, "max": 79},
+    {"player_id": 3, "player_name": "Charlie", "min": 70, "max": 85},
+    {"player_id": 4, "player_name": "Diana", "min": 55, "max": 75},
+    {"player_id": 5, "player_name": "Ethan", "min": 66, "max": 78},
+    {"player_id": 6, "player_name": "Fiona", "min": 73, "max": 88},
+    {"player_id": 7, "player_name": "George", "min": 52, "max": 68},
+    {"player_id": 8, "player_name": "Hannah", "min": 71, "max": 83},
+    {"player_id": 9, "player_name": "Isaac", "min": 60, "max": 72},
+    {"player_id": 10, "player_name": "Jenny", "min": 75, "max": 91},
+    {"player_id": 11, "player_name": "Kevin", "min": 94, "max": 100}
+  ],
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 95},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 88},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 82},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 75},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 70},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 65},
+    {"player_id": 7, "player_name": "George Lee", "score": 60},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 55},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 50},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 45}
+  ]
+}

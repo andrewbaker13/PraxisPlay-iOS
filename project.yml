@@ -1,0 +1,43 @@
+name: PraxisPlay
+options:
+  bundleIdPrefix: com.mktpraxis
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: "S36NQ79D63"
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  PraxisPlay:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: PraxisPlay/App
+      - path: PraxisPlay/Models
+      - path: PraxisPlay/Services
+      - path: PraxisPlay/Views
+      - path: PraxisPlay/WebBridge
+      - path: PraxisPlay/Resources/Assets.xcassets
+      - path: PraxisPlay/Resources/WebEngine
+        type: folder
+        buildPhase: resources
+    info:
+      path: PraxisPlay/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mktpraxis.praxisplay
+        PRODUCT_NAME: PraxisPlay
+        INFOPLIST_FILE: PraxisPlay/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: S36NQ79D63
+        ENABLE_PREVIEWS: YES

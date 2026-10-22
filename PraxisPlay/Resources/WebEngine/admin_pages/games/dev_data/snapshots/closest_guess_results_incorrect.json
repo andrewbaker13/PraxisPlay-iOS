@@ -1,0 +1,43 @@
+{
+  "type": "game_results",
+  "game_type": "closest_guess",
+  "current_round": 1,
+  "total_rounds": 5,
+  "next_game_type": "word_guess",
+  "correct_answer": "71",
+  "player_answer": "85-95",
+  "points": 0,
+  "is_correct": false,
+  "round_stats": {
+    "player_stats": {
+      "999": {
+        "player_round_score": 0,
+        "player_total_score": 75
+      }
+    },
+    "percent_scored": 80,
+    "average_score": 62
+  },
+  "game_specific": {
+    "top_scorer": {
+      "name": "Bob Martinez",
+      "points": 95,
+      "range": "69-73"
+    },
+    "correct_count": 8,
+    "total_guesses": 10,
+    "average_range_width": 13.8
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 188, "round_scores": [93, 95]},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 183, "round_scores": [95, 88]},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 170, "round_scores": [88, 82]},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 158, "round_scores": [88, 70]},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 148, "round_scores": [83, 65]},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 138, "round_scores": [78, 60]},
+    {"player_id": 8, "player_name": "George Lee", "score": 128, "round_scores": [73, 55]},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 120, "round_scores": [70, 50]},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 108, "round_scores": [63, 45]},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 75, "round_scores": [0, 75]}
+  ]
+}

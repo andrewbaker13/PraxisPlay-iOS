@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Praxis Play — MktPraxis</title>
+    <link rel="icon" type="image/svg+xml" href="../../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    
+    <!-- DNS prefetch and preconnect for faster loading -->
+    <link rel="dns-prefetch" href="https://drbaker-backend.onrender.com">
+    <link rel="preconnect" href="https://drbaker-backend.onrender.com" crossorigin>
+    
+    <link rel="stylesheet" href="../../shared/css/main.css">
+    <style>
+        .join-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+        .join-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .join-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .join-header h1 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        .join-header p {
+            color: #64748b;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1.125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .room-code-input {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.5rem !important;
+        }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .guest-toggle {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .guest-toggle label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .guest-toggle input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: 20px;
+            height: 20px;
+        }
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .warning-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f59e0b;
+            display: none;
+        }
+        .success-message {
+            background: #efe;
+            color: #070;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+        }
+        .info-box p {
+            margin: 0;
+            color: #1e40af;
+            font-size: 0.875rem;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/css/badge-notification.css">
+</head>
+<body>
+    <div class="join-container">
+        <div class="join-card">
+            <div class="join-header">
+                <img src="../../art_assets/svg_logos/praxisplay_main_logo.svg" alt="Praxis Play" style="width: 180px; margin: 0 auto 1.5rem auto; display: block;">
+                <h1>🎮 Join Praxis Play Session</h1>
+                <p>Grab the room code from your instructor's screen and jump in</p>
+            </div>
+
+            <div id="errorMessage" class="error-message" role="alert"></div>
+            <div id="warningMessage" class="warning-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <form id="joinForm">
+                <div class="form-group">
+                    <label for="roomCode">Room Code</label>
+                    <input 
+                        type="text" 
+                        id="roomCode" 
+                        name="roomCode" 
+                        class="room-code-input"
+                        placeholder="AB12" 
+                        maxlength="4"
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="guest-toggle">
+                    <label>
+                        <input type="checkbox" id="guestMode" name="guestMode">
+                        Join as Guest (no account needed)
+                    </label>
+                </div>
+
+                <div id="guestFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="guestName">Your Name</label>
+                        <input 
+                            type="text" 
+                            id="guestName" 
+                            name="guestName" 
+                            placeholder="Enter your display name"
+                            maxlength="50"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="guestPassword">Guest Room PIN (if required)</label>
+                        <input 
+                            type="text" 
+                            id="guestPassword" 
+                            name="room_guest_pin_no_autofill" 
+                            placeholder="Optional"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            data-lpignore="true"
+                            data-1p-ignore="true"
+                            data-form-type="other"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="joinBtn">
+                    Join Game
+                </button>
+            </form>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> The room code is on your instructor's screen. Joining as a guest? Pick any display name you want!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../shared/js/api-config.js"></script>
+    <script src="../../shared/js/error_utils.js"></script>
+    <script>
+        // API_BASE loaded from config
+        const API_BASE = window.API_BASE;
+        
+        // Timing instrumentation
+        const timingData = {
+            pageLoadStart: Date.now(),
+            joinRequestStart: null,
+            joinResponseComplete: null,
+            dnsLookup: null,
+            tcpConnection: null,
+            sslHandshake: null,
+            firstByteTime: null
+        };
+        
+        function logTiming(label, value) {
+            console.log(`[TIMING] ${label}: ${value}ms`);
+        }
+        
+        function displayTimingData() {
+            const timingDisplay = document.createElement('div');
+            timingDisplay.style.cssText = 'position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; border-radius: 4px; max-width: 300px; z-index: 9999;';
+            
+            let html = '<strong>Join Request Timing:</strong><br>';
+            if (timingData.dnsLookup) html += `DNS: ${timingData.dnsLookup}ms<br>`;
+            if (timingData.tcpConnection) html += `TCP: ${timingData.tcpConnection}ms<br>`;
+            if (timingData.sslHandshake) html += `SSL: ${timingData.sslHandshake}ms<br>`;
+            if (timingData.firstByteTime) html += `First Byte: ${timingData.firstByteTime}ms<br>`;
+            if (timingData.joinRequestStart && timingData.joinResponseComplete) {
+                html += `Total Request: ${timingData.joinResponseComplete - timingData.joinRequestStart}ms<br>`;
+            }
+            html += `<br>Total Page Time: ${Date.now() - timingData.pageLoadStart}ms`;
+            
+            timingDisplay.innerHTML = html;
+            document.body.appendChild(timingDisplay);
+        }
+        
+        // Check for room code in URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCodeFromUrl = urlParams.get('room');
+        if (roomCodeFromUrl) {
+            document.getElementById('roomCode').value = roomCodeFromUrl.toUpperCase();
+        }
+
+        // Defeat browser password manager autofill on the guest room code field
+        const gpJoinInput = document.getElementById('guestPassword');
+        if (gpJoinInput) {
+            gpJoinInput.value = '';
+            setTimeout(() => { if (gpJoinInput && !gpJoinInput.dataset.userEdited) gpJoinInput.value = ''; }, 100);
+            setTimeout(() => { if (gpJoinInput && !gpJoinInput.dataset.userEdited) gpJoinInput.value = ''; }, 400);
+            gpJoinInput.addEventListener('input', () => { gpJoinInput.dataset.userEdited = 'true'; });
+        }
+
+        function getGuestResumeKey(roomCode) {
+            return `praxisPlayGuestSession:${roomCode}`;
+        }
+
+        // Same unambiguous alphabet as room codes -- no 0/O/1/L/I, because these
+        // get read off a projector and said out loud.
+        const GUEST_TAG_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+        const GUEST_TAG_LENGTH = 4;
+        const GUEST_NAME_MAX = 100;  // PlayerSession.guest_name max_length
+
+        function getGuestTagKey(roomCode) {
+            return `praxisPlayGuestTag:${roomCode}`;
+        }
+
+        function makeGuestTag() {
+            const draws = new Uint32Array(GUEST_TAG_LENGTH);
+            crypto.getRandomValues(draws);
+            let tag = '';
+            for (let i = 0; i < GUEST_TAG_LENGTH; i++) {
+                tag += GUEST_TAG_CHARS[draws[i] % GUEST_TAG_CHARS.length];
+            }
+            return tag;
+        }
+
+        function guestTagFor(roomCode) {
+            // Stable per room: coming back to this page must not mint a second
+            // identity with a zero score.
+            try {
+                const saved = localStorage.getItem(getGuestTagKey(roomCode));
+                if (saved && saved.length === GUEST_TAG_LENGTH) {
+                    return saved;
+                }
+            } catch (error) {
+                // Private browsing. A fresh tag still works for this join.
+            }
+            const tag = makeGuestTag();
+            try {
+                localStorage.setItem(getGuestTagKey(roomCode), tag);
+            } catch (error) {
+                // Not fatal -- the name is already decided for this request.
+            }
+            return tag;
+        }
+
+        function decorateGuestName(roomCode, typedName) {
+            const suffix = ` ${guestTagFor(roomCode)}`;
+            return typedName.slice(0, GUEST_NAME_MAX - suffix.length) + suffix;
+        }
+
+        function getSavedGuestSession(roomCode) {
+            try {
+                return JSON.parse(localStorage.getItem(getGuestResumeKey(roomCode)) || 'null');
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function updateResumeNotice() {
+            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            const saved = roomCode ? getSavedGuestSession(roomCode) : null;
+            const warningMessage = document.getElementById('warningMessage');
+            if (saved && saved.guest_name && saved.player_session_id) {
+                // Show what they typed, not the tagged form -- they are being
+                // asked to retype the name, and the tag is re-applied for them.
+                const shown = saved.base_name || saved.guest_name;
+                warningMessage.textContent = `Found a previous guest session for ${shown}. Use the same name to rejoin.`;
+                warningMessage.style.display = 'block';
+            } else if (warningMessage.textContent.startsWith('Found a previous guest session')) {
+                warningMessage.style.display = 'none';
+                warningMessage.textContent = '';
+            }
+        }
+        
+        // Toggle guest fields
+        document.getElementById('guestMode').addEventListener('change', function() {
+            const guestFields = document.getElementById('guestFields');
+            const guestName = document.getElementById('guestName');
+            
+            if (this.checked) {
+                guestFields.style.display = 'block';
+                guestName.required = true;
+            } else {
+                guestFields.style.display = 'none';
+                guestName.required = false;
+            }
+        });
+
+        // Auto-uppercase room code
+        document.getElementById('roomCode').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+            updateResumeNotice();
+        });
+
+        updateResumeNotice();
+
+        // Handle form submission
+        document.getElementById('joinForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            const isGuest = document.getElementById('guestMode').checked;
+            const guestName = document.getElementById('guestName').value.trim();
+            const guestPassword = document.getElementById('guestPassword').value.trim();
+            const joinBtn = document.getElementById('joinBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const warningMessage = document.getElementById('warningMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Clear messages
+            errorMessage.style.display = 'none';
+            warningMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate
+            if (!roomCode) {
+                showError('Please enter a room code');
+                return;
+            }
+            
+            if (isGuest && !guestName) {
+                showError('Please enter your name');
+                return;
+            }
+            
+            // Disable button and show loading spinner
+            joinBtn.disabled = true;
+            joinBtn.innerHTML = '<span class="spinner"></span>Joining...';
+            
+            try {
+                // Prepare request data
+                const requestData = {
+                    room_code: roomCode
+                };
+                
+                if (isGuest) {
+                    requestData.guest_name = decorateGuestName(roomCode, guestName);
+                    const savedGuestSession = getSavedGuestSession(roomCode);
+                    if (savedGuestSession && savedGuestSession.guest_name === requestData.guest_name && savedGuestSession.player_session_id) {
+                        requestData.player_session_id = savedGuestSession.player_session_id;
+                    }
+                    if (guestPassword) {
+                        requestData.guest_password = guestPassword;
+                    }
+                } else {
+                    requestData.guest_password = guestPassword;
+                }
+                
+                // Get auth token if not guest
+                let headers = {'Content-Type': 'application/json'};
+                if (!isGuest) {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        showError('Please log in first or join as a guest');
+                        joinBtn.disabled = false;
+                        joinBtn.textContent = 'Join Game';
+                        return;
+                    }
+                    headers['Authorization'] = `Token ${token}`;
+                }
+                
+                // Join game
+                joinBtn.innerHTML = 'Joining... <span style="font-size: 0.75rem;">(may take 1-2 min on first load)</span>';
+                
+                // A whole class scanning one QR code shares one campus IP, so every
+                // join in the room comes out of a single rate-limit bucket and a late
+                // scanner can legitimately be told to wait. Sit out the queue on the
+                // student's behalf: told to "try again", someone in a room of 50 will
+                // just mash the button and drain the bucket faster.
+                const MAX_JOIN_RETRIES = 4;
+                let response;
+                let data;
+                
+                for (let attempt = 0; ; attempt++) {
+                    timingData.joinRequestStart = Date.now();
+                    response = await fetch(`${API_BASE}/game/join/`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    timingData.joinResponseComplete = Date.now();
+                    const requestTime = timingData.joinResponseComplete - timingData.joinRequestStart;
+                    logTiming('Join Request', requestTime);
+                    
+                    // Capture resource timing
+                    if (window.performance && window.performance.getEntriesByType) {
+                        const resources = window.performance.getEntriesByType('resource');
+                        const apiResource = resources.find(r => r.name.includes('/game/join/'));
+                        if (apiResource) {
+                            timingData.dnsLookup = Math.round(apiResource.domainLookupEnd - apiResource.domainLookupStart);
+                            timingData.tcpConnection = Math.round(apiResource.connectEnd - apiResource.connectStart);
+                            timingData.sslHandshake = Math.round(apiResource.connectEnd - apiResource.secureConnectionStart);
+                            timingData.firstByteTime = Math.round(apiResource.responseStart - apiResource.requestStart);
+                            
+                            logTiming('DNS Lookup', timingData.dnsLookup);
+                            logTiming('TCP Connection', timingData.tcpConnection);
+                            logTiming('SSL Handshake', timingData.sslHandshake);
+                            logTiming('Time to First Byte', timingData.firstByteTime);
+                        }
+                    }
+                    
+                    displayTimingData();
+                    
+                    try {
+                        data = await response.json();
+                    } catch (parseError) {
+                        data = {};
+                    }
+                    
+                    if (response.status !== 429) {
+                        break;
+                    }
+                    
+                    // DRF answers a throttle with {detail: "...available in N seconds"}
+                    // and no `error` key, which is why reading `data.error` alone used
+                    // to leave the student staring at a bare "Failed to join game".
+                    const detail = (data && (data.detail || data.error)) || '';
+                    const parsed = /(\d+)\s*second/.exec(detail);
+                    const waitSeconds = Math.min(parsed ? parseInt(parsed[1], 10) + 1 : 5, 30);
+                    
+                    if (attempt >= MAX_JOIN_RETRIES) {
+                        throw new Error(
+                            'This room is receiving a lot of join requests at once. Wait about ' +
+                            waitSeconds + ' seconds, then tap Join Game again.'
+                        );
+                    }
+                    
+                    for (let remaining = waitSeconds; remaining > 0; remaining--) {
+                        joinBtn.textContent = 'Room is busy - retrying in ' + remaining + 's';
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                    joinBtn.innerHTML = '<span class="spinner"></span>Joining...';
+                }
+                
+                if (!response.ok) {
+                    const message = (window.ErrorUtils && ErrorUtils.messageFrom)
+                        ? ErrorUtils.messageFrom(data, response.status, 'Failed to join game')
+                        : (data.error || data.detail || 'Failed to join game');
+                    throw new Error(message);
+                }
+                
+                // Show warning if present (e.g., guest in enrollment-required game)
+                if (data.warning) {
+                    showWarning(data.warning);
+                }
+                
+                // Store player session info
+                sessionStorage.setItem('gameSession', JSON.stringify(data.game_session));
+                sessionStorage.setItem('playerSession', JSON.stringify(data.player_session));
+                sessionStorage.setItem('isGuest', data.is_guest);
+                sessionStorage.setItem('waitingToEnter', data.waiting_to_enter || false);
+
+                if (data.is_guest && data.game_session && data.game_session.game_type === 'live_buzzer') {
+                    localStorage.setItem(getGuestResumeKey(roomCode), JSON.stringify({
+                        room_code: roomCode,
+                        // The server numbers a name the room already has, so store
+                        // what it assigned -- storing what they typed would make the
+                        // resume credential match a different player.
+                        guest_name: (data.player_session && data.player_session.display_name) || requestData.guest_name,
+                        base_name: guestName,
+                        player_session_id: data.resume_player_session_id || data.player_session.id,
+                        saved_at: new Date().toISOString()
+                    }));
+                }
+                
+                // Success!
+                const waitingMsg = data.waiting_to_enter 
+                    ? 'You\u2019re in! You\u2019ll jump in when the next round starts\u2026' 
+                    : 'You\u2019re in! Loading the game\u2026';
+                showSuccess(waitingMsg);
+                
+                // Redirect to game play page
+                setTimeout(() => {
+                    window.location.href = `game-play.html?room=${roomCode}`;
+                }, 1000);
+                
+            } catch (error) {
+                showError(error.message);
+                joinBtn.disabled = false;
+                joinBtn.innerHTML = 'Join Game';
+            }
+        });
+        
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function showWarning(message) {
+            const warningMessage = document.getElementById('warningMessage');
+            warningMessage.textContent = message;
+            warningMessage.style.display = 'block';
+        }
+        
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        // Listen for auto-join commands from multi-player-tester
+        window.addEventListener('message', function(event) {
+            // Only accept messages from same origin for security
+            if (event.origin !== window.location.origin) return;
+
+            const data = event.data;
+            if (data.action === 'joinGame') {
+                console.log('Received auto-join command:', data);
+                
+                // Fill in the form
+                const roomCodeInput = document.getElementById('roomCode');
+                const guestModeCheckbox = document.getElementById('guestMode');
+                const guestNameInput = document.getElementById('guestName');
+                const guestPasswordInput = document.getElementById('guestPassword');
+                
+                if (roomCodeInput) roomCodeInput.value = data.roomCode || '';
+                
+                // Enable guest mode
+                if (guestModeCheckbox && !guestModeCheckbox.checked) {
+                    guestModeCheckbox.checked = true;
+                    guestModeCheckbox.dispatchEvent(new Event('change'));
+                }
+                
+                // Fill guest fields
+                setTimeout(() => {
+                    if (guestNameInput) guestNameInput.value = data.username || '';
+                    if (guestPasswordInput && data.password) guestPasswordInput.value = data.password;
+                    
+                    // Auto-submit after a brief delay
+                    setTimeout(() => {
+                        const joinForm = document.getElementById('joinForm');
+                        if (joinForm) {
+                            joinForm.dispatchEvent(new Event('submit'));
+                        }
+                    }, 200);
+                }, 100);
+            }
+        });
+    </script>
+    
+    <!-- Deferred Tracking -->
+    <!-- No Clarity: session replay would capture identifiable student records. -->
+    
+    <footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <img src="../../art_assets/svg_logos/praxisplay_notext_logo.svg" alt="Praxis Play" style="width: 20px; height: 20px; opacity: 0.8;">
+            <span>Powered by <strong>Praxis Play</strong></span>
+        </div>
+        <div style="opacity: 0.7; font-size: 0.85rem;">MktPraxis \u2014 Making Analytics Competitive</div>
+    </footer>
+    <script src="../../shared/js/badge-notifications.js"></script>
+</body>
+</html>

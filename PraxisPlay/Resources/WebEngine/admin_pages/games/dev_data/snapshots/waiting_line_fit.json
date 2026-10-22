@@ -1,0 +1,14 @@
+{
+  "type": "waiting_for_round",
+  "game_type": "line_fit",
+  "current_round": 1,
+  "total_rounds": 5,
+  "next_game_type": "line_fit",
+  "next_game_title": "Line Fit: Scatter Plot Challenge",
+  "message": "Get ready for the next round!",
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 0},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 0},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 0}
+  ]
+}

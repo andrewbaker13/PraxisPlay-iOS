@@ -1,0 +1,33 @@
+{
+  "type": "game_started",
+  "game_type": "closest_guess",
+  "question_text": "What percentage of consumers say they are more likely to buy from brands that personalize their experience?",
+  "game_config": {
+    "numberline_min": 0,
+    "numberline_max": 100,
+    "max_range_width": 20
+  },
+  "current_round": 1,
+  "total_rounds": 5,
+  "game_time_limit": 45,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "submitted_ranges": [
+    {"player_id": 1, "player_name": "Alice", "min": 68, "max": 74},
+    {"player_id": 2, "player_name": "Bob", "min": 65, "max": 78},
+    {"player_id": 3, "player_name": "Charlie", "min": 70, "max": 85},
+    {"player_id": 4, "player_name": "Diana", "min": 60, "max": 75}
+  ],
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 95},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 88},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 82},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 75},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 70},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 65},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 60},
+    {"player_id": 8, "player_name": "George Lee", "score": 55},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 50},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 45}
+  ]
+}

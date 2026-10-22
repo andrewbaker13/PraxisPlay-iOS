@@ -1,0 +1,101 @@
+{
+  "type": "game_started",
+  "game_type": "line_fit",
+  "question_text": "Draw a line that best fits the data showing hours studied vs. exam score",
+  "image_url": null,
+  "time_limit": 30,
+  "start_time": 1734393600000,
+  "game_config": {
+    "x_min": 0,
+    "x_max": 10,
+    "y_min": 50,
+    "y_max": 100,
+    "x_label": "Hours Studied",
+    "y_label": "Exam Score",
+    "correct_slope": 4.5,
+    "correct_intercept": 55,
+    "points": [
+      [1.2, 60],
+      [2.5, 65],
+      [3.8, 72],
+      [4.1, 75],
+      [5.5, 78],
+      [6.2, 82],
+      [7.0, 86],
+      [7.8, 89],
+      [8.5, 92],
+      [9.2, 95]
+    ]
+  },
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson"},
+    {"player_id": 2, "player_name": "Bob Martinez"},
+    {"player_id": 3, "player_name": "Charlie Davis"},
+    {"player_id": 4, "player_name": "Diana Chen"},
+    {"player_id": 5, "player_name": "Ethan Wilson"},
+    {"player_id": 6, "player_name": "Fiona Taylor"},
+    {"player_id": 7, "player_name": "George Lee"},
+    {"player_id": 8, "player_name": "Hannah Patel"},
+    {"player_id": 9, "player_name": "Isaac Brown"},
+    {"player_id": 10, "player_name": "Jenny Kim"}
+  ],
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 380},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 355},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 330},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 305},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 280},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 255},
+    {"player_id": 7, "player_name": "George Lee", "score": 230},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 205},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 180},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 155}
+  ],
+  "scatter_data_message": {
+    "type": "line_fit_data",
+    "points": [
+      [1.2, 60],
+      [2.5, 65],
+      [3.8, 72],
+      [4.1, 75],
+      [5.5, 78],
+      [6.2, 82],
+      [7.0, 86],
+      [7.8, 89],
+      [8.5, 92],
+      [9.2, 95]
+    ],
+    "x_label": "Hours Studied",
+    "y_label": "Exam Score"
+  },
+  "other_submissions": [
+    {
+      "delay_ms": 5000,
+      "player_name": "Alice",
+      "slope": 4.4,
+      "intercept": 56,
+      "color": "#3498db"
+    },
+    {
+      "delay_ms": 8000,
+      "player_name": "Bob",
+      "slope": 4.7,
+      "intercept": 53,
+      "color": "#e74c3c"
+    },
+    {
+      "delay_ms": 12000,
+      "player_name": "Charlie",
+      "slope": 4.3,
+      "intercept": 57,
+      "color": "#2ecc71"
+    },
+    {
+      "delay_ms": 15000,
+      "player_name": "Diana",
+      "slope": 4.8,
+      "intercept": 52,
+      "color": "#f39c12"
+    }
+  ]
+}

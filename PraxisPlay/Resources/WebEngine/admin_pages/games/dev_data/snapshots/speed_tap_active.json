@@ -1,0 +1,28 @@
+{
+  "type": "game_started",
+  "game_type": "speed_tap",
+  "question_text": "Which marketing metric measures the percentage of customers who make a repeat purchase?",
+  "options": [
+    {"id": "A", "text": "Customer Acquisition Cost (CAC)"},
+    {"id": "B", "text": "Customer Lifetime Value (CLV)"},
+    {"id": "C", "text": "Retention Rate"},
+    {"id": "D", "text": "Churn Rate"}
+  ],
+  "current_round": 3,
+  "total_rounds": 5,
+  "game_time_limit": 20,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 435},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 400},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 365},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 345},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 350},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 325},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 305},
+    {"player_id": 8, "player_name": "George Lee", "score": 295},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 270},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 240}
+  ]
+}

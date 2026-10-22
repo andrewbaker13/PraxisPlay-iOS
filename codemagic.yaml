@@ -1,0 +1,41 @@
+workflows:
+  praxis-play-ios-testflight:
+    name: Praxis Play iOS — Build & TestFlight
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic_ASC_Key
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.mktpraxis.praxisplay
+      vars:
+        XCODE_PROJECT: "PraxisPlay.xcodeproj"
+        XCODE_SCHEME: "PraxisPlay"
+        APPLE_TEAM_ID: "S36NQ79D63"
+      xcode: latest
+    scripts:
+      - name: Generate Xcode Project with XcodeGen
+        script: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+      - name: Set up Code Signing Settings on Xcode Project
+        script: |
+          xcode-project use-profiles
+      - name: Increment Build Number
+        script: |
+          agvtool new-version -all $(($BUILD_NUMBER + 1))
+      - name: Build Signed IPA for App Store / TestFlight
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

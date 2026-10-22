@@ -1,0 +1,14 @@
+{
+  "type": "waiting_for_round",
+  "game_type": "word_guess",
+  "current_round": 2,
+  "total_rounds": 5,
+  "next_game_type": "word_guess",
+  "next_game_title": "Word Guess: Stats Vocabulary",
+  "message": "Get ready for the next round!",
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 150},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 135},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 120}
+  ]
+}

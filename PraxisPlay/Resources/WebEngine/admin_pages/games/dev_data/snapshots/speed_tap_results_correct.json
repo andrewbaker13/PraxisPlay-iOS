@@ -1,0 +1,42 @@
+{
+  "type": "game_results",
+  "game_type": "speed_tap",
+  "current_round": 3,
+  "total_rounds": 5,
+  "next_game_type": "closest_guess",
+  "correct_answer": "Retention Rate",
+  "player_answer": "Retention Rate",
+  "points": 85,
+  "multiplier": "1.5x",
+  "is_correct": true,
+  "round_stats": {
+    "player_stats": {
+      "999": {
+        "player_round_score": 85,
+        "player_total_score": 435
+      }
+    },
+    "percent_scored": 75,
+    "average_score": 68
+  },
+  "game_specific": {
+    "fastest_correct": {
+      "player_name": "Alice Johnson",
+      "response_time": 2.3
+    },
+    "correct_count": 8,
+    "incorrect_count": 2
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 520, "round_scores": [100, 85, 90, 95, 150]},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 485, "round_scores": [85, 90, 80, 100, 130]},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 450, "round_scores": [90, 75, 85, 80, 120]},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 435, "round_scores": [80, 85, 70, 90, 110]},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 435, "round_scores": [75, 80, 85, 75, 120]},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 410, "round_scores": [75, 80, 85, 75, 95]},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 395, "round_scores": [70, 70, 80, 85, 90]},
+    {"player_id": 8, "player_name": "George Lee", "score": 380, "round_scores": [65, 75, 75, 80, 85]},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 365, "round_scores": [60, 70, 70, 75, 90]},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 340, "round_scores": [55, 65, 65, 70, 85]}
+  ]
+}

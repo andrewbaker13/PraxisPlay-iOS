@@ -1,0 +1,57 @@
+{
+  "type": "game_results",
+  "game_type": "crowd_wisdom",
+  "current_round": 2,
+  "total_rounds": 5,
+  "round_stats": {
+    "round_number": 2,
+    "game_type": "crowd_wisdom",
+    "question_text": "Which sorting algorithm has the best average-case time complexity?",
+    "correct_answer": "Merge Sort",
+    "player_stats": {
+      "999": {
+        "player_id": 999,
+        "player_name": "You",
+        "answered": true,
+        "correct": true,
+        "points_earned": 92,
+        "total_score": 542,
+        "answer_time": 4.2,
+        "got_tough_bonus": false
+      }
+    }
+  },
+  "game_specific": {
+    "correct_option_index": 1,
+    "was_tough_question": false,
+    "percent_correct": 55,
+    "final_distribution": [
+      {"option_index": 0, "percent": 10, "text": "Bubble Sort"},
+      {"option_index": 1, "percent": 55, "text": "Merge Sort"},
+      {"option_index": 2, "percent": 30, "text": "Quick Sort"},
+      {"option_index": 3, "percent": 5, "text": "Selection Sort"}
+    ],
+    "your_answer_index": 1,
+    "your_speed_percentile": 72,
+    "points_breakdown": {
+      "base_points": 100,
+      "speed_multiplier": 0.92,
+      "tough_bonus": false,
+      "final_points": 92
+    }
+  },
+  "leaderboard": [
+    {"player_id": 999, "player_name": "You", "score": 542},
+    {"player_id": 1, "player_name": "Alice", "score": 512},
+    {"player_id": 2, "player_name": "Bob", "score": 477},
+    {"player_id": 3, "player_name": "Charlie", "score": 462},
+    {"player_id": 4, "player_name": "Diana", "score": 432},
+    {"player_id": 5, "player_name": "Eve", "score": 407},
+    {"player_id": 6, "player_name": "Frank", "score": 382},
+    {"player_id": 7, "player_name": "Grace", "score": 357},
+    {"player_id": 8, "player_name": "Hank", "score": 332},
+    {"player_id": 9, "player_name": "Ivy", "score": 302}
+  ],
+  "next_game_type": "line_fit",
+  "next_game_title": "📊 Line Fit"
+}

@@ -1,0 +1,129 @@
+{
+  "type": "game_results",
+  "game_type": "closest_guess",
+  "current_round": 1,
+  "total_rounds": 5,
+  "next_game_type": "word_guess",
+  "correct_answer": "71",
+  "player_answer": "65-75",
+  "points": 92,
+  "is_correct": true,
+  "round_stats": {
+    "player_stats": {
+      "1": {
+        "player_name": "Alice Johnson",
+        "player_round_score": 98,
+        "player_total_score": 193,
+        "answered": true,
+        "range": "70-72",
+        "range_width": 2,
+        "captured_answer": true
+      },
+      "2": {
+        "player_name": "Bob Martinez",
+        "player_round_score": 92,
+        "player_total_score": 180,
+        "answered": true,
+        "range": "65-78",
+        "range_width": 13,
+        "captured_answer": true
+      },
+      "3": {
+        "player_name": "Charlie Davis",
+        "player_round_score": 83,
+        "player_total_score": 165,
+        "answered": true,
+        "range": "70-85",
+        "range_width": 15,
+        "captured_answer": true
+      },
+      "4": {
+        "player_name": "Diana Chen",
+        "player_round_score": 85,
+        "player_total_score": 155,
+        "answered": true,
+        "range": "60-75",
+        "range_width": 15,
+        "captured_answer": true
+      },
+      "6": {
+        "player_name": "Ethan Wilson",
+        "player_round_score": 80,
+        "player_total_score": 145,
+        "answered": true,
+        "range": "66-78",
+        "range_width": 12,
+        "captured_answer": true
+      },
+      "7": {
+        "player_name": "Fiona Taylor",
+        "player_round_score": 78,
+        "player_total_score": 138,
+        "answered": true,
+        "range": "73-88",
+        "range_width": 15,
+        "captured_answer": true
+      },
+      "8": {
+        "player_name": "George Lee",
+        "player_round_score": 73,
+        "player_total_score": 128,
+        "answered": true,
+        "range": "52-68",
+        "range_width": 16,
+        "captured_answer": false
+      },
+      "9": {
+        "player_name": "Hannah Patel",
+        "player_round_score": 70,
+        "player_total_score": 120,
+        "answered": true,
+        "range": "68-80",
+        "range_width": 12,
+        "captured_answer": true
+      },
+      "10": {
+        "player_name": "Isaac Brown",
+        "player_round_score": 65,
+        "player_total_score": 110,
+        "answered": true,
+        "range": "55-68",
+        "range_width": 13,
+        "captured_answer": false
+      },
+      "999": {
+        "player_name": "You (Dev Player)",
+        "player_round_score": 92,
+        "player_total_score": 167,
+        "answered": true,
+        "range": "65-75",
+        "range_width": 10,
+        "captured_answer": true
+      }
+    },
+    "percent_scored": 85,
+    "average_score": 68
+  },
+  "game_specific": {
+    "top_scorer": {
+      "name": "Alice Johnson",
+      "points": 98,
+      "range": "70-72"
+    },
+    "correct_count": 9,
+    "total_guesses": 10,
+    "average_range_width": 12.5
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 193, "round_scores": [98, 95]},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 180, "round_scores": [92, 88]},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 167, "round_scores": [92, 75]},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 165, "round_scores": [83, 82]},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 155, "round_scores": [85, 70]},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 145, "round_scores": [80, 65]},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 138, "round_scores": [78, 60]},
+    {"player_id": 8, "player_name": "George Lee", "score": 128, "round_scores": [73, 55]},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 120, "round_scores": [70, 50]},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 110, "round_scores": [65, 45]}
+  ]
+}

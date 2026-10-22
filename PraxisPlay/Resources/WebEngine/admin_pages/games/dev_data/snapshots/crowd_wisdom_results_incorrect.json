@@ -1,0 +1,59 @@
+{
+  "type": "game_results",
+  "game_type": "crowd_wisdom",
+  "current_round": 3,
+  "total_rounds": 5,
+  "round_stats": {
+    "round_number": 3,
+    "game_type": "crowd_wisdom",
+    "question_text": "In database design, what does ACID stand for?",
+    "correct_answer": "Atomicity, Consistency, Isolation, Durability",
+    "player_stats": {
+      "999": {
+        "player_id": 999,
+        "player_name": "You",
+        "answered": true,
+        "correct": false,
+        "points_earned": -15,
+        "total_score": 527,
+        "answer_time": 8.5,
+        "got_tough_bonus": false
+      }
+    }
+  },
+  "game_specific": {
+    "correct_option_index": 2,
+    "was_tough_question": true,
+    "percent_correct": 28,
+    "final_distribution": [
+      {"option_index": 0, "percent": 35, "text": "Atomic, Consistent, Isolated, Durable"},
+      {"option_index": 1, "percent": 22, "text": "Always Create Indexed Data"},
+      {"option_index": 2, "percent": 28, "text": "Atomicity, Consistency, Isolation, Durability"},
+      {"option_index": 3, "percent": 15, "text": "Advanced Computer Interface Design"}
+    ],
+    "your_answer_index": 0,
+    "your_speed_percentile": 45,
+    "points_breakdown": {
+      "base_points": 100,
+      "speed_multiplier": 0.65,
+      "tough_bonus": false,
+      "penalty": -15,
+      "final_points": -15
+    },
+    "explanation": "This was a tough one! Only 28% of players got it right. ACID stands for Atomicity, Consistency, Isolation, Durability - the four key properties of database transactions."
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice", "score": 712},
+    {"player_id": 999, "player_name": "You", "score": 527},
+    {"player_id": 2, "player_name": "Bob", "score": 512},
+    {"player_id": 3, "player_name": "Charlie", "score": 497},
+    {"player_id": 4, "player_name": "Diana", "score": 467},
+    {"player_id": 5, "player_name": "Eve", "score": 442},
+    {"player_id": 6, "player_name": "Frank", "score": 417},
+    {"player_id": 7, "player_name": "Grace", "score": 392},
+    {"player_id": 8, "player_name": "Hank", "score": 367},
+    {"player_id": 9, "player_name": "Ivy", "score": 337}
+  ],
+  "next_game_type": "line_fit",
+  "next_game_title": "📊 Line Fit"
+}

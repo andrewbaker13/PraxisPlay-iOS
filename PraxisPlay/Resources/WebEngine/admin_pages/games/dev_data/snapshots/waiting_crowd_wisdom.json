@@ -1,0 +1,14 @@
+{
+  "type": "waiting_for_round",
+  "game_type": "crowd_wisdom",
+  "current_round": 3,
+  "total_rounds": 5,
+  "next_game_type": "crowd_wisdom",
+  "next_game_title": "Crowd Wisdom: Statistical Reasoning",
+  "message": "Get ready for the next round!",
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 285},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 250},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 230}
+  ]
+}

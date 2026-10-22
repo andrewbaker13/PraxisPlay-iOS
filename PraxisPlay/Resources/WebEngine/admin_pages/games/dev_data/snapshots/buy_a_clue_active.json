@@ -1,0 +1,35 @@
+{
+  "type": "game_started",
+  "game_type": "buy_a_clue",
+  "question_text": "A SaaS startup's monthly churn drops from 5% to 2.5% while ARPU stays constant at $100. What happens to Customer Lifetime Value (CLV = ARPU / Churn)?",
+  "current_round": 2,
+  "total_rounds": 3,
+  "game_time_limit": 40,
+  "start_time": "2026-10-22T12:00:00Z",
+  "game_config": {
+    "clue_cost": 25,
+    "base_points": 100,
+    "clue_text": "Plug the numbers into CLV = $100 / 0.05 ($2,000) vs. CLV = $100 / 0.025 ($4,000). Cutting churn in half divides the denominator by 2!",
+    "correct_option_id": "B",
+    "answer_explanation": "Because churn sits in the denominator of the retention CLV formula (ARPU / c), halving churn from 5% to 2.5% exactly doubles Customer Lifetime Value from $2,000 to $4,000.",
+    "takeaway": "Expected Value of Sample Information (EVSI): Buying research is only profitable when the accuracy lift outweighs the research cost!",
+    "outcomes": {
+      "no_clue_correct": 100,
+      "no_clue_wrong": 0,
+      "clue_correct": 75,
+      "clue_wrong": -25
+    },
+    "options": [
+      {"id": "A", "text": "CLV increases by 25% (to $2,500)"},
+      {"id": "B", "text": "CLV doubles by 100% (from $2,000 to $4,000)"},
+      {"id": "C", "text": "CLV increases by 50% (to $3,000)"},
+      {"id": "D", "text": "CLV quadruples (to $8,000)"}
+    ]
+  },
+  "leaderboard": [
+    {"player_id": 999, "player_name": "You", "score": 420},
+    {"player_id": 1, "player_name": "Maya Lin", "score": 410},
+    {"player_id": 2, "player_name": "Jordan Vance", "score": 395},
+    {"player_id": 3, "player_name": "Liam O'Connor", "score": 350}
+  ]
+}

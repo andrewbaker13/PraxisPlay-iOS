@@ -1,0 +1,42 @@
+{
+  "type": "game_results",
+  "game_type": "word_guess",
+  "current_round": 2,
+  "total_rounds": 5,
+  "next_game_type": "speed_tap",
+  "correct_answer": "MARKETING MIX",
+  "player_answer": "MARKETING MIX",
+  "points": 95,
+  "is_correct": true,
+  "round_stats": {
+    "player_stats": {
+      "999": {
+        "player_round_score": 95,
+        "player_total_score": 545
+      }
+    },
+    "percent_scored": 80,
+    "average_score": 72
+  },
+  "game_specific": {
+    "fastest_correct": {
+      "player_name": "Alice Johnson",
+      "guess_time": 15.2
+    },
+    "correct_count": 8,
+    "incorrect_count": 2,
+    "average_time": 32.5
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 615, "round_scores": [100, 95, 90, 95, 150]},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 575, "round_scores": [85, 90, 90, 100, 130]},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 545, "round_scores": [75, 95, 85, 75, 120]},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 530, "round_scores": [90, 75, 85, 80, 120]},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 515, "round_scores": [80, 85, 70, 90, 110]},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 485, "round_scores": [75, 80, 85, 75, 95]},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 470, "round_scores": [70, 70, 80, 85, 90]},
+    {"player_id": 8, "player_name": "George Lee", "score": 450, "round_scores": [65, 75, 75, 80, 85]},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 425, "round_scores": [60, 70, 70, 75, 90]},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 405, "round_scores": [55, 65, 65, 70, 85]}
+  ]
+}

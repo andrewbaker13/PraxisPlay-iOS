@@ -1,0 +1,50 @@
+{
+  "type": "game_started",
+  "game_type": "speed_tap",
+  "question_text": "Which marketing metric measures the percentage of customers who make a repeat purchase?",
+  "options": [
+    {"id": "A", "text": "Customer Acquisition Cost (CAC)"},
+    {"id": "B", "text": "Customer Lifetime Value (CLV)"},
+    {"id": "C", "text": "Retention Rate"},
+    {"id": "D", "text": "Churn Rate"}
+  ],
+  "current_round": 3,
+  "total_rounds": 5,
+  "game_time_limit": 20,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "leaderboard": [
+    {"name": "Alice Johnson", "score": 435, "rank": 1},
+    {"name": "Bob Martinez", "score": 400, "rank": 2},
+    {"name": "Charlie Davis", "score": 365, "rank": 3},
+    {"name": "Diana Chen", "score": 345, "rank": 4},
+    {"name": "Ethan Wilson", "score": 325, "rank": 5},
+    {"name": "Fiona Taylor", "score": 305, "rank": 6},
+    {"name": "George Lee", "score": 295, "rank": 7},
+    {"name": "Hannah Patel", "score": 270, "rank": 8},
+    {"name": "Isaac Brown", "score": 240, "rank": 9},
+    {"name": "Julia Kim", "score": 220, "rank": 10},
+    {"name": "Kevin Rodriguez", "score": 195, "rank": 11},
+    {"name": "Laura Smith", "score": 175, "rank": 12},
+    {"name": "Michael Wong", "score": 160, "rank": 13},
+    {"name": "Nina Garcia", "score": 140, "rank": 14},
+    {"name": "Oscar Thompson", "score": 120, "rank": 15}
+  ],
+  "players": [
+    {"id": 1, "name": "Alice Johnson"},
+    {"id": 2, "name": "Bob Martinez"},
+    {"id": 3, "name": "Charlie Davis"},
+    {"id": 4, "name": "Diana Chen"},
+    {"id": 5, "name": "Ethan Wilson"},
+    {"id": 6, "name": "Fiona Taylor"},
+    {"id": 7, "name": "George Lee"},
+    {"id": 8, "name": "Hannah Patel"},
+    {"id": 9, "name": "Isaac Brown"},
+    {"id": 10, "name": "Julia Kim"},
+    {"id": 11, "name": "Kevin Rodriguez"},
+    {"id": 12, "name": "Laura Smith"},
+    {"id": 13, "name": "Michael Wong"},
+    {"id": 14, "name": "Nina Garcia"},
+    {"id": 15, "name": "Oscar Thompson"}
+  ]
+}

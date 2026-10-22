@@ -1,0 +1,102 @@
+{
+  "type": "game_results",
+  "game_type": "line_fit",
+  "current_round": 4,
+  "total_rounds": 5,
+  "round_stats": {
+    "round_number": 4,
+    "game_type": "line_fit",
+    "question_text": "Draw a line that best fits the relationship between temperature and ice cream sales",
+    "correct_answer": "y = 12.3x + 45",
+    "player_stats": {
+      "999": {
+        "player_id": 999,
+        "player_name": "You",
+        "answered": true,
+        "correct": false,
+        "points_earned": 35,
+        "total_score": 503,
+        "answer_time": 26.8,
+        "your_line": {
+          "slope": 8.5,
+          "intercept": 60
+        }
+      }
+    }
+  },
+  "game_specific": {
+    "correct_line": {
+      "slope": 12.3,
+      "intercept": 45,
+      "equation": "y = 12.3x + 45"
+    },
+    "your_line": {
+      "slope": 8.5,
+      "intercept": 60,
+      "equation": "y = 8.5x + 60"
+    },
+    "accuracy_metrics": {
+      "r_squared": 0.48,
+      "rmse": 18.5,
+      "accuracy_percent": 48
+    },
+    "points_breakdown": {
+      "base_points": 100,
+      "accuracy_multiplier": 0.48,
+      "speed_penalty": -13,
+      "final_points": 35
+    },
+    "leaderboard_position": "7th best fit",
+    "feedback": "Your line underestimated the slope. The relationship was stronger than you thought!",
+    "scatter_data": {
+      "points": [
+        [15, 230],
+        [18, 275],
+        [22, 315],
+        [25, 350],
+        [28, 390],
+        [30, 415],
+        [32, 440],
+        [35, 475],
+        [38, 512],
+        [40, 538]
+      ],
+      "bounds": {
+        "x_min": 10,
+        "x_max": 45,
+        "y_min": 200,
+        "y_max": 600
+      },
+      "axis_labels": {
+        "x": "Sales Reps",
+        "y": "Revenue ($k)"
+      }
+    },
+    "true_line": {"slope": 12.3, "intercept": 45},
+    "correlation": 0.88,
+    "r_squared": 0.77,
+    "all_submissions": [
+      {"slope": 12.1, "intercept": 46, "player_id": 1, "player_name": "Alice", "sse": 85.2, "rank": 1},
+      {"slope": 11.8, "intercept": 48, "player_id": 2, "player_name": "Bob", "sse": 92.4, "rank": 2},
+      {"slope": 13.0, "intercept": 43, "player_id": 3, "player_name": "Charlie", "sse": 95.7, "rank": 3},
+      {"slope": 10.5, "intercept": 52, "player_id": 4, "player_name": "Diana", "sse": 125.3, "rank": 4},
+      {"slope": 8.5, "intercept": 60, "player_id": 999, "player_name": "You", "sse": 285.4, "rank": 7}
+    ],
+    "submission_count": 7,
+    "average_sse": 145.8
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice", "score": 645},
+    {"player_id": 2, "player_name": "Bob", "score": 620},
+    {"player_id": 3, "player_name": "Charlie", "score": 595},
+    {"player_id": 4, "player_name": "Diana", "score": 570},
+    {"player_id": 999, "player_name": "You", "score": 503},
+    {"player_id": 5, "player_name": "Eve", "score": 475},
+    {"player_id": 6, "player_name": "Frank", "score": 450},
+    {"player_id": 7, "player_name": "Grace", "score": 425},
+    {"player_id": 8, "player_name": "Hank", "score": 400},
+    {"player_id": 9, "player_name": "Ivy", "score": 375}
+  ],
+  "next_game_type": "crowd_wisdom",
+  "next_game_title": "🧠 Crowd Wisdom"
+}

@@ -1,0 +1,25 @@
+{
+  "type": "game_started",
+  "game_type": "minority_rule",
+  "question_text": "You are launching a boutique DTC functional beverage brand. Which positioning segment do you enter to escape the crowded Red Ocean?",
+  "current_round": 3,
+  "total_rounds": 3,
+  "game_time_limit": 35,
+  "start_time": "2026-10-22T12:00:00Z",
+  "game_config": {
+    "base_points": 120,
+    "takeaway": "When 60% of entrants chase the largest headline segment (High-Caffeine Gym Pre-Workout), CAC skyrockets and margins collapse. Blue Ocean strategists capture outsized profit in viable, underserved niches.",
+    "options": [
+      {"id": 0, "text": "⚡ High-Caffeine Gym Pre-Workout Cans"},
+      {"id": 1, "text": "🧠 Caffeine-Free Evening Focus & Tart Cherry Nootropic"},
+      {"id": 2, "text": "🍓 Zero-Sugar Fruit Sparkling Hydration"},
+      {"id": 3, "text": "☕ Cold-Brew Protein RTD Shake"}
+    ]
+  },
+  "leaderboard": [
+    {"player_id": 999, "player_name": "You", "score": 495},
+    {"player_id": 1, "player_name": "Maya Lin", "score": 480},
+    {"player_id": 2, "player_name": "Jordan Vance", "score": 445},
+    {"player_id": 3, "player_name": "Liam O'Connor", "score": 410}
+  ]
+}

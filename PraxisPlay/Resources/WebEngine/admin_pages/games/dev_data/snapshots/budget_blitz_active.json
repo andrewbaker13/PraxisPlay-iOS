@@ -1,0 +1,44 @@
+{
+  "type": "game_started",
+  "game_type": "budget_blitz",
+  "question_text": "Allocate your 5 marketing tokens across channels to maximize Q4 Incremental Conversions!",
+  "current_round": 1,
+  "total_rounds": 3,
+  "game_time_limit": 45,
+  "start_time": "2026-10-22T12:00:00Z",
+  "game_config": {
+    "budget_tokens": 5,
+    "response_unit": "conversions",
+    "channels": [
+      {
+        "id": "paid_search",
+        "label": "🔍 Paid Search (SEM)",
+        "marginal_returns": [42, 34, 22, 12, 5]
+      },
+      {
+        "id": "creator_reels",
+        "label": "📱 Creator Reels & TikTok",
+        "marginal_returns": [38, 30, 24, 15, 8]
+      },
+      {
+        "id": "retargeting_crm",
+        "label": "🎯 Lifecycle Retargeting",
+        "marginal_returns": [45, 26, 14, 7, 3]
+      }
+    ],
+    "optimal_allocation": {
+      "paid_search": 2,
+      "creator_reels": 2,
+      "retargeting_crm": 1
+    },
+    "best_outcome": 189,
+    "takeaway": "Equimarginal Principle in action: always place the NEXT token where marginal return is highest rather than dumping all budget into the channel with the highest first-token return!"
+  },
+  "leaderboard": [
+    {"player_id": 999, "player_name": "You", "score": 380},
+    {"player_id": 1, "player_name": "Maya Lin", "score": 410},
+    {"player_id": 2, "player_name": "Jordan Vance", "score": 365},
+    {"player_id": 3, "player_name": "Liam O'Connor", "score": 340},
+    {"player_id": 4, "player_name": "Elena Rostova", "score": 310}
+  ]
+}

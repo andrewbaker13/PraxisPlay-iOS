@@ -1,0 +1,131 @@
+{
+  "type": "game_results",
+  "game_type": "speed_tap",
+  "current_round": 3,
+  "total_rounds": 5,
+  "next_game_type": "closest_guess",
+  "next_game_title": "🎯 Closest Guess",
+  "correct_answer": "Retention Rate",
+  "points": 85,
+  "is_correct": true,
+  "round_stats": {
+    "round_number": 3,
+    "game_type": "speed_tap",
+    "question_text": "Which marketing metric measures the percentage of customers who make a repeat purchase?",
+    "correct_answer": "Retention Rate",
+    "player_stats": {
+      "1": {
+        "player_id": 1,
+        "player_name": "Alice Johnson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 95,
+        "total_score": 520,
+        "answer_time": 2.3
+      },
+      "2": {
+        "player_id": 2,
+        "player_name": "Bob Martinez",
+        "answered": true,
+        "correct": true,
+        "points_earned": 90,
+        "total_score": 485,
+        "answer_time": 3.1
+      },
+      "3": {
+        "player_id": 3,
+        "player_name": "Charlie Davis",
+        "answered": true,
+        "correct": true,
+        "points_earned": 85,
+        "total_score": 450,
+        "answer_time": 4.2
+      },
+      "4": {
+        "player_id": 4,
+        "player_name": "Diana Chen",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 435,
+        "answer_time": 5.1
+      },
+      "5": {
+        "player_id": 5,
+        "player_name": "Ethan Wilson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 80,
+        "total_score": 410,
+        "answer_time": 5.8
+      },
+      "6": {
+        "player_id": 6,
+        "player_name": "Fiona Taylor",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 395,
+        "answer_time": 6.5
+      },
+      "7": {
+        "player_id": 7,
+        "player_name": "George Lee",
+        "answered": true,
+        "correct": true,
+        "points_earned": 75,
+        "total_score": 380,
+        "answer_time": 7.2
+      },
+      "8": {
+        "player_id": 8,
+        "player_name": "Hannah Patel",
+        "answered": true,
+        "correct": true,
+        "points_earned": 70,
+        "total_score": 365,
+        "answer_time": 8.1
+      },
+      "9": {
+        "player_id": 9,
+        "player_name": "Isaac Brown",
+        "answered": true,
+        "correct": true,
+        "points_earned": 65,
+        "total_score": 340,
+        "answer_time": 9.3
+      },
+      "10": {
+        "player_id": 10,
+        "player_name": "Jenny Kim",
+        "answered": false,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 315,
+        "answer_time": null
+      }
+    },
+    "percent_scored": 80,
+    "average_score": 73
+  },
+  "game_specific": {
+    "fastest_correct": {
+      "player_name": "Alice Johnson",
+      "response_time": 2.3
+    },
+    "correct_count": 8,
+    "incorrect_count": 2
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 520},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 485},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 450},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 435},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 410},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 395},
+    {"player_id": 7, "player_name": "George Lee", "score": 380},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 365},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 340},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 315}
+  ]
+}

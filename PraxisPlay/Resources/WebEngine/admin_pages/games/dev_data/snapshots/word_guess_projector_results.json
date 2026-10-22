@@ -1,0 +1,52 @@
+{
+  "type": "game_results",
+  "game_type": "word_guess",
+  "current_round": 2,
+  "total_rounds": 5,
+  "next_game_type": "speed_tap",
+  "next_game_title": "⚡ Speed Tap",
+  "correct_answer": "MARKETING MIX",
+  "points": 95,
+  "is_correct": true,
+  "round_stats": {
+    "round_number": 2,
+    "game_type": "word_guess",
+    "question_text": "What marketing framework uses Product, Price, Place, and Promotion?",
+    "correct_answer": "MARKETING MIX",
+    "player_stats": {
+      "1": {"player_id": 1, "player_name": "Alice Johnson", "answered": true, "correct": true, "points_earned": 100, "total_score": 615, "answer_time": 15.2},
+      "2": {"player_id": 2, "player_name": "Bob Martinez", "answered": true, "correct": true, "points_earned": 90, "total_score": 575, "answer_time": 22.5},
+      "3": {"player_id": 3, "player_name": "Charlie Davis", "answered": true, "correct": true, "points_earned": 85, "total_score": 530, "answer_time": 28.3},
+      "4": {"player_id": 4, "player_name": "Diana Chen", "answered": true, "correct": false, "points_earned": 0, "total_score": 515, "answer_time": 35.8},
+      "5": {"player_id": 5, "player_name": "Ethan Wilson", "answered": true, "correct": true, "points_earned": 80, "total_score": 485, "answer_time": 42.1},
+      "6": {"player_id": 6, "player_name": "Fiona Taylor", "answered": true, "correct": false, "points_earned": 0, "total_score": 470, "answer_time": 48.5},
+      "7": {"player_id": 7, "player_name": "George Lee", "answered": true, "correct": true, "points_earned": 75, "total_score": 450, "answer_time": 55.2},
+      "8": {"player_id": 8, "player_name": "Hannah Patel", "answered": true, "correct": true, "points_earned": 70, "total_score": 425, "answer_time": 62.8},
+      "9": {"player_id": 9, "player_name": "Isaac Brown", "answered": true, "correct": true, "points_earned": 65, "total_score": 405, "answer_time": 71.3},
+      "10": {"player_id": 10, "player_name": "Jenny Kim", "answered": false, "correct": false, "points_earned": 0, "total_score": 325, "answer_time": null}
+    },
+    "percent_scored": 80,
+    "average_score": 72
+  },
+  "game_specific": {
+    "fastest_correct": {
+      "player_name": "Alice Johnson",
+      "guess_time": 15.2
+    },
+    "correct_count": 8,
+    "incorrect_count": 2,
+    "average_time": 32.5
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 615},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 575},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 530},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 515},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 485},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 470},
+    {"player_id": 7, "player_name": "George Lee", "score": 450},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 425},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 405},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 325}
+  ]
+}

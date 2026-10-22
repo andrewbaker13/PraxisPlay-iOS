@@ -1,0 +1,26 @@
+{
+  "type": "game_started",
+  "game_type": "word_guess",
+  "question_text": "What marketing framework uses Product, Price, Place, and Promotion?",
+  "game_config": {
+    "answer": "MARKETING MIX",
+    "hint": "Also known as the 4 P's"
+  },
+  "current_round": 2,
+  "total_rounds": 5,
+  "game_time_limit": 90,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 520},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 485},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 450},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 435},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 420},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 395},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 380},
+    {"player_id": 8, "player_name": "George Lee", "score": 365},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 340},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 325}
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "type": "game_results",
+  "game_type": "line_fit",
+  "current_round": 3,
+  "total_rounds": 5,
+  "next_game_type": "crowd_wisdom",
+  "next_game_title": "Crowd Wisdom: Algorithm Complexity",
+  "round_stats": {
+    "round_number": 3,
+    "game_type": "line_fit",
+    "question_text": "Draw a line that best fits the data showing hours studied vs. exam score",
+    "correct_answer": "y = 4.5x + 55",
+    "player_stats": {
+      "1": {
+        "player_id": 1,
+        "player_name": "Alice Johnson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 92,
+        "total_score": 472,
+        "answer_time": 16.5,
+        "line": {
+          "slope": 4.4,
+          "intercept": 56,
+          "equation": "y = 4.4x + 56"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.96,
+          "rmse": 2.3,
+          "accuracy_percent": 96
+        }
+      },
+      "2": {
+        "player_id": 2,
+        "player_name": "Bob Martinez",
+        "answered": true,
+        "correct": true,
+        "points_earned": 88,
+        "total_score": 443,
+        "answer_time": 18.3,
+        "line": {
+          "slope": 4.7,
+          "intercept": 53,
+          "equation": "y = 4.7x + 53"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.94,
+          "rmse": 2.8,
+          "accuracy_percent": 94
+        }
+      },
+      "3": {
+        "player_id": 3,
+        "player_name": "Charlie Davis",
+        "answered": true,
+        "correct": true,
+        "points_earned": 85,
+        "total_score": 415,
+        "answer_time": 19.8,
+        "line": {
+          "slope": 4.3,
+          "intercept": 57,
+          "equation": "y = 4.3x + 57"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.92,
+          "rmse": 3.1,
+          "accuracy_percent": 92
+        }
+      },
+      "4": {
+        "player_id": 4,
+        "player_name": "Diana Chen",
+        "answered": true,
+        "correct": true,
+        "points_earned": 82,
+        "total_score": 387,
+        "answer_time": 21.2,
+        "line": {
+          "slope": 4.8,
+          "intercept": 52,
+          "equation": "y = 4.8x + 52"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.91,
+          "rmse": 3.3,
+          "accuracy_percent": 91
+        }
+      },
+      "5": {
+        "player_id": 5,
+        "player_name": "Ethan Wilson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 78,
+        "total_score": 358,
+        "answer_time": 23.5,
+        "line": {
+          "slope": 4.2,
+          "intercept": 58,
+          "equation": "y = 4.2x + 58"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.89,
+          "rmse": 3.6,
+          "accuracy_percent": 89
+        }
+      },
+      "6": {
+        "player_id": 6,
+        "player_name": "Fiona Taylor",
+        "answered": true,
+        "correct": false,
+        "points_earned": 45,
+        "total_score": 300,
+        "answer_time": 25.8,
+        "line": {
+          "slope": 3.8,
+          "intercept": 60,
+          "equation": "y = 3.8x + 60"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.75,
+          "rmse": 5.2,
+          "accuracy_percent": 75
+        }
+      },
+      "7": {
+        "player_id": 7,
+        "player_name": "George Lee",
+        "answered": true,
+        "correct": false,
+        "points_earned": 38,
+        "total_score": 268,
+        "answer_time": 27.2,
+        "line": {
+          "slope": 5.2,
+          "intercept": 48,
+          "equation": "y = 5.2x + 48"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.68,
+          "rmse": 6.1,
+          "accuracy_percent": 68
+        }
+      },
+      "8": {
+        "player_id": 8,
+        "player_name": "Hannah Patel",
+        "answered": true,
+        "correct": false,
+        "points_earned": 32,
+        "total_score": 237,
+        "answer_time": 28.5,
+        "line": {
+          "slope": 3.5,
+          "intercept": 62,
+          "equation": "y = 3.5x + 62"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.62,
+          "rmse": 6.8,
+          "accuracy_percent": 62
+        }
+      },
+      "9": {
+        "player_id": 9,
+        "player_name": "Isaac Brown",
+        "answered": true,
+        "correct": false,
+        "points_earned": 28,
+        "total_score": 208,
+        "answer_time": 29.8,
+        "line": {
+          "slope": 5.5,
+          "intercept": 45,
+          "equation": "y = 5.5x + 45"
+        },
+        "accuracy_metrics": {
+          "r_squared": 0.58,
+          "rmse": 7.3,
+          "accuracy_percent": 58
+        }
+      },
+      "10": {
+        "player_id": 10,
+        "player_name": "Jenny Kim",
+        "answered": false,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 155
+      }
+    }
+  },
+  "game_specific": {
+    "correct_line": {
+      "slope": 4.5,
+      "intercept": 55,
+      "equation": "y = 4.5x + 55"
+    },
+    "best_fit": {
+      "player_name": "Alice Johnson",
+      "accuracy_percent": 96,
+      "r_squared": 0.96,
+      "equation": "y = 4.4x + 56"
+    },
+    "scatter_data": {
+      "points": [
+        [1.2, 60],
+        [2.5, 65],
+        [3.8, 72],
+        [4.1, 75],
+        [5.5, 78],
+        [6.2, 82],
+        [7.0, 86],
+        [7.8, 89],
+        [8.5, 92],
+        [9.2, 95]
+      ],
+      "bounds": {
+        "x_min": 0,
+        "x_max": 10,
+        "y_min": 50,
+        "y_max": 100
+      },
+      "axis_labels": {
+        "x": "Hours Studied",
+        "y": "Exam Score"
+      }
+    },
+    "true_line": {"slope": 4.5, "intercept": 55},
+    "correlation": 0.92,
+    "r_squared": 0.85,
+    "all_submissions": [
+      {"slope": 4.4, "intercept": 56, "player_id": 1, "player_name": "Alice Johnson", "sse": 10.5, "rank": 1},
+      {"slope": 4.7, "intercept": 53, "player_id": 2, "player_name": "Bob Martinez", "sse": 14.2, "rank": 2},
+      {"slope": 4.3, "intercept": 57, "player_id": 3, "player_name": "Charlie Davis", "sse": 16.7, "rank": 3},
+      {"slope": 4.8, "intercept": 52, "player_id": 4, "player_name": "Diana Chen", "sse": 18.3, "rank": 4},
+      {"slope": 4.2, "intercept": 58, "player_id": 5, "player_name": "Ethan Wilson", "sse": 22.1, "rank": 5}
+    ],
+    "submission_count": 10,
+    "average_sse": 19.4
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 472},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 443},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 415},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 387},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 358},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 300},
+    {"player_id": 7, "player_name": "George Lee", "score": 268},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 237},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 208},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 155}
+  ]
+}

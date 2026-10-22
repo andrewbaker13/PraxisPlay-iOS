@@ -1,0 +1,41 @@
+{
+  "type": "game_results",
+  "game_type": "push_range",
+  "current_round": 3,
+  "total_rounds": 5,
+  "next_game_type": "closest_guess",
+  "correct_answer": "87",
+  "player_answer": "Team Success",
+  "points": 78,
+  "is_correct": true,
+  "round_stats": {
+    "player_stats": {
+      "999": {
+        "player_round_score": 78,
+        "player_total_score": 508
+      }
+    },
+    "percent_scored": 100,
+    "average_score": 75
+  },
+  "game_specific": {
+    "final_range": "75-92%",
+    "top_pressers": [
+      {"player_id": 999, "player_name": "You", "team": "left", "presses": 45},
+      {"player_id": 1, "player_name": "Alice", "team": "left", "presses": 42},
+      {"player_id": 2, "player_name": "Bob", "team": "right", "presses": 38}
+    ]
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 565, "round_scores": [95, 92, 80]},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 548, "round_scores": [88, 90, 78]},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 533, "round_scores": [85, 85, 78]},
+    {"player_id": 999, "player_name": "You (Dev Player)", "score": 508, "round_scores": [75, 72, 78]},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 523, "round_scores": [82, 80, 78]},
+    {"player_id": 6, "player_name": "Ethan Wilson", "score": 498, "round_scores": [80, 78, 78]},
+    {"player_id": 7, "player_name": "Fiona Taylor", "score": 483, "round_scores": [78, 75, 78]},
+    {"player_id": 8, "player_name": "George Lee", "score": 468, "round_scores": [75, 72, 78]},
+    {"player_id": 9, "player_name": "Hannah Patel", "score": 458, "round_scores": [72, 70, 78]},
+    {"player_id": 10, "player_name": "Isaac Brown", "score": 443, "round_scores": [70, 68, 78]}
+  ]
+}

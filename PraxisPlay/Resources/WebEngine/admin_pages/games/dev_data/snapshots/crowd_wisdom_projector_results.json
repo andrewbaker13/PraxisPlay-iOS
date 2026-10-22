@@ -1,0 +1,147 @@
+{
+  "type": "game_results",
+  "game_type": "crowd_wisdom",
+  "current_round": 2,
+  "total_rounds": 5,
+  "next_game_type": "push_range",
+  "next_game_title": "Push Range: Video Marketing Impact",
+  "round_stats": {
+    "round_number": 2,
+    "game_type": "crowd_wisdom",
+    "question_text": "Which sorting algorithm has the best average-case time complexity?",
+    "correct_answer": "Merge Sort",
+    "player_stats": {
+      "1": {
+        "player_id": 1,
+        "player_name": "Alice Johnson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 95,
+        "total_score": 545,
+        "answer_time": 3.8,
+        "got_tough_bonus": false,
+        "answer_index": 1
+      },
+      "2": {
+        "player_id": 2,
+        "player_name": "Bob Martinez",
+        "answered": true,
+        "correct": true,
+        "points_earned": 88,
+        "total_score": 508,
+        "answer_time": 5.2,
+        "got_tough_bonus": false,
+        "answer_index": 1
+      },
+      "3": {
+        "player_id": 3,
+        "player_name": "Charlie Davis",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 385,
+        "answer_time": 6.5,
+        "got_tough_bonus": false,
+        "answer_index": 2
+      },
+      "4": {
+        "player_id": 4,
+        "player_name": "Diana Chen",
+        "answered": true,
+        "correct": true,
+        "points_earned": 92,
+        "total_score": 462,
+        "answer_time": 4.2,
+        "got_tough_bonus": false,
+        "answer_index": 1
+      },
+      "5": {
+        "player_id": 5,
+        "player_name": "Ethan Wilson",
+        "answered": true,
+        "correct": true,
+        "points_earned": 85,
+        "total_score": 425,
+        "answer_time": 5.8,
+        "got_tough_bonus": false,
+        "answer_index": 1
+      },
+      "6": {
+        "player_id": 6,
+        "player_name": "Fiona Taylor",
+        "answered": true,
+        "correct": true,
+        "points_earned": 82,
+        "total_score": 397,
+        "answer_time": 6.3,
+        "got_tough_bonus": false,
+        "answer_index": 1
+      },
+      "7": {
+        "player_id": 7,
+        "player_name": "George Lee",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 290,
+        "answer_time": 7.2,
+        "got_tough_bonus": false,
+        "answer_index": 0
+      },
+      "8": {
+        "player_id": 8,
+        "player_name": "Hannah Patel",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 265,
+        "answer_time": 8.1,
+        "got_tough_bonus": false,
+        "answer_index": 2
+      },
+      "9": {
+        "player_id": 9,
+        "player_name": "Isaac Brown",
+        "answered": true,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 240,
+        "answer_time": 9.5,
+        "got_tough_bonus": false,
+        "answer_index": 3
+      },
+      "10": {
+        "player_id": 10,
+        "player_name": "Jenny Kim",
+        "answered": false,
+        "correct": false,
+        "points_earned": 0,
+        "total_score": 210,
+        "got_tough_bonus": false
+      }
+    }
+  },
+  "game_specific": {
+    "correct_option_index": 1,
+    "was_tough_question": false,
+    "percent_correct": 60,
+    "final_distribution": [
+      {"option_index": 0, "percent": 10, "text": "Bubble Sort"},
+      {"option_index": 1, "percent": 60, "text": "Merge Sort"},
+      {"option_index": 2, "percent": 20, "text": "Quick Sort"},
+      {"option_index": 3, "percent": 10, "text": "Selection Sort"}
+    ]
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 545},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 508},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 462},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 425},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 397},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 385},
+    {"player_id": 7, "player_name": "George Lee", "score": 290},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 265},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 240},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 210}
+  ]
+}

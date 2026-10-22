@@ -1,0 +1,46 @@
+{
+  "type": "game_started",
+  "game_type": "push_range",
+  "question_text": "What percentage of marketers say video marketing has a direct positive impact on sales?",
+  "current_round": 3,
+  "total_rounds": 5,
+  "game_time_limit": 30,
+  "start_time": "2025-12-16T10:30:00Z",
+  "image_url": null,
+  "players": [
+    {"player_id": 1, "player_name": "Alice Johnson"},
+    {"player_id": 2, "player_name": "Bob Martinez"},
+    {"player_id": 3, "player_name": "Charlie Davis"},
+    {"player_id": 4, "player_name": "Diana Chen"},
+    {"player_id": 5, "player_name": "Ethan Wilson"},
+    {"player_id": 6, "player_name": "Fiona Taylor"},
+    {"player_id": 7, "player_name": "George Lee"},
+    {"player_id": 8, "player_name": "Hannah Patel"},
+    {"player_id": 9, "player_name": "Isaac Brown"},
+    {"player_id": 10, "player_name": "Jenny Kim"}
+  ],
+  "team_assignments": {
+    "1": {"team": "left", "name": "Alice"},
+    "2": {"team": "right", "name": "Bob"},
+    "3": {"team": "left", "name": "Charlie"},
+    "4": {"team": "right", "name": "Diana"},
+    "5": {"team": "left", "name": "Ethan"},
+    "6": {"team": "right", "name": "Fiona"},
+    "7": {"team": "left", "name": "George"},
+    "8": {"team": "right", "name": "Hannah"},
+    "9": {"team": "left", "name": "Isaac"},
+    "10": {"team": "right", "name": "Jenny"}
+  },
+  "leaderboard": [
+    {"player_id": 1, "player_name": "Alice Johnson", "score": 485},
+    {"player_id": 2, "player_name": "Bob Martinez", "score": 470},
+    {"player_id": 3, "player_name": "Charlie Davis", "score": 455},
+    {"player_id": 4, "player_name": "Diana Chen", "score": 445},
+    {"player_id": 5, "player_name": "Ethan Wilson", "score": 430},
+    {"player_id": 6, "player_name": "Fiona Taylor", "score": 420},
+    {"player_id": 7, "player_name": "George Lee", "score": 405},
+    {"player_id": 8, "player_name": "Hannah Patel", "score": 390},
+    {"player_id": 9, "player_name": "Isaac Brown", "score": 380},
+    {"player_id": 10, "player_name": "Jenny Kim", "score": 365}
+  ]
+}
