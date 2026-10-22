@@ -2,7 +2,16 @@ import SwiftUI
 
 struct MainTabView: View {
     @ObservedObject var sessionStore = PraxisSessionStore.shared
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Int
+
+    init() {
+        let args = CommandLine.arguments
+        if let idx = args.firstIndex(of: "--tab"), idx + 1 < args.count, let tabNum = Int(args[idx + 1]) {
+            _selectedTab = State(initialValue: tabNum)
+        } else {
+            _selectedTab = State(initialValue: 0)
+        }
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -29,6 +38,17 @@ struct MainTabView: View {
         .tint(.blue)
         .fullScreenCover(item: $sessionStore.activeArenaLaunch) { launchMode in
             LiveGameArenaView(launchMode: launchMode)
+        }
+        .onAppear {
+            let args = CommandLine.arguments
+            if let idx = args.firstIndex(of: "--solo"), idx + 1 < args.count {
+                let modeId = args[idx + 1]
+                if let mode = SoloGameMode.allModes.first(where: { $0.id == modeId }) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        sessionStore.launchSoloMode(mode)
+                    }
+                }
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .praxisSwitchTab)) { note in
             if let tab = note.object as? Int {

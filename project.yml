@@ -31,6 +31,24 @@ targets:
         buildPhase: resources
     info:
       path: PraxisPlay/Info.plist
+      properties:
+        CFBundleDisplayName: "Praxis Play"
+        ITSAppUsesNonExemptEncryption: false
+        NSCameraUsageDescription: "Praxis Play uses the camera to scan the classroom projector QR code so you can join your live game session in one tap."
+        UILaunchScreen:
+          UIColorName: AccentColor
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.mktpraxis.praxisplay
+            CFBundleURLSchemes:
+              - mktpraxis
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mktpraxis.praxisplay

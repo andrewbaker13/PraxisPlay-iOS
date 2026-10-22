@@ -55,41 +55,35 @@ jobs:
           # Clean status bar (9:41 AM, full Wi-Fi & battery for App Store quality)
           xcrun simctl status_bar "$SIM_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularMode active --cellularBars 4 || true
 
-          # Install and launch PraxisPlay
+          # Install and launch PraxisPlay — Screen 1: Join Live Lobby
           xcrun simctl install "$SIM_UDID" "$APP_PATH"
-          xcrun simctl launch "$SIM_UDID" com.mktpraxis.praxisplay
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --tab 0
           sleep 3
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/01-Join-Live-Lobby.png
 
-          # Switch to Solo Practice Arcade Tab
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
-          sleep 2
+          # Screen 2: Solo Practice Arcade Tab
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --tab 1
+          sleep 3
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/02-Solo-Practice-Arcade.png
 
-          # Launch Line Fit Interactive Scatter Regression
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=line_fit"
-          sleep 4
+          # Screen 3: Line Fit Interactive Scatter Regression
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo line_fit
+          sleep 5
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/03-Line-Fit-Regression.png
 
-          # Launch Budget Blitz Token Optimizer
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
-          sleep 1
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=budget_blitz"
-          sleep 3
+          # Screen 4: Budget Blitz Token Optimizer
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo budget_blitz
+          sleep 4
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/04-Budget-Blitz-Optimizer.png
 
-          # Launch Minority Rule Blue Ocean Strategy
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
-          sleep 1
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=minority_rule"
-          sleep 3
+          # Screen 5: Minority Rule Blue Ocean Strategy
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo minority_rule
+          sleep 4
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/05-Minority-Rule-Blue-Ocean.png
 
-          # Launch Speed Tap Live Round
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
-          sleep 1
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=speed_tap"
-          sleep 3
+          # Screen 6: Speed Tap Live Round
+          xcrun simctl launch --terminate-running-process "$SIM_UDID" com.mktpraxis.praxisplay --solo speed_tap
+          sleep 4
           xcrun simctl io "$SIM_UDID" screenshot build/screenshots/06-Speed-Tap-Live-Round.png
 
           xcrun simctl shutdown "$SIM_UDID" || true
