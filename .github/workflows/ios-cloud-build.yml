@@ -28,7 +28,7 @@ jobs:
           # Ensure objectVersion is compatible with Xcode 15.4+ as well as Xcode 16+
           sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' PraxisPlay.xcodeproj/project.pbxproj
 
-      - name: Compile & Verify iOS App (Simulator Build)
+      - name: Compile & Verify Universal iPhone + iPad App (Simulator Build)
         run: |
           xcodebuild \
             -project PraxisPlay.xcodeproj \
@@ -40,6 +40,66 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             build
+
+      - name: Boot iPhone 15 Pro Simulator & Capture Live Screenshots
+        run: |
+          mkdir -p build/screenshots
+          APP_PATH="build/DerivedData/Build/Products/Release-iphonesimulator/PraxisPlay.app"
+
+          # Find an available iPhone 15 Pro or iPhone 15 simulator UDID
+          SIM_UDID=$(xcrun simctl list devices available | grep -E "iPhone 15 Pro \(|iPhone 15 \(" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+          echo "📱 Booting Simulator UDID: $SIM_UDID"
+          xcrun simctl boot "$SIM_UDID" || true
+          xcrun simctl bootstatus "$SIM_UDID" -b
+
+          # Clean status bar (9:41 AM, full Wi-Fi & battery for App Store quality)
+          xcrun simctl status_bar "$SIM_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularMode active --cellularBars 4 || true
+
+          # Install and launch PraxisPlay
+          xcrun simctl install "$SIM_UDID" "$APP_PATH"
+          xcrun simctl launch "$SIM_UDID" com.mktpraxis.praxisplay
+          sleep 3
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/01-Join-Live-Lobby.png
+
+          # Switch to Solo Practice Arcade Tab
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
+          sleep 2
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/02-Solo-Practice-Arcade.png
+
+          # Launch Line Fit Interactive Scatter Regression
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=line_fit"
+          sleep 4
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/03-Line-Fit-Regression.png
+
+          # Launch Budget Blitz Token Optimizer
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
+          sleep 1
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=budget_blitz"
+          sleep 3
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/04-Budget-Blitz-Optimizer.png
+
+          # Launch Minority Rule Blue Ocean Strategy
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
+          sleep 1
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=minority_rule"
+          sleep 3
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/05-Minority-Rule-Blue-Ocean.png
+
+          # Launch Speed Tap Live Round
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
+          sleep 1
+          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=speed_tap"
+          sleep 3
+          xcrun simctl io "$SIM_UDID" screenshot build/screenshots/06-Speed-Tap-Live-Round.png
+
+          xcrun simctl shutdown "$SIM_UDID" || true
+
+      - name: Upload Live iPhone 15 Pro Screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: PraxisPlay-iPhone-Screenshots
+          path: build/screenshots/*.png
+          retention-days: 30
 
       - name: Upload Compiled Simulator .app Artifact
         uses: actions/upload-artifact@v4

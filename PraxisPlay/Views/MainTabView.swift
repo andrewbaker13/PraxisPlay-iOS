@@ -30,5 +30,14 @@ struct MainTabView: View {
         .fullScreenCover(item: $sessionStore.activeArenaLaunch) { launchMode in
             LiveGameArenaView(launchMode: launchMode)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .praxisSwitchTab)) { note in
+            if let tab = note.object as? Int {
+                selectedTab = tab
+            }
+        }
     }
+}
+
+extension Notification.Name {
+    static let praxisSwitchTab = Notification.Name("praxisSwitchTab")
 }
