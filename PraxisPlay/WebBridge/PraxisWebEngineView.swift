@@ -189,8 +189,11 @@ struct PraxisWebEngineView: UIViewRepresentable {
                     sessionStorage.setItem('isGuest', "\(isGuestStr)");
                     sessionStorage.setItem('waitingToEnter', "\(waitingStr)");
                     localStorage.setItem('last_praxis_player_name', "\(name)");
-                    if ("\(token)".length > 0) {
+                    if ("\(token)".length > 0 && "\(isGuestStr)" === "false") {
                         localStorage.setItem('token', "\(token)");
+                        sessionStorage.setItem('authToken', "\(token)");
+                    } else {
+                        sessionStorage.removeItem('authToken');
                     }
                 } catch (e) {
                     console.warn('[Praxis-iOS] Storage bootstrap warning:', e);

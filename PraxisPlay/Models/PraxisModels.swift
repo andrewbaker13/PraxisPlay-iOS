@@ -35,6 +35,19 @@ struct RecentRoomSession: Identifiable, Codable, Equatable {
     var joinedAt: Date
 }
 
+// MARK: - Active Server Game Session (from GET /api/game/my-active-sessions/)
+struct ActiveServerGameSession: Identifiable, Equatable {
+    var id: String { "\(roomCode)-\(playerSessionId)" }
+    let roomCode: String
+    let status: String
+    let currentRound: Int
+    let totalRounds: Int
+    let courseName: String
+    let instructorName: String
+    let playerSessionId: Int
+    let score: Int
+}
+
 // MARK: - Live HUD Telemetry State (Synced from WebEngine)
 struct HUDTelemetryState: Equatable {
     enum ConnectionStatus: String, Equatable {

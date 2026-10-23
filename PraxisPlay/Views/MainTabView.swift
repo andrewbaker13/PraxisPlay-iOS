@@ -31,7 +31,7 @@ struct MainTabView: View {
 
             ProfileSettingsView()
                 .tabItem {
-                    Label("Setup", systemImage: "slider.horizontal.3")
+                    Label("Account", systemImage: "person.crop.circle.fill")
                 }
                 .tag(2)
         }

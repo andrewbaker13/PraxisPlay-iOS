@@ -15,6 +15,18 @@ final class PraxisSessionStore: ObservableObject {
     @Published var loggedInUsername: String {
         didSet { UserDefaults.standard.set(loggedInUsername, forKey: "praxis_logged_in_user") }
     }
+    @Published var loggedInEmail: String {
+        didSet { UserDefaults.standard.set(loggedInEmail, forKey: "praxis_logged_in_email") }
+    }
+    @Published var loggedInFirstName: String {
+        didSet { UserDefaults.standard.set(loggedInFirstName, forKey: "praxis_logged_in_first_name") }
+    }
+    @Published var isStaffUser: Bool {
+        didSet { UserDefaults.standard.set(isStaffUser, forKey: "praxis_is_staff_user") }
+    }
+    @Published var enrolledCourses: [String] {
+        didSet { UserDefaults.standard.set(enrolledCourses, forKey: "praxis_enrolled_courses") }
+    }
     @Published var useGuestMode: Bool {
         didSet { UserDefaults.standard.set(useGuestMode, forKey: "praxis_use_guest_mode") }
     }
@@ -33,6 +45,7 @@ final class PraxisSessionStore: ObservableObject {
 
     // MARK: - Published State
     @Published var recentSessions: [RecentRoomSession] = []
+    @Published var activeServerSessions: [ActiveServerGameSession] = []
     @Published var soloHighScores: [String: Int] = [:]
     @Published var isJoining: Bool = false
     @Published var joinStatusText: String = ""
@@ -40,6 +53,26 @@ final class PraxisSessionStore: ObservableObject {
     @Published var joinWarningMessage: String? = nil
     @Published var activeArenaLaunch: ArenaLaunchMode? = nil
     @Published var backendLatencyMs: Int? = nil
+
+    // MARK: - MktPraxis Account Authentication State
+    @Published var isAuthenticating: Bool = false
+    @Published var authErrorMessage: String? = nil
+    @Published var mfaPendingUserId: Int? = nil
+    @Published var mfaEmailHint: String = ""
+
+    var isAuthenticated: Bool {
+        !authToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var accountDisplayLabel: String {
+        if !loggedInFirstName.isEmpty {
+            return "\(loggedInFirstName) (@\(loggedInUsername))"
+        }
+        if !loggedInUsername.isEmpty {
+            return "@\(loggedInUsername)"
+        }
+        return "MktPraxis Account"
+    }
 
     private let recentSessionsKey = "praxis_recent_sessions_v1"
     private let soloScoresKey = "praxis_solo_high_scores_v1"
@@ -49,6 +82,10 @@ final class PraxisSessionStore: ObservableObject {
         self.studentDisplayName = UserDefaults.standard.string(forKey: "praxis_student_name") ?? ""
         self.authToken = UserDefaults.standard.string(forKey: "praxis_auth_token") ?? ""
         self.loggedInUsername = UserDefaults.standard.string(forKey: "praxis_logged_in_user") ?? ""
+        self.loggedInEmail = UserDefaults.standard.string(forKey: "praxis_logged_in_email") ?? ""
+        self.loggedInFirstName = UserDefaults.standard.string(forKey: "praxis_logged_in_first_name") ?? ""
+        self.isStaffUser = UserDefaults.standard.bool(forKey: "praxis_is_staff_user")
+        self.enrolledCourses = (UserDefaults.standard.array(forKey: "praxis_enrolled_courses") as? [String]) ?? []
         if UserDefaults.standard.object(forKey: "praxis_use_guest_mode") == nil {
             self.useGuestMode = true
         } else {
@@ -64,6 +101,267 @@ final class PraxisSessionStore: ObservableObject {
 
         loadPersistedCollections()
         UIApplication.shared.isIdleTimerDisabled = self.keepScreenAwake
+
+        if !self.authToken.isEmpty {
+            Task {
+                await fetchUserProfile()
+                await fetchMyActiveSessions()
+            }
+        }
+    }
+
+    // MARK: - MktPraxis Account Sign-In & 2FA Verification
+    func login(usernameOrEmail: String, password: String) async -> Bool {
+        let trimmedUser = usernameOrEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedUser.isEmpty, !password.isEmpty else {
+            authErrorMessage = "Please enter your MktPraxis username/email and password."
+            HapticsManager.shared.playNotification(.warning)
+            return false
+        }
+
+        guard let url = URL(string: "\(apiBaseURL)/auth/login/") else {
+            authErrorMessage = "Invalid server URL."
+            return false
+        }
+
+        isAuthenticating = true
+        authErrorMessage = nil
+        defer { isAuthenticating = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 30
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = [
+            "username": trimmedUser,
+            "password": password,
+            "remember_me": true
+        ]
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let http = response as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+
+            guard let statusCode = http?.statusCode, (200...299).contains(statusCode) else {
+                let err = (json["error"] as? String)
+                    ?? (json["detail"] as? String)
+                    ?? "Invalid username/email or password."
+                authErrorMessage = err
+                HapticsManager.shared.playNotification(.error)
+                return false
+            }
+
+            // Check if 2FA / Email Verification Code is required (staff/instructor accounts)
+            if let mfaReq = json["mfa_required"] as? Bool, mfaReq,
+               let mfaUid = json["mfa_user_id"] as? Int {
+                self.mfaPendingUserId = mfaUid
+                self.mfaEmailHint = (json["email_hint"] as? String) ?? "your email"
+                HapticsManager.shared.playNotification(.warning)
+                return false
+            }
+
+            return await completeSignIn(with: json)
+        } catch {
+            authErrorMessage = "Could not connect to MktPraxis (\(error.localizedDescription))."
+            HapticsManager.shared.playNotification(.error)
+            return false
+        }
+    }
+
+    func verifyMFA(code: String) async -> Bool {
+        let trimmedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let userId = mfaPendingUserId, !trimmedCode.isEmpty else {
+            authErrorMessage = "Please enter the 6-digit verification code from your email."
+            return false
+        }
+
+        guard let url = URL(string: "\(apiBaseURL)/auth/mfa/verify/") else {
+            authErrorMessage = "Invalid server URL."
+            return false
+        }
+
+        isAuthenticating = true
+        authErrorMessage = nil
+        defer { isAuthenticating = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 30
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = [
+            "user_id": userId,
+            "mfa_code": trimmedCode,
+            "remember_me": true,
+            "device_label": "Praxis Play iOS/iPadOS"
+        ]
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let http = response as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+
+            guard let statusCode = http?.statusCode, (200...299).contains(statusCode) else {
+                let err = (json["error"] as? String)
+                    ?? (json["detail"] as? String)
+                    ?? "Invalid or expired verification code."
+                authErrorMessage = err
+                HapticsManager.shared.playNotification(.error)
+                return false
+            }
+
+            mfaPendingUserId = nil
+            mfaEmailHint = ""
+            return await completeSignIn(with: json)
+        } catch {
+            authErrorMessage = "Verification failed (\(error.localizedDescription))."
+            HapticsManager.shared.playNotification(.error)
+            return false
+        }
+    }
+
+    func resendMFACode() async {
+        guard let userId = mfaPendingUserId,
+              let url = URL(string: "\(apiBaseURL)/auth/mfa/resend/") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: ["user_id": userId])
+        _ = try? await URLSession.shared.data(for: req)
+        HapticsManager.shared.playNotification(.success)
+    }
+
+    func cancelMFAPrompt() {
+        mfaPendingUserId = nil
+        mfaEmailHint = ""
+        authErrorMessage = nil
+    }
+
+    private func completeSignIn(with json: [String: Any]) async -> Bool {
+        guard let token = json["token"] as? String, !token.isEmpty else {
+            authErrorMessage = "Login succeeded but no auth token was returned."
+            return false
+        }
+
+        self.authToken = token
+        self.loggedInUsername = (json["username"] as? String) ?? ""
+        self.loggedInFirstName = (json["first_name"] as? String) ?? ""
+        self.loggedInEmail = (json["email"] as? String) ?? ""
+        let isStaff = (json["is_staff"] as? Bool) ?? false
+        let isSuper = (json["is_superuser"] as? Bool) ?? false
+        self.isStaffUser = isStaff || isSuper
+        self.useGuestMode = false
+
+        if studentDisplayName.isEmpty {
+            studentDisplayName = !loggedInFirstName.isEmpty ? loggedInFirstName : loggedInUsername
+        }
+
+        await fetchUserProfile()
+        await fetchMyActiveSessions()
+        HapticsManager.shared.playNotification(.success)
+        return true
+    }
+
+    func fetchUserProfile() async {
+        guard !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/auth/profile/") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.timeoutInterval = 20
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            guard let http = response as? HTTPURLResponse else { return }
+            if http.statusCode == 401 {
+                // Token expired on server
+                clearAuthState()
+                return
+            }
+            guard (200...299).contains(http.statusCode),
+                  let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else { return }
+
+            if let uname = json["username"] as? String, !uname.isEmpty {
+                self.loggedInUsername = uname
+            }
+            if let fname = json["first_name"] as? String {
+                self.loggedInFirstName = fname
+            }
+            if let email = json["email"] as? String {
+                self.loggedInEmail = email
+            }
+            let staff = (json["is_staff"] as? Bool) ?? false
+            let superuser = (json["is_superuser"] as? Bool) ?? false
+            self.isStaffUser = staff || superuser
+
+            if let coursesArr = json["courses"] as? [[String: Any]] {
+                let names = coursesArr.compactMap { $0["name"] as? String }
+                self.enrolledCourses = names
+            } else if let singleCourse = json["course"] as? String, !singleCourse.isEmpty {
+                self.enrolledCourses = [singleCourse]
+            }
+        } catch {
+            // Keep cached profile info on transient offline errors
+        }
+    }
+
+    func fetchMyActiveSessions() async {
+        guard !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/game/my-active-sessions/") else {
+            activeServerSessions = []
+            return
+        }
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.timeoutInterval = 15
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode),
+                  let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+                  let list = json["sessions"] as? [[String: Any]] else { return }
+
+            self.activeServerSessions = list.compactMap { item in
+                guard let code = item["room_code"] as? String else { return nil }
+                return ActiveServerGameSession(
+                    roomCode: code,
+                    status: (item["status"] as? String) ?? "in_progress",
+                    currentRound: (item["current_round"] as? Int) ?? 1,
+                    totalRounds: (item["total_rounds"] as? Int) ?? 1,
+                    courseName: (item["course_name"] as? String) ?? "Live Classroom Session",
+                    instructorName: (item["instructor_name"] as? String) ?? "Instructor",
+                    playerSessionId: (item["player_session_id"] as? Int) ?? 0,
+                    score: (item["score"] as? Int) ?? 0
+                )
+            }
+        } catch {}
+    }
+
+    func logout() async {
+        if !authToken.isEmpty, let url = URL(string: "\(apiBaseURL)/auth/logout/") {
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            _ = try? await URLSession.shared.data(for: req)
+        }
+        clearAuthState()
+        HapticsManager.shared.playImpact(style: .medium)
+    }
+
+    private func clearAuthState() {
+        authToken = ""
+        loggedInUsername = ""
+        loggedInEmail = ""
+        loggedInFirstName = ""
+        isStaffUser = false
+        enrolledCourses = []
+        activeServerSessions = []
+        mfaPendingUserId = nil
+        mfaEmailHint = ""
+        useGuestMode = true
     }
 
     // MARK: - Stable Guest Tag (Matches game-join.html lines 301-342)

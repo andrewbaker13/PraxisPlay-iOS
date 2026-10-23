@@ -9,6 +9,7 @@ struct JoinSessionView: View {
     @State private var guestPinInput: String = ""
     @State private var showGuestPinField: Bool = false
     @State private var showQRScanner: Bool = false
+    @State private var showLoginSheet: Bool = false
     @FocusState private var focusedField: Field?
 
     enum Field {
@@ -24,8 +25,13 @@ struct JoinSessionView: View {
                     // MARK: - Hero Banner
                     heroHeader
 
-                    // MARK: - Main Join Card
+                    // MARK: - Main Join Card (with MktPraxis Account Sign-In Bar)
                     joinFormCard
+
+                    // MARK: - Live Active Sessions on Your MktPraxis Account
+                    if sessionStore.isAuthenticated && !sessionStore.activeServerSessions.isEmpty {
+                        activeAccountSessionsSection
+                    }
 
                     // MARK: - Recent Classroom Sessions (1-Tap Rejoin)
                     if !sessionStore.recentSessions.isEmpty {
@@ -64,17 +70,35 @@ struct JoinSessionView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        HapticsManager.shared.playTap()
-                        showQRScanner = true
-                    } label: {
-                        Label("Scan QR", systemImage: "qrcode.viewfinder")
+                    HStack(spacing: 8) {
+                        Button {
+                            HapticsManager.shared.playTap()
+                            showLoginSheet = true
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: sessionStore.isAuthenticated ? "person.crop.circle.badge.checkmark" : "person.crop.circle")
+                                Text(sessionStore.isAuthenticated ? "@\(sessionStore.loggedInUsername)" : "Sign In")
+                            }
                             .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 12)
+                            .foregroundStyle(sessionStore.isAuthenticated ? .mint : .cyan)
+                            .padding(.horizontal, 11)
                             .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.85))
+                            .background(Color.white.opacity(0.10))
                             .clipShape(Capsule())
+                        }
+
+                        Button {
+                            HapticsManager.shared.playTap()
+                            showQRScanner = true
+                        } label: {
+                            Label("Scan QR", systemImage: "qrcode.viewfinder")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.blue.opacity(0.85))
+                                .clipShape(Capsule())
+                        }
                     }
                 }
             }
@@ -82,11 +106,20 @@ struct JoinSessionView: View {
                 if playerNameInput.isEmpty && !sessionStore.studentDisplayName.isEmpty {
                     playerNameInput = sessionStore.studentDisplayName
                 }
+                if sessionStore.isAuthenticated {
+                    Task {
+                        await sessionStore.fetchMyActiveSessions()
+                    }
+                }
+            }
+            .sheet(isPresented: $showLoginSheet) {
+                MktPraxisLoginSheetView()
             }
             .sheet(isPresented: $showQRScanner) {
                 QRScannerSheetView { scannedCode in
                     roomCodeInput = scannedCode
-                    if !playerNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    if (sessionStore.isAuthenticated && !sessionStore.useGuestMode)
+                        || !playerNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Task {
                             await sessionStore.joinRoom(
                                 roomCode: scannedCode,
@@ -136,6 +169,9 @@ struct JoinSessionView: View {
     // MARK: - Join Form Card
     private var joinFormCard: some View {
         VStack(alignment: .leading, spacing: 18) {
+            // MktPraxis Account vs Guest Identity Banner
+            accountIdentityBanner
+
             // Room Code Input + QR Camera Button
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -207,45 +243,47 @@ struct JoinSessionView: View {
                 }
             }
 
-            // Player Display Name
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("YOUR DISPLAY NAME")
-                        .font(.system(size: 12, weight: .heavy))
-                        .tracking(0.8)
-                        .foregroundStyle(Color.white.opacity(0.7))
-                    Spacer()
-                    if !roomCodeInput.isEmpty {
-                        Text("ID Tag: #\(sessionStore.guestTag(for: roomCodeInput))")
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.mint)
-                    }
-                }
-
-                HStack(spacing: 10) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 20))
-                        .foregroundStyle(.blue)
-                    TextField("e.g. Alex, Jordan", text: $playerNameInput)
-                        .focused($focusedField, equals: .playerName)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .submitLabel(.go)
-                        .onSubmit {
-                            submitJoin()
+            // Player Display Name (Required in Guest Mode; hidden when joining as MktPraxis Account)
+            if !sessionStore.isAuthenticated || sessionStore.useGuestMode {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("YOUR DISPLAY NAME (GUEST)")
+                            .font(.system(size: 12, weight: .heavy))
+                            .tracking(0.8)
+                            .foregroundStyle(Color.white.opacity(0.7))
+                        Spacer()
+                        if !roomCodeInput.isEmpty {
+                            Text("ID Tag: #\(sessionStore.guestTag(for: roomCodeInput))")
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .foregroundStyle(.mint)
                         }
+                    }
+
+                    HStack(spacing: 10) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(.blue)
+                        TextField("e.g. Alex, Jordan", text: $playerNameInput)
+                            .focused($focusedField, equals: .playerName)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .submitLabel(.go)
+                            .onSubmit {
+                                submitJoin()
+                            }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 14)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .strokeBorder(
+                                focusedField == .playerName ? Color.blue : Color.white.opacity(0.16),
+                                lineWidth: 1.5
+                            )
+                    )
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 14)
-                .background(Color.white.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(
-                            focusedField == .playerName ? Color.blue : Color.white.opacity(0.16),
-                            lineWidth: 1.5
-                        )
-                )
             }
 
             // Optional Room Guest PIN Disclosure
@@ -325,6 +363,174 @@ struct JoinSessionView: View {
             RoundedRectangle(cornerRadius: 22)
                 .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
         )
+    }
+
+    // MARK: - MktPraxis Account vs Guest Identity Banner
+    private var accountIdentityBanner: some View {
+        Group {
+            if sessionStore.isAuthenticated {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.mint)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text("Signed in as \(sessionStore.accountDisplayLabel)")
+                                    .font(.system(size: 13.5, weight: .heavy))
+                                    .foregroundStyle(.white)
+                                if sessionStore.isStaffUser {
+                                    Text("INSTRUCTOR")
+                                        .font(.system(size: 9, weight: .heavy))
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.cyan.opacity(0.22))
+                                        .foregroundStyle(.cyan)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            if let firstCourse = sessionStore.enrolledCourses.first {
+                                Text(firstCourse)
+                                    .font(.system(size: 11.5, weight: .medium))
+                                    .foregroundStyle(.white.opacity(0.68))
+                                    .lineLimit(1)
+                            } else {
+                                Text("Scores sync directly to your MktPraxis account")
+                                    .font(.system(size: 11.5, weight: .medium))
+                                    .foregroundStyle(.white.opacity(0.68))
+                            }
+                        }
+
+                        Spacer()
+
+                        Button {
+                            HapticsManager.shared.playSelection()
+                            sessionStore.useGuestMode.toggle()
+                        } label: {
+                            Text(sessionStore.useGuestMode ? "Use Account" : "Guest Mode")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(.cyan)
+                                .padding(.horizontal, 9)
+                                .padding(.vertical, 5)
+                                .background(Color.white.opacity(0.08))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(12)
+                .background(Color.mint.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color.mint.opacity(0.35), lineWidth: 1)
+                )
+            } else {
+                HStack(spacing: 10) {
+                    Image(systemName: "person.badge.key.fill")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.cyan)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Have a MktPraxis Account?")
+                            .font(.system(size: 13, weight: .heavy))
+                            .foregroundStyle(.white)
+                        Text("Sign in for course credit, or enter a guest name below")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.68))
+                    }
+
+                    Spacer()
+
+                    Button {
+                        HapticsManager.shared.playTap()
+                        showLoginSheet = true
+                    } label: {
+                        Text("Sign In →")
+                            .font(.system(size: 12, weight: .heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(
+                                LinearGradient(
+                                    colors: [.blue, .cyan],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .clipShape(Capsule())
+                    }
+                }
+                .padding(12)
+                .background(Color.white.opacity(0.06))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color.cyan.opacity(0.30), lineWidth: 1)
+                )
+            }
+        }
+    }
+
+    // MARK: - Live Active Sessions on Your Account
+    private var activeAccountSessionsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Active Live Games on Your Account", systemImage: "dot.radiowaves.left.and.right")
+                    .font(.system(size: 14, weight: .heavy))
+                    .foregroundStyle(.mint)
+                Spacer()
+                Text("Live Now")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.mint)
+            }
+
+            ForEach(sessionStore.activeServerSessions) { active in
+                Button {
+                    Task {
+                        await sessionStore.joinRoom(
+                            roomCode: active.roomCode,
+                            displayName: playerNameInput,
+                            guestPin: guestPinInput
+                        )
+                    }
+                } label: {
+                    HStack(spacing: 14) {
+                        Text(active.roomCode)
+                            .font(.system(size: 16, weight: .black, design: .monospaced))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(Color.green.opacity(0.32))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(active.courseName)
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                            Text("Round \(active.currentRound)/\(active.totalRounds) • \(active.score) pts • \(active.instructorName)")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.7))
+                                .lineLimit(1)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(.mint)
+                    }
+                    .padding(14)
+                    .background(Color.mint.opacity(0.10))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(Color.mint.opacity(0.35), lineWidth: 1)
+                    )
+                }
+            }
+        }
     }
 
     // MARK: - Recent Classroom Sessions (1-Tap Rejoin)
