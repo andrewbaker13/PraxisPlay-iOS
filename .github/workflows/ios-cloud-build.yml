@@ -13,20 +13,24 @@ on:
 
 jobs:
   build-ios:
-    name: Build PraxisPlay iOS (macOS 14 / Xcode)
-    runs-on: macos-14
+    name: Build PraxisPlay iOS (Xcode 26 / iOS 26 SDK)
+    runs-on: macos-15
     steps:
       - name: Checkout PraxisPlay-iOS
         uses: actions/checkout@v4
 
-      - name: Generate Xcode Project via XcodeGen
+      - name: Select Xcode 26 SDK & Generate Xcode Project via XcodeGen
         run: |
+          XCODE_26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n 1 || true)
+          if [ -n "$XCODE_26" ]; then
+            echo "🔧 Selecting $XCODE_26"
+            sudo xcode-select -s "$XCODE_26/Contents/Developer"
+          fi
+          xcodebuild -version
           if ! command -v xcodegen &> /dev/null; then
             brew install xcodegen
           fi
           xcodegen generate
-          # Ensure objectVersion is compatible with Xcode 15.4+ as well as Xcode 16+
-          sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' PraxisPlay.xcodeproj/project.pbxproj
 
       - name: Compile & Verify Universal iPhone + iPad App (Simulator Build)
         if: ${{ github.event.inputs.deploy_to_testflight != 'true' }}
