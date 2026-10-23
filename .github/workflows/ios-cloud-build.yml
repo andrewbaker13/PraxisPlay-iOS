@@ -29,6 +29,7 @@ jobs:
           sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' PraxisPlay.xcodeproj/project.pbxproj
 
       - name: Compile & Verify Universal iPhone + iPad App (Simulator Build)
+        if: ${{ github.event.inputs.deploy_to_testflight != 'true' }}
         run: |
           xcodebuild \
             -project PraxisPlay.xcodeproj \
@@ -42,6 +43,7 @@ jobs:
             build
 
       - name: Boot iPhone 15 Pro Simulator & Capture Live Screenshots
+        if: ${{ github.event.inputs.deploy_to_testflight != 'true' }}
         run: |
           mkdir -p build/screenshots
           APP_PATH="build/DerivedData/Build/Products/Release-iphonesimulator/PraxisPlay.app"
@@ -134,6 +136,7 @@ jobs:
           xcrun simctl shutdown "$SIM_UDID" || true
 
       - name: Upload Live iPhone 15 Pro Screenshots
+        if: ${{ github.event.inputs.deploy_to_testflight != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: PraxisPlay-iPhone-Screenshots
@@ -141,13 +144,14 @@ jobs:
           retention-days: 30
 
       - name: Upload Compiled Simulator .app Artifact
+        if: ${{ github.event.inputs.deploy_to_testflight != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: PraxisPlay-iOS-Simulator-Build
           path: build/DerivedData/Build/Products/Release-iphonesimulator/PraxisPlay.app
           retention-days: 14
 
-      - name: Archive & Upload Signed IPA to TestFlight (Optional)
+      - name: Archive & Upload Signed IPA to TestFlight
         if: ${{ github.event.inputs.deploy_to_testflight == 'true' }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
@@ -158,6 +162,7 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
         run: |
+          set -euo pipefail
           echo "🔐 Configuring signing certificate and provisioning profile for Team S36NQ79D63..."
           CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
           PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
@@ -170,23 +175,39 @@ jobs:
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
+          # Import Apple WWDR G3 intermediate certificate + distribution PKCS#12
+          curl -sSL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o "$RUNNER_TEMP/AppleWWDRCAG3.cer"
+          security import "$RUNNER_TEMP/AppleWWDRCAG3.cer" -k "$KEYCHAIN_PATH" -T /usr/bin/codesign || true
           security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" login.keychain-db
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          # Extract UUID and Name from provisioning profile and install to Xcode's Provisioning Profiles folder
+          security cms -D -i "$PP_PATH" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$RUNNER_TEMP/profile.plist")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$RUNNER_TEMP/profile.plist")
+          echo "📄 Installed Provisioning Profile: $PROFILE_NAME ($PROFILE_UUID)"
 
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PROFILE_UUID.mobileprovision"
 
           mkdir -p ~/.appstoreconnect/private_keys
           echo -n "$ASC_PRIVATE_KEY_BASE64" | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
 
+          echo "📦 Archiving PraxisPlay (Build #$GITHUB_RUN_NUMBER)..."
           xcodebuild archive \
             -project PraxisPlay.xcodeproj \
             -scheme PraxisPlay \
             -sdk iphoneos \
             -configuration Release \
             -archivePath build/PraxisPlay.xcarchive \
-            DEVELOPMENT_TEAM=S36NQ79D63
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=S36NQ79D63 \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            PROVISIONING_PROFILE="$PROFILE_UUID"
 
           cat <<EOF > build/ExportOptions.plist
           <?xml version="1.0" encoding="UTF-8"?>
@@ -195,21 +216,40 @@ jobs:
           <dict>
               <key>method</key>
               <string>app-store-connect</string>
+              <key>signingStyle</key>
+              <string>manual</string>
               <key>teamID</key>
               <string>S36NQ79D63</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.mktpraxis.praxisplay</key>
+                  <string>$PROFILE_NAME</string>
+              </dict>
               <key>uploadSymbols</key>
               <true/>
           </dict>
           </plist>
           EOF
 
+          echo "📤 Exporting signed IPA..."
           xcodebuild -exportArchive \
             -archivePath build/PraxisPlay.xcarchive \
             -exportOptionsPlist build/ExportOptions.plist \
             -exportPath build/ipa
 
+          echo "🚀 Uploading PraxisPlay.ipa to Apple TestFlight..."
           xcrun altool --upload-app \
             --type ios \
             --file build/ipa/PraxisPlay.ipa \
             --apiKey "$ASC_KEY_ID" \
             --apiIssuer "$ASC_ISSUER_ID"
+
+      - name: Upload Signed IPA Artifact
+        if: ${{ github.event.inputs.deploy_to_testflight == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: PraxisPlay-Signed-IPA
+          path: build/ipa/*.ipa
+          retention-days: 30
