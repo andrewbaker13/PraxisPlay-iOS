@@ -100,24 +100,45 @@ class MockWebSocket {
                 
                 // 🚧 DEV MODE: For push_range, send periodic boundary updates
                 if (snapshot.game_type === 'push_range' && snapshot.team_assignments) {
-                    // Simulate boundary updates every 2 seconds
-                    let leftBoundary = 0;
-                    let rightBoundary = 100;
+                    // Cooperative state shared with Solo Mode MockWebSocket.send so player taps persist
+                    this.__pushState = {
+                        leftBoundary: typeof snapshot.left_boundary === 'number' ? snapshot.left_boundary : 15,
+                        rightBoundary: typeof snapshot.right_boundary === 'number' ? snapshot.right_boundary : 85,
+                        myPresses: 0,
+                        peerPresses: {
+                            '100': 4, '101': 3, '102': 5, '103': 2,
+                            '104': 6, '105': 4, '106': 5, '107': 3, '108': 4
+                        }
+                    };
+                    if (this.__pushUpdateInterval) clearInterval(this.__pushUpdateInterval);
                     const updateInterval = setInterval(() => {
-                        leftBoundary = Math.min(leftBoundary + Math.random() * 3, 45);
-                        rightBoundary = Math.max(rightBoundary - Math.random() * 3, 55);
-                        
-                        console.log(`🚧 MockWebSocket: Sending push_range_update (left: ${leftBoundary.toFixed(1)}%, right: ${rightBoundary.toFixed(1)}%)`);
+                        if (window.isRoundEnded) {
+                            clearInterval(updateInterval);
+                            return;
+                        }
+                        const st = this.__pushState;
+                        // Simulate active bots on both teams while preserving player's real presses
+                        st.leftBoundary = Math.min(st.rightBoundary - 4, st.leftBoundary + (Math.random() * 1.4));
+                        st.rightBoundary = Math.max(st.leftBoundary + 4, st.rightBoundary - (Math.random() * 1.8));
+                        Object.keys(st.peerPresses).forEach(pid => {
+                            if (Math.random() > 0.35) st.peerPresses[pid] += Math.floor(Math.random() * 3) + 1;
+                        });
+                        const playerPresses = Object.assign({}, st.peerPresses, { '999': st.myPresses });
+                        const leftTotal = (playerPresses['999'] || 0) + (playerPresses['100'] || 0) + (playerPresses['101'] || 0) + (playerPresses['102'] || 0) + (playerPresses['103'] || 0);
+                        const rightTotal = (playerPresses['104'] || 0) + (playerPresses['105'] || 0) + (playerPresses['106'] || 0) + (playerPresses['107'] || 0) + (playerPresses['108'] || 0);
+
                         this.simulateMessage({
                             type: 'push_range_update',
-                            left_boundary: parseFloat(leftBoundary.toFixed(2)),
-                            right_boundary: parseFloat(rightBoundary.toFixed(2)),
+                            left_boundary: parseFloat(st.leftBoundary.toFixed(2)),
+                            right_boundary: parseFloat(st.rightBoundary.toFixed(2)),
+                            player_presses: playerPresses,
                             team_stats: {
-                                left: { total_presses: Math.floor(leftBoundary * 10), players: 5 },
-                                right: { total_presses: Math.floor((100 - rightBoundary) * 10), players: 5 }
+                                left: { total_presses: leftTotal, players: 5 },
+                                right: { total_presses: rightTotal, players: 5 }
                             }
                         });
-                    }, 2000);
+                    }, 1500);
+                    this.__pushUpdateInterval = updateInterval;
                     
                     // Stop updates after 30 seconds (or time limit)
                     setTimeout(() => clearInterval(updateInterval), (snapshot.game_time_limit || 30) * 1000);
@@ -1811,7 +1832,7 @@ async function handleUnifiedGameResults(message) {
                     results.forEach(result => {
                         const rangeWidth = ((result.guess_max - result.guess_min) / (numberlineMax - numberlineMin)) * 100;
                         const rangeLeft = ((result.guess_min - numberlineMin) / (numberlineMax - numberlineMin)) * 100;
-                        const isMyGuess = (myPlayerId && (result.player_id === myPlayerId || result.player_session_id === myPlayerId)) ||
+                        const isMyGuess = (myPlayerId && (result.player_id == myPlayerId || result.player_session_id == myPlayerId)) ||
                                           (myPlayerName && result.player_name === myPlayerName);
                         if (isMyGuess) playerResultObj = result;
 
@@ -1912,7 +1933,8 @@ async function handleUnifiedGameResults(message) {
                 console.log('[PUSH RANGE DEBUG] showPushRangeResults function exists?', typeof showPushRangeResults === 'function');
                 if (typeof showPushRangeResults === 'function' && gs.chart_data) {
                     console.log('[PUSH RANGE DEBUG] Calling showPushRangeResults...');
-                    gameSpecificHTML += `<div style="padding-top: 120px;">${showPushRangeResults(gs.chart_data)}</div>`;
+                    const topPad = window.__PRAXIS_IOS_NATIVE ? '12px' : '120px';
+                    gameSpecificHTML += `<div style="padding-top: ${topPad};">${showPushRangeResults(gs.chart_data)}</div>`;
                 } else if (gs.chart_data) {
                     console.log('[PUSH RANGE] Chart data available but showPushRangeResults function not loaded');
                 }
@@ -3048,7 +3070,7 @@ function showSpeedTapDotPlot(chartData) {
     let percentileHTML = '';
     if (!isProjector && typeof playerSession !== 'undefined' && chartData.all_responses.length > 0) {
         const myResp = chartData.all_responses.find(r => 
-            (playerSession.id && (r.player_id === playerSession.id || r.player_session_id === playerSession.id)) ||
+            (playerSession.id && (r.player_id == playerSession.id || r.player_session_id == playerSession.id)) ||
             (playerSession.name && r.player_name === playerSession.name)
         );
         if (myResp && myResp.is_correct && myResp.response_time_ms) {
@@ -3158,7 +3180,7 @@ function drawSpeedTapDotPlot(canvasId, chartData) {
         // Draw incorrect (red) dots first
         bin.incorrect.forEach((resp, stackIndex) => {
             const dotY = axisY - (stackIndex + 1) * stackStep;
-            const isMyDot = (myPlayerId && (resp.player_id === myPlayerId || resp.player_session_id === myPlayerId)) ||
+            const isMyDot = (myPlayerId && (resp.player_id == myPlayerId || resp.player_session_id == myPlayerId)) ||
                             (myPlayerName && resp.player_name === myPlayerName);
             if (isMyDot && !isProjector) {
                 myDotCoords = { x: binCenterX, y: dotY, timeMs: resp.response_time_ms };
@@ -3179,7 +3201,7 @@ function drawSpeedTapDotPlot(canvasId, chartData) {
         const incorrectHeight = bin.incorrect.length;
         bin.correct.forEach((resp, stackIndex) => {
             const dotY = axisY - (incorrectHeight + stackIndex + 1) * stackStep;
-            const isMyDot = (myPlayerId && (resp.player_id === myPlayerId || resp.player_session_id === myPlayerId)) ||
+            const isMyDot = (myPlayerId && (resp.player_id == myPlayerId || resp.player_session_id == myPlayerId)) ||
                             (myPlayerName && resp.player_name === myPlayerName);
             if (isMyDot && !isProjector) {
                 myDotCoords = { x: binCenterX, y: dotY, timeMs: resp.response_time_ms };

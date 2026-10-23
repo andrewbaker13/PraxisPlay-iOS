@@ -1377,6 +1377,28 @@
 
         installDarkResultsRenderers();
 
+        // Ensure lazy-loaded scripts (line-fit.js, game-push-range.js) never overwrite our dark-slate iOS results renderers
+        if (typeof window.loadGameScript === 'function' && !window.loadGameScript.__iosWrapped) {
+            const origLoadScript = window.loadGameScript;
+            const wrappedLoad = function (gType) {
+                return origLoadScript.apply(this, arguments).then(function (res) {
+                    installDarkResultsRenderers();
+                    return res;
+                });
+            };
+            wrappedLoad.__iosWrapped = true;
+            window.loadGameScript = wrappedLoad;
+        }
+        if (typeof window.handleUnifiedGameResults === 'function' && !window.handleUnifiedGameResults.__iosWrapped) {
+            const origUnified = window.handleUnifiedGameResults;
+            const wrappedUnified = function (message) {
+                installDarkResultsRenderers();
+                return origUnified.apply(this, arguments);
+            };
+            wrappedUnified.__iosWrapped = true;
+            window.handleUnifiedGameResults = wrappedUnified;
+        }
+
         const enhanceCurrentGameDOM = function () {
             installDarkResultsRenderers();
             enhanceLineFitTouchAndTheme();
@@ -2003,8 +2025,69 @@
             });
         }
 
-        // D. Solo Practice Mode: Inject Interactive "🔄 Play Another Round" Button on Any Debrief Screen
+        // D. Solo Practice Mode: Next Game / Replay Controls, Push Range Lock-In Button, & Timer-Expiry Auto-Grading
         if (window.DEV_MODE) {
+            const soloRotation = [
+                { game: 'line_fit', snap: 'line_fit_active', label: '📈 Line Fit' },
+                { game: 'budget_blitz', snap: 'budget_blitz_active', label: '💰 Budget Blitz' },
+                { game: 'closest_guess', snap: 'closest_guess_active', label: '🎯 Closest Guess' },
+                { game: 'buy_a_clue', snap: 'buy_a_clue_active', label: '🕵️ Buy a Clue' },
+                { game: 'minority_rule', snap: 'minority_rule_active', label: '🌊 Minority Rule' },
+                { game: 'crowd_wisdom', snap: 'crowd_wisdom_active', label: '🧠 Crowd Wisdom' },
+                { game: 'speed_tap', snap: 'speed_tap_active', label: '⚡ Speed Tap' },
+                { game: 'push_range', snap: 'push_range_active', label: '⚔️ Push Range' },
+                { game: 'word_guess', snap: 'word_guess_active', label: '🔤 Word Guess' }
+            ];
+            const currentGameType = (typeof gameType !== 'undefined' && gameType)
+                || new URLSearchParams(window.location.search).get('game')
+                || 'speed_tap';
+            const curIdx = Math.max(0, soloRotation.findIndex(function (g) { return g.game === currentGameType; }));
+            const nextSolo = soloRotation[(curIdx + 1) % soloRotation.length];
+
+            const navigateToSoloGame = function (targetObj) {
+                postToNative({ type: 'haptic', pattern: [20, 40, 20] });
+                window.__PRAXIS_IOS_SOLO_RESULTS = false;
+                const url = new URL(window.location.href);
+                url.searchParams.set('solo', '1');
+                url.searchParams.set('game', targetObj.game);
+                url.searchParams.set('snapshot', targetObj.snap);
+                url.searchParams.delete('results');
+                window.location.href = url.toString();
+            };
+
+            // D1. Push Range Solo Mode: Add "⚡ Lock Range & View Results" button below #pushButton
+            const pushBtn = document.getElementById('pushButton');
+            if (pushBtn && !document.getElementById('iosSoloPushFinishBtn')) {
+                const finishBtn = document.createElement('button');
+                finishBtn.type = 'button';
+                finishBtn.id = 'iosSoloPushFinishBtn';
+                finishBtn.innerHTML = '⚡ Lock In Team Range & View Results';
+                finishBtn.style.cssText = 'display: block; width: 100%; max-width: 340px; margin: 10px auto 0 auto; padding: 11px 16px; border-radius: 12px; border: 1.5px solid rgba(56, 189, 248, 0.45); background: rgba(15, 23, 42, 0.88); color: #38BDF8; font-size: 0.9rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25);';
+                finishBtn.addEventListener('click', function () {
+                    postToNative({ type: 'haptic', pattern: [25, 40] });
+                    finishBtn.disabled = true;
+                    finishBtn.textContent = 'Scoring Team Bracket...';
+                    if (typeof websocket !== 'undefined' && websocket) {
+                        websocket.send(JSON.stringify({ action: 'push_range_finish' }));
+                    }
+                });
+                pushBtn.insertAdjacentElement('afterend', finishBtn);
+            }
+
+            // D2. Auto-resolve if round timer hits 0 and shows .suspense-shimmer-card in Solo Mode
+            const shimmer = gameArea.querySelector('.suspense-shimmer-card');
+            if (shimmer && !shimmer.__iosSoloTimeoutHandled && !window.__iosSoloResultPending) {
+                shimmer.__iosSoloTimeoutHandled = true;
+                setTimeout(function () {
+                    if (window.isRoundEnded || typeof websocket === 'undefined' || !websocket) return;
+                    websocket.send(JSON.stringify({
+                        action: 'solo_timer_expired',
+                        data: { game_type: currentGameType }
+                    }));
+                }, 900);
+            }
+
+            // D3. Inject "🔄 Play Again" + "▶️ Next Game" action bar on any debrief screen
             const debriefRoot = document.getElementById('roundCompleteBanner')
                 || gameArea.querySelector('.bb-results')
                 || gameArea.querySelector('.bac-results')
@@ -2017,16 +2100,44 @@
                         d.style.display = 'none';
                     }
                 });
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'ios-solo-replay-btn';
-                btn.innerHTML = '🔄 Play Another Practice Round';
-                btn.addEventListener('click', function () {
+
+                const btnRow = document.createElement('div');
+                btnRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;';
+
+                const btnReplay = document.createElement('button');
+                btnReplay.type = 'button';
+                btnReplay.className = 'ios-solo-replay-btn';
+                btnReplay.style.marginTop = '0';
+                btnReplay.innerHTML = '🔄 Play Again';
+                btnReplay.addEventListener('click', function () {
                     postToNative({ type: 'haptic', pattern: [20, 40, 20] });
                     window.__PRAXIS_IOS_SOLO_RESULTS = false;
                     window.location.reload();
                 });
-                debriefRoot.appendChild(btn);
+
+                const btnNext = document.createElement('button');
+                btnNext.type = 'button';
+                btnNext.className = 'ios-solo-replay-btn';
+                btnNext.style.cssText = 'margin-top: 0; background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35) !important;';
+                btnNext.innerHTML = '▶️ Next: ' + nextSolo.label;
+                btnNext.addEventListener('click', function () {
+                    navigateToSoloGame(nextSolo);
+                });
+
+                btnRow.appendChild(btnReplay);
+                btnRow.appendChild(btnNext);
+                debriefRoot.appendChild(btnRow);
+
+                // Also make "📋 Next Round Preview" card clickable in Solo Mode if present
+                gameArea.querySelectorAll('div').forEach(function (card) {
+                    if (!card.__iosNextCardBound && (card.textContent || '').includes('Next Round Preview') && (card.getAttribute('style') || '').includes('border: 2px solid #cbd5e1')) {
+                        card.__iosNextCardBound = true;
+                        card.style.cursor = 'pointer';
+                        card.addEventListener('click', function () {
+                            navigateToSoloGame(nextSolo);
+                        });
+                    }
+                });
             }
         }
     }
@@ -2196,22 +2307,26 @@
             if (lineFitState.point2) drawHandle(lineFitState.point2);
         };
 
-        // Ensure scatter data is loaded immediately if config already has points,
-        // and seed an initial draggable 2-handle line so touch affordance is immediate
-        setTimeout(function () {
-            if (typeof lineFitState !== 'undefined' && !lineFitState.scatterData && lineFitState.config && lineFitState.config.points) {
-                handleLineFitData({
+        // Helper to seed or preserve the 2 draggable cyan handles whenever scatter data arrives
+        function seedInitialHandlesIfNeeded(forceReset) {
+            if (typeof lineFitState === 'undefined' || !lineFitState.config) return;
+            if (!lineFitState.scatterData && lineFitState.config.points) {
+                lineFitState.scatterData = {
                     type: 'line_fit_data',
-                    points: JSON.parse(JSON.stringify(lineFitState.config.points)),
+                    points: lineFitState.config.points.map(function (p) {
+                        return Array.isArray(p) ? { x: p[0], y: p[1] } : { x: p.x, y: p.y };
+                    }),
                     x_bounds: [lineFitState.config.x_min, lineFitState.config.x_max],
                     y_bounds: [lineFitState.config.y_min, lineFitState.config.y_max],
                     axis_labels: { x: lineFitState.config.x_label, y: lineFitState.config.y_label }
-                });
+                };
             }
-            if (typeof lineFitState !== 'undefined' && lineFitState.config && lineFitState.scatterData && !lineFitState.point1) {
-                const cfg = lineFitState.config;
-                const xSpan = cfg.x_max - cfg.x_min;
-                const ySpan = cfg.y_max - cfg.y_min;
+            if (!lineFitState.scatterData || lineFitState.mode === 'confirmed') return;
+
+            const cfg = lineFitState.config;
+            const xSpan = cfg.x_max - cfg.x_min;
+            const ySpan = cfg.y_max - cfg.y_min;
+            if (forceReset || !lineFitState.point1 || !lineFitState.point2) {
                 lineFitState.point1 = {
                     x: Number((cfg.x_min + xSpan * 0.18).toFixed(2)),
                     y: Number((cfg.y_min + ySpan * 0.30).toFixed(2))
@@ -2220,22 +2335,57 @@
                     x: Number((cfg.x_min + xSpan * 0.84).toFixed(2)),
                     y: Number((cfg.y_min + ySpan * 0.78).toFixed(2))
                 };
-                lineFitState.mode = 'proposed';
-                if (typeof calculateLineFromPoints === 'function') calculateLineFromPoints();
-                const confirmBtn = document.getElementById('confirmBtn');
-                const redrawBtn = document.getElementById('redrawBtn');
-                if (confirmBtn) confirmBtn.disabled = false;
-                if (redrawBtn) redrawBtn.disabled = false;
-                window.drawScatterPlot();
             }
+            lineFitState.mode = 'proposed';
+            if (typeof calculateLineFromPoints === 'function') calculateLineFromPoints();
+            const controls = document.getElementById('lineFitControls');
+            if (controls && !window.isProjectorMode) controls.style.display = 'flex';
+            const confirmBtn = document.getElementById('confirmBtn');
+            const redrawBtn = document.getElementById('redrawBtn');
+            if (confirmBtn) confirmBtn.disabled = false;
+            if (redrawBtn) redrawBtn.disabled = false;
             const inst = document.getElementById('canvasInstructions');
-            if (inst && typeof lineFitState !== 'undefined') {
+            if (inst) {
                 inst.innerHTML = '👆 Drag either cyan handle to fit the line, then Confirm';
                 inst.style.color = '#38BDF8';
             }
+            window.drawScatterPlot();
+        }
+
+        // Hook processScatterData so the 500ms scatter_data_message does not wipe mode back to 'placing_first'
+        if (typeof window.processScatterData === 'function' && !window.processScatterData.__iosWrapped) {
+            const origProcessScatter = window.processScatterData;
+            const wrappedProcessScatter = function () {
+                const hadHandles = (typeof lineFitState !== 'undefined' && lineFitState.point1 && lineFitState.point2);
+                const savedP1 = hadHandles ? { x: lineFitState.point1.x, y: lineFitState.point1.y } : null;
+                const savedP2 = hadHandles ? { x: lineFitState.point2.x, y: lineFitState.point2.y } : null;
+                origProcessScatter.apply(this, arguments);
+                if (savedP1 && savedP2 && lineFitState.mode !== 'confirmed') {
+                    lineFitState.point1 = savedP1;
+                    lineFitState.point2 = savedP2;
+                }
+                seedInitialHandlesIfNeeded(false);
+            };
+            wrappedProcessScatter.__iosWrapped = true;
+            window.processScatterData = wrappedProcessScatter;
+        }
+
+        // Hook redrawLineFit so tapping Redraw resets the 2 draggable handles cleanly
+        if (typeof window.redrawLineFit === 'function' && !window.redrawLineFit.__iosWrapped) {
+            const origRedraw = window.redrawLineFit;
+            const wrappedRedraw = function () {
+                origRedraw.apply(this, arguments);
+                seedInitialHandlesIfNeeded(true);
+            };
+            wrappedRedraw.__iosWrapped = true;
+            window.redrawLineFit = wrappedRedraw;
+        }
+
+        setTimeout(function () {
+            seedInitialHandlesIfNeeded(false);
         }, 120);
 
-        // Live 60fps Touch-Drag Handler
+        // Live 60fps Touch & Pointer Drag Handler
         let lastDragHaptic = 0;
         let isDragging = false;
 
@@ -2248,7 +2398,7 @@
             };
         }
 
-        canvas.addEventListener('touchstart', function (e) {
+        function onDragStart(e) {
             if (typeof lineFitState === 'undefined' || lineFitState.mode === 'confirmed') return;
             e.preventDefault();
             e.stopPropagation();
@@ -2260,18 +2410,23 @@
             isDragging = true;
             postToNative({ type: 'haptic', pattern: [18] });
 
-            if (lineFitState.mode === 'proposed' && lineFitState.point1 && lineFitState.point2) {
-                // Grab whichever endpoint is closer to the touch
+            if (lineFitState.point1 && lineFitState.point2) {
+                lineFitState.mode = 'proposed';
+                // Grab whichever endpoint is closer to the touch/pointer
                 const c1 = dataToCanvas(lineFitState.point1.x, lineFitState.point1.y);
                 const c2 = dataToCanvas(lineFitState.point2.x, lineFitState.point2.y);
                 const d1 = Math.hypot(raw.x - c1.x, raw.y - c1.y);
                 const d2 = Math.hypot(raw.x - c2.x, raw.y - c2.y);
                 if (d1 < d2) {
-                    // Swap so point1 is the fixed anchor and point2 tracks the finger
+                    // Swap so point1 is the fixed anchor and point2 tracks the finger/cursor
                     lineFitState.point1 = lineFitState.point2;
                 }
                 lineFitState.point2 = dataPt;
                 calculateLineFromPoints();
+                const confirmBtn = document.getElementById('confirmBtn');
+                const redrawBtn = document.getElementById('redrawBtn');
+                if (confirmBtn) confirmBtn.disabled = false;
+                if (redrawBtn) redrawBtn.disabled = false;
                 window.drawScatterPlot();
             } else if (lineFitState.mode === 'placing_second' && lineFitState.point1) {
                 if (validateMinimumDistance(lineFitState.point1, dataPt)) {
@@ -2296,9 +2451,9 @@
                 lineFitState.mode = 'placing_second';
                 window.drawScatterPlot();
             }
-        }, { capture: true, passive: false });
+        }
 
-        canvas.addEventListener('touchmove', function (e) {
+        function onDragMove(e) {
             if (!isDragging || typeof lineFitState === 'undefined' || lineFitState.mode === 'confirmed' || !lineFitState.point1) return;
             e.preventDefault();
             e.stopPropagation();
@@ -2331,10 +2486,10 @@
                     postToNative({ type: 'haptic', pattern: [10] });
                 }
             }
-        }, { capture: true, passive: false });
+        }
 
-        canvas.addEventListener('touchend', function (e) {
-            if (typeof lineFitState === 'undefined' || lineFitState.mode === 'confirmed') return;
+        function onDragEnd(e) {
+            if (!isDragging || typeof lineFitState === 'undefined' || lineFitState.mode === 'confirmed') return;
             e.preventDefault();
             e.stopPropagation();
             isDragging = false;
@@ -2349,7 +2504,18 @@
                     inst.style.color = '#38BDF8';
                 }
             }
-        }, { capture: true, passive: false });
+        }
+
+        canvas.addEventListener('touchstart', onDragStart, { capture: true, passive: false });
+        canvas.addEventListener('touchmove', onDragMove, { capture: true, passive: false });
+        canvas.addEventListener('touchend', onDragEnd, { capture: true, passive: false });
+        canvas.addEventListener('mousedown', onDragStart, { capture: true });
+        canvas.addEventListener('mousemove', onDragMove, { capture: true });
+        window.addEventListener('mouseup', onDragEnd, { capture: true });
+        canvas.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { capture: true });
     }
 
     // 4B. Closest Guess: Tactile Dual Thumb Sliders + Stepper Pills (-5 / -1 / +1 / +5)
@@ -2538,6 +2704,26 @@
                 handleKeyTap(btn.getAttribute('data-key'));
             });
         });
+
+        // Support physical iPad Magic Keyboard / desktop keyboard typing while readonly is active
+        if (!window.__iosWgKeydownBound) {
+            window.__iosWgKeydownBound = true;
+            window.addEventListener('keydown', function (e) {
+                const activeInput = document.getElementById('wordGuessInput');
+                if (!activeInput || typeof wordGuessState === 'undefined' || wordGuessState.hasAnswered) return;
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+                if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    handleKeyTap('⌫');
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleKeyTap('GO');
+                } else if (/^[a-zA-Z]$/.test(e.key)) {
+                    e.preventDefault();
+                    handleKeyTap(e.key.toUpperCase());
+                }
+            });
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -2613,21 +2799,70 @@
                 return originalSend.call(this, rawData);
             }
 
+            // Route generic Solo timer expiration to the active game's grading pipeline
+            if (action === 'solo_timer_expired' || action === 'minority_rule_timeout') {
+                const gType = data.game_type || (typeof gameType !== 'undefined' && gameType) || '';
+                if (gType === 'line_fit' || String(window.DEV_STATE || '').indexOf('line_fit') === 0) {
+                    const prop = (typeof lineFitState !== 'undefined' && lineFitState.proposedLine) || { slope: 4.5, intercept: 55 };
+                    return this.send(JSON.stringify({ action: 'line_fit_confirm', data: { slope: prop.slope, intercept: prop.intercept } }));
+                } else if (gType === 'closest_guess' || String(window.DEV_STATE || '').indexOf('closest_guess') === 0) {
+                    const minEl = document.getElementById('guessMin');
+                    const maxEl = document.getElementById('guessMax');
+                    return this.send(JSON.stringify({
+                        action: 'submit_guess',
+                        data: {
+                            guess_min: minEl ? parseFloat(minEl.value) : 35,
+                            guess_max: maxEl ? parseFloat(maxEl.value) : 50
+                        }
+                    }));
+                } else if (gType === 'push_range' || String(window.DEV_STATE || '').indexOf('push_range') === 0) {
+                    return this.send(JSON.stringify({ action: 'push_range_finish' }));
+                } else if (gType === 'budget_blitz' || String(window.DEV_STATE || '').indexOf('budget_blitz') === 0) {
+                    const alloc = (typeof budgetBlitzState !== 'undefined' && budgetBlitzState.allocation) || {};
+                    return this.send(JSON.stringify({ action: 'budget_blitz_submit', data: { allocation_by_channel_id: alloc } }));
+                } else if (gType === 'buy_a_clue' || String(window.DEV_STATE || '').indexOf('buy_a_clue') === 0) {
+                    const optId = (typeof buyAClueState !== 'undefined' && buyAClueState.selectedOptionId) || 'A';
+                    return this.send(JSON.stringify({ action: 'buy_a_clue_submit', data: { option_id: optId } }));
+                } else if (gType === 'minority_rule' || action === 'minority_rule_timeout' || String(window.DEV_STATE || '').indexOf('minority_rule') === 0) {
+                    const optIdx = (typeof minorityRuleState !== 'undefined' && minorityRuleState.selectedOptionIndex != null) ? minorityRuleState.selectedOptionIndex : 0;
+                    return this.send(JSON.stringify({ action: 'minority_rule_submit', data: { option_index: optIdx } }));
+                } else if (gType === 'crowd_wisdom' || String(window.DEV_STATE || '').indexOf('crowd_wisdom') === 0) {
+                    return this.send(JSON.stringify({ action: 'crowd_wisdom_answer', data: { option_index: -1 } }));
+                } else if (gType === 'word_guess' || String(window.DEV_STATE || '').indexOf('word_guess') === 0) {
+                    return this.send(JSON.stringify({ action: 'word_guess_timeout', data: { answer: 'MARKETING MIX' } }));
+                } else {
+                    return this.send(JSON.stringify({ action: 'speed_tap', data: { answer: '' } }));
+                }
+            }
+
+            // 1. Speed Tap submission in Solo Mode
             if (action === 'speed_tap') {
-                const chosenAns = data.answer || 'Retention Rate';
+                window.__iosSoloResultPending = true;
+                const chosenAns = data.answer != null ? String(data.answer) : 'Retention Rate';
                 const isCorrect = (chosenAns === 'Retention Rate');
+                const elapsedMs = (typeof speedTapStartTime === 'number' && speedTapStartTime > 0)
+                    ? Math.max(600, Math.min(11500, Date.now() - speedTapStartTime))
+                    : 2600;
+                const pts = isCorrect ? Math.max(65, Math.round(115 - (elapsedMs / 1000) * 4)) : 0;
                 setTimeout(async function () {
                     try {
                         const file = isCorrect ? 'speed_tap_results_correct.json' : 'speed_tap_results_incorrect.json';
                         const res = await fetch('dev_data/snapshots/' + file);
                         const json = await res.json();
-                        json.player_answer = chosenAns;
+                        json.player_answer = chosenAns || 'No Answer';
                         json.is_correct = isCorrect;
+                        json.points = pts;
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = {
+                            player_round_score: pts,
+                            player_total_score: 380 + pts
+                        };
                         json.game_specific = json.game_specific || {};
                         const synthResponses = [
                             { player_id: 1, player_name: 'Alice', response_time_ms: 1900, time: 1.9, is_correct: true },
                             { player_id: 2, player_name: 'Bob', response_time_ms: 2300, time: 2.3, is_correct: true },
-                            { player_id: 999, player_name: 'You', response_time_ms: 2600, time: 2.6, is_correct: isCorrect },
+                            { player_id: 999, player_name: 'You', response_time_ms: elapsedMs, time: Number((elapsedMs / 1000).toFixed(1)), is_correct: isCorrect },
                             { player_id: 3, player_name: 'Charlie', response_time_ms: 3400, time: 3.4, is_correct: true },
                             { player_id: 4, player_name: 'Diana', response_time_ms: 4100, time: 4.1, is_correct: true },
                             { player_id: 6, player_name: 'Ethan', response_time_ms: 5200, time: 5.2, is_correct: false },
@@ -2640,10 +2875,11 @@
                             all_responses: synthResponses,
                             non_responders: []
                         };
+                        window.__iosSoloResultPending = false;
                         self.simulateMessage(json);
-                        postToNative({ type: 'soloCompleted', gameType: 'speed_tap', points: isCorrect ? 135 : 0 });
+                        postToNative({ type: 'soloCompleted', gameType: 'speed_tap', points: pts });
                     } catch (e) { console.error(e); }
-                }, 1400);
+                }, 1100);
                 return;
             }
 
@@ -2651,13 +2887,25 @@
                 return;
             }
 
-            // Closest Guess submission in Solo Mode
+            // 2. Closest Guess submission in Solo Mode (Dynamic Range & Width Scoring)
             if (action === 'submit_guess' || action === 'submit_range' || action === 'closest_guess' || action === 'timer_expired') {
+                window.__iosSoloResultPending = true;
+                let gMin = parseFloat(data.guess_min);
+                let gMax = parseFloat(data.guess_max);
+                if (isNaN(gMin) || isNaN(gMax)) {
+                    const minEl = document.getElementById('guessMin');
+                    const maxEl = document.getElementById('guessMax');
+                    gMin = minEl && !isNaN(parseFloat(minEl.value)) ? parseFloat(minEl.value) : 65;
+                    gMax = maxEl && !isNaN(parseFloat(maxEl.value)) ? parseFloat(maxEl.value) : 75;
+                }
+                if (gMin > gMax) {
+                    const tmp = gMin; gMin = gMax; gMax = tmp;
+                }
                 if (action !== 'timer_expired') {
                     this.simulateMessage({
                         type: 'guess_submitted',
-                        guess_min: data.guess_min,
-                        guess_max: data.guess_max,
+                        guess_min: gMin,
+                        guess_max: gMax,
                         submission_order: 1
                     });
                 }
@@ -2665,81 +2913,314 @@
                     try {
                         const res = await fetch('dev_data/snapshots/closest_guess_results_correct.json');
                         const json = await res.json();
+                        const truth = Number(json.correct_answer || 71);
+                        const captured = (gMin <= truth && gMax >= truth);
+                        const width = Math.max(1, Number((gMax - gMin).toFixed(1)));
+                        const pts = captured ? Math.max(25, Math.min(100, Math.round(100 - width * 0.85))) : 0;
+                        const rangeStr = `${gMin}-${gMax}`;
+
+                        json.player_answer = rangeStr;
+                        json.points = pts;
+                        json.is_correct = captured;
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = {
+                            player_id: 999,
+                            player_name: 'You',
+                            player_round_score: pts,
+                            player_total_score: 380 + pts,
+                            answered: true,
+                            range: rangeStr,
+                            range_width: width,
+                            captured_answer: captured
+                        };
+                        if (Array.isArray(json.leaderboard)) {
+                            const me = json.leaderboard.find(function (p) { return p.player_id == 999; });
+                            if (me) {
+                                me.player_name = 'You';
+                                me.score = 380 + pts;
+                            }
+                        }
+                        window.__iosSoloResultPending = false;
                         self.simulateMessage(json);
-                        postToNative({ type: 'soloCompleted', gameType: 'closest_guess', points: 125 });
+                        postToNative({ type: 'soloCompleted', gameType: 'closest_guess', points: pts });
                     } catch (e) { console.error(e); }
-                }, 1600);
+                }, 1200);
                 return;
             }
 
-            // Crowd Wisdom submission in Solo Mode
+            // 3. Crowd Wisdom submission in Solo Mode (Dynamic Option Grading)
             if (action === 'crowd_wisdom' || action === 'crowd_wisdom_answer' || action === 'submit_answer') {
-                this.simulateMessage({
-                    type: 'answer_submitted',
-                    option_index: data.option_index
-                });
+                window.__iosSoloResultPending = true;
+                const chosenOpt = (data.option_index !== undefined && data.option_index !== null) ? Number(data.option_index) : -1;
+                if (chosenOpt >= 0) {
+                    this.simulateMessage({
+                        type: 'answer_submitted',
+                        option_index: chosenOpt
+                    });
+                }
                 setTimeout(async function () {
                     try {
                         const res = await fetch('dev_data/snapshots/crowd_wisdom_results_correct.json');
                         const json = await res.json();
+                        const correctIdx = (json.game_specific && json.game_specific.correct_option_index != null)
+                            ? Number(json.game_specific.correct_option_index)
+                            : 1;
+                        const isCorrect = (chosenOpt === correctIdx);
+                        const pts = isCorrect ? 94 : 0;
+                        const dist = (json.game_specific && json.game_specific.final_distribution) || [];
+                        const chosenText = (dist.find(function (d) { return d.option_index === chosenOpt; }) || {}).text || 'No Answer';
+
+                        json.is_correct = isCorrect;
+                        json.points = pts;
+                        json.player_answer = chosenText;
+                        json.correct_answer = (dist.find(function (d) { return d.option_index === correctIdx; }) || {}).text || 'Merge Sort';
+                        json.game_specific = json.game_specific || {};
+                        json.game_specific.your_answer_index = chosenOpt;
+                        json.game_specific.points_breakdown = {
+                            base_points: isCorrect ? 100 : 0,
+                            speed_multiplier: isCorrect ? 0.94 : 0,
+                            tough_bonus: false,
+                            final_points: pts
+                        };
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = {
+                            player_id: 999,
+                            player_name: 'You',
+                            answered: chosenOpt >= 0,
+                            correct: isCorrect,
+                            points_earned: pts,
+                            total_score: 450 + pts,
+                            player_round_score: pts,
+                            player_total_score: 450 + pts,
+                            answer_time: 3.8,
+                            got_tough_bonus: false
+                        };
+                        if (typeof handleCrowdWisdomResults === 'function') {
+                            try { handleCrowdWisdomResults(json); } catch (_) {}
+                        }
+                        window.__iosSoloResultPending = false;
                         self.simulateMessage(json);
-                        postToNative({ type: 'soloCompleted', gameType: 'crowd_wisdom', points: 140 });
+                        postToNative({ type: 'soloCompleted', gameType: 'crowd_wisdom', points: pts });
                     } catch (e) { console.error(e); }
-                }, 1800);
+                }, 1300);
                 return;
             }
 
-            // Word Guess submission in Solo Mode
-            if (action === 'word_guess' || action === 'submit_word_guess') {
-                this.simulateMessage({
-                    type: 'word_guess_correct',
-                    points: 150,
-                    answer: data.guess || 'MARKETING MIX'
-                });
+            // 4. Word Guess submission in Solo Mode (Supports word_guess_submit + Live Validation)
+            if (action === 'word_guess_submit' || action === 'word_guess' || action === 'submit_word_guess' || action === 'word_guess_timeout') {
+                const rawGuess = String(data.answer || data.guess || '').trim();
+                const normalizedGuess = rawGuess.replace(/[^A-Z]/gi, '').toUpperCase();
+                const isTimeout = (action === 'word_guess_timeout');
+                const isCorrect = !isTimeout && (normalizedGuess === 'MARKETINGMIX');
+
+                if (!isCorrect && !isTimeout) {
+                    this.simulateMessage({
+                        type: 'word_guess_incorrect',
+                        message: '❌ "' + rawGuess.toUpperCase() + '" is not right — use ⌫ to edit and try again!'
+                    });
+                    // Re-enable custom iOS GO button so player can edit and resubmit
+                    setTimeout(function () {
+                        const goBtn = document.querySelector('.ios-wg-go');
+                        const inp = document.getElementById('wordGuessInput');
+                        if (goBtn && inp) {
+                            const maxLen = (typeof wordGuessState !== 'undefined' && wordGuessState.letterCount) || 12;
+                            const curLen = (inp.value || '').replace(/[^A-Z]/gi, '').length;
+                            if (curLen === maxLen) goBtn.classList.remove('disabled');
+                        }
+                    }, 60);
+                    return;
+                }
+
+                window.__iosSoloResultPending = true;
+                const cluesUsed = (typeof wordGuessState !== 'undefined' && wordGuessState.revealedCount) || 1;
+                const pts = isCorrect ? Math.max(55, 110 - (cluesUsed - 1) * 15) : 0;
+
+                if (isCorrect) {
+                    this.simulateMessage({
+                        type: 'word_guess_correct',
+                        points: pts,
+                        answer: 'MARKETING MIX'
+                    });
+                }
                 setTimeout(async function () {
                     try {
                         const res = await fetch('dev_data/snapshots/word_guess_results_correct.json');
                         const json = await res.json();
+                        json.points = pts;
+                        json.is_correct = isCorrect;
+                        json.player_answer = isCorrect ? 'MARKETING MIX' : (rawGuess || 'Time Expired');
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = {
+                            player_round_score: pts,
+                            player_total_score: 450 + pts
+                        };
+                        window.__iosSoloResultPending = false;
                         self.simulateMessage(json);
-                        postToNative({ type: 'soloCompleted', gameType: 'word_guess', points: 150 });
+                        postToNative({ type: 'soloCompleted', gameType: 'word_guess', points: pts });
                     } catch (e) { console.error(e); }
-                }, 1800);
+                }, isCorrect ? 1400 : 400);
                 return;
             }
 
-            // Line Fit submission in Solo Mode
+            // 5. Line Fit submission in Solo Mode (Real OLS SSE, RMSE, R², & Rank Calculation)
             if (action === 'submit_line' || action === 'line_fit_submit' || action === 'line_fit_confirm') {
+                window.__iosSoloResultPending = true;
+                const prop = (typeof lineFitState !== 'undefined' && lineFitState.proposedLine) || {};
+                const slope = Number((data.slope != null ? data.slope : (prop.slope != null ? prop.slope : 4.5)).toFixed(2));
+                const intercept = Number((data.intercept != null ? data.intercept : (prop.intercept != null ? prop.intercept : 55.0)).toFixed(2));
+
                 setTimeout(async function () {
                     try {
                         const res = await fetch('dev_data/snapshots/line_fit_results_correct.json');
                         const json = await res.json();
+                        const gs = json.game_specific = json.game_specific || {};
+                        const rawPts = (gs.scatter_data && gs.scatter_data.points) || [
+                            [1.2, 60], [2.5, 65], [3.8, 72], [4.1, 75], [5.5, 78],
+                            [6.2, 82], [7.0, 86], [7.8, 89], [8.5, 92], [9.2, 95]
+                        ];
+                        const ptsList = rawPts.map(function (p) { return Array.isArray(p) ? { x: p[0], y: p[1] } : p; });
+                        const meanY = ptsList.reduce(function (s, p) { return s + p.y; }, 0) / (ptsList.length || 1);
+                        let sse = 0;
+                        let ssTot = 0;
+                        ptsList.forEach(function (p) {
+                            const yHat = slope * p.x + intercept;
+                            sse += Math.pow(p.y - yHat, 2);
+                            ssTot += Math.pow(p.y - meanY, 2);
+                        });
+                        sse = Number(sse.toFixed(1));
+                        const rmse = Number(Math.sqrt(sse / (ptsList.length || 1)).toFixed(2));
+                        const rSq = Number(Math.max(0, Math.min(0.99, 1 - (sse / (ssTot || 1)))).toFixed(2));
+                        const eqStr = `y = ${slope}x ${intercept >= 0 ? '+' : '-'} ${Math.abs(intercept)}`;
+
+                        const peerSubs = [
+                            { slope: 4.7, intercept: 54.0, player_id: 1, player_name: 'Alice', sse: 15.2 },
+                            { slope: 4.4, intercept: 56.0, player_id: 3, player_name: 'Charlie', sse: 18.7 },
+                            { slope: 4.2, intercept: 57.0, player_id: 2, player_name: 'Bob', sse: 28.4 },
+                            { slope: slope, intercept: intercept, player_id: 999, player_name: 'You', sse: sse }
+                        ].sort(function (a, b) { return a.sse - b.sse; });
+                        peerSubs.forEach(function (s, i) { s.rank = i + 1; });
+
+                        const myEntry = peerSubs.find(function (s) { return s.player_id == 999; }) || { rank: 1, sse: sse };
+                        const pts = Math.max(20, Math.min(100, Math.round(100 * Math.exp(-Math.max(0, sse - 10.5) / 150))));
+
+                        gs.your_line = { slope: slope, intercept: intercept, equation: eqStr, sse: sse, rank: myEntry.rank };
+                        gs.all_submissions = peerSubs;
+                        gs.accuracy_metrics = { r_squared: rSq, rmse: rmse, accuracy_percent: Math.round(rSq * 100) };
+                        gs.average_sse = Number((peerSubs.reduce(function (acc, s) { return acc + s.sse; }, 0) / peerSubs.length).toFixed(1));
+
+                        json.points = pts;
+                        json.is_correct = (pts >= 50);
+                        json.player_answer = eqStr;
                         json.round_stats = json.round_stats || {};
                         json.round_stats.percent_scored = 92;
                         json.round_stats.player_stats = json.round_stats.player_stats || {};
-                        json.round_stats.player_stats['999'] = Object.assign(json.round_stats.player_stats['999'] || {}, {
-                            player_round_score: 88,
-                            player_total_score: 468
-                        });
+                        json.round_stats.player_stats['999'] = {
+                            player_id: 999,
+                            player_name: 'You',
+                            answered: true,
+                            correct: pts >= 50,
+                            points_earned: pts,
+                            total_score: 380 + pts,
+                            player_round_score: pts,
+                            player_total_score: 380 + pts,
+                            your_line: { slope: slope, intercept: intercept }
+                        };
+                        window.__iosSoloResultPending = false;
                         self.simulateMessage(json);
-                        postToNative({ type: 'soloCompleted', gameType: 'line_fit', points: 145 });
+                        postToNative({ type: 'soloCompleted', gameType: 'line_fit', points: pts });
                     } catch (e) { console.error(e); }
-                }, 1400);
+                }, 1100);
                 return;
             }
 
-            // Push Range button presses in Solo Mode
+            // 6. Push Range button presses & finish in Solo Mode
             if (action === 'push_range_press' || action === 'button_press') {
-                if (!this.__pushSoloDone) {
-                    this.__pushSoloDone = true;
-                    setTimeout(async function () {
-                        try {
-                            const res = await fetch('dev_data/snapshots/push_range_results_correct.json');
-                            const json = await res.json();
-                            self.simulateMessage(json);
-                            postToNative({ type: 'soloCompleted', gameType: 'push_range', points: 130 });
-                        } catch (e) { console.error(e); }
-                    }, 8000);
-                }
+                const count = Math.max(1, Number(data.press_count || 1));
+                const st = this.__pushState = this.__pushState || {
+                    leftBoundary: 15,
+                    rightBoundary: 85,
+                    myPresses: 0,
+                    peerPresses: {
+                        '100': 4, '101': 3, '102': 5, '103': 2,
+                        '104': 6, '105': 4, '106': 5, '107': 3, '108': 4
+                    }
+                };
+                st.myPresses += count;
+                st.leftBoundary = Math.min(st.rightBoundary - 3, st.leftBoundary + count * 0.55);
+
+                const playerPresses = Object.assign({}, st.peerPresses, { '999': st.myPresses });
+                const leftTotal = (playerPresses['999'] || 0) + (playerPresses['100'] || 0) + (playerPresses['101'] || 0) + (playerPresses['102'] || 0) + (playerPresses['103'] || 0);
+                const rightTotal = (playerPresses['104'] || 0) + (playerPresses['105'] || 0) + (playerPresses['106'] || 0) + (playerPresses['107'] || 0) + (playerPresses['108'] || 0);
+
+                this.simulateMessage({
+                    type: 'push_range_update',
+                    left_boundary: parseFloat(st.leftBoundary.toFixed(2)),
+                    right_boundary: parseFloat(st.rightBoundary.toFixed(2)),
+                    player_presses: playerPresses,
+                    team_stats: {
+                        left: { total_presses: leftTotal, players: 5 },
+                        right: { total_presses: rightTotal, players: 5 }
+                    }
+                });
+                return;
+            }
+
+            if (action === 'push_range_finish') {
+                if (this.__pushSoloDone) return;
+                this.__pushSoloDone = true;
+                window.__iosSoloResultPending = true;
+                if (this.__pushUpdateInterval) clearInterval(this.__pushUpdateInterval);
+
+                const st = this.__pushState || { leftBoundary: 72, rightBoundary: 92, myPresses: 28 };
+                const leftB = Math.round(typeof localLeftBoundary === 'number' ? localLeftBoundary : st.leftBoundary);
+                const rightB = Math.round(typeof localRightBoundary === 'number' ? localRightBoundary : st.rightBoundary);
+                const myTaps = Math.max(st.myPresses || 0, typeof myPressCount === 'number' ? myPressCount : 0);
+
+                setTimeout(async function () {
+                    try {
+                        const res = await fetch('dev_data/snapshots/push_range_results_correct.json');
+                        const json = await res.json();
+                        const truth = Number(json.correct_answer || 87);
+                        const captured = (leftB <= truth && rightB >= truth);
+                        const width = Math.max(2, rightB - leftB);
+                        const pts = captured
+                            ? Math.max(45, Math.min(100, Math.round(95 - width * 0.45) + Math.min(20, Math.round(myTaps * 0.5))))
+                            : Math.min(35, Math.round(myTaps * 0.6));
+                        const finalRangeStr = `${leftB}-${rightB}%`;
+                        const topPressers = [
+                            { player_id: 999, player_name: 'You', team: 'left', presses: myTaps, points: pts },
+                            { player_id: 1, player_name: 'Alice', team: 'left', presses: 34, points: 78 },
+                            { player_id: 2, player_name: 'Bob', team: 'right', presses: 31, points: 72 }
+                        ].sort(function (a, b) { return b.presses - a.presses; });
+
+                        json.points = pts;
+                        json.is_correct = captured;
+                        json.player_answer = captured ? `Team Captured (${finalRangeStr})` : `Missed (${finalRangeStr})`;
+                        json.round_stats = json.round_stats || {};
+                        json.round_stats.player_stats = json.round_stats.player_stats || {};
+                        json.round_stats.player_stats['999'] = {
+                            player_round_score: pts,
+                            player_total_score: 430 + pts
+                        };
+                        json.game_specific = {
+                            is_correct: captured,
+                            final_range: finalRangeStr,
+                            top_pressers: topPressers,
+                            chart_data: {
+                                final_left: leftB,
+                                final_right: rightB,
+                                correct_answer: truth,
+                                top_pressers: topPressers
+                            }
+                        };
+                        window.__iosSoloResultPending = false;
+                        self.simulateMessage(json);
+                        postToNative({ type: 'soloCompleted', gameType: 'push_range', points: pts });
+                    } catch (e) { console.error(e); }
+                }, 600);
                 return;
             }
 

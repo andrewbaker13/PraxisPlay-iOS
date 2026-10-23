@@ -168,20 +168,24 @@ function showPushRangeGame(message, timeLimit) {
     // Attach event handlers for speed tapping (each click/tap counts once)
     const pushBtn = document.getElementById('pushButton');
     if (pushBtn) {
+        let lastTouchTapTime = 0;
+
         // Prevent default to avoid unwanted behavior
         pushBtn.addEventListener('mousedown', (e) => {
             e.preventDefault();
         });
         
-        // Mouse click - single press per click
+        // Mouse click - single press per click (ignore synthetic click right after touchend)
         pushBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            if (Date.now() - lastTouchTapTime < 350) return;
             registerPress();
         });
         
         // Touch tap - single press per tap
         pushBtn.addEventListener('touchend', (e) => {
             e.preventDefault();
+            lastTouchTapTime = Date.now();
             registerPress();
         });
         
@@ -201,7 +205,7 @@ function registerPress() {
         return; // Ignore press during cooldown
     }
     
-    // Track rapid pressing (5 presses in 1 second = cooldown)
+    // Track rapid pressing (14 presses in 1 second = anti-autoclicker cooldown)
     rapidPressCount++;
     
     // Start window timer on first press
@@ -213,7 +217,7 @@ function registerPress() {
     }
     
     // Check if exceeded limit
-    if (rapidPressCount >= 5) {
+    if (rapidPressCount >= 14) {
         activateCooldown();
         return;
     }

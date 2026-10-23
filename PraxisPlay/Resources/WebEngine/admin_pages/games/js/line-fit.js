@@ -1259,7 +1259,7 @@ function drawLineFitResultsCanvas(canvasId, gameSpecific) {
     let playerRank = null;
     if (gs.all_submissions && gs.your_line) {
         playerSubmission = gs.all_submissions.find(sub => 
-            sub.player_id === playerSession.id || 
+            sub.player_id == playerSession.id || 
             (Math.abs(sub.slope - gs.your_line.slope) < 0.001 && 
              Math.abs(sub.intercept - gs.your_line.intercept) < 0.001)
         );
@@ -1273,7 +1273,7 @@ function drawLineFitResultsCanvas(canvasId, gameSpecific) {
         console.log('[LINE FIT RESULTS] Drawing', gs.all_submissions.length - 3, 'gray lines');
         gs.all_submissions.slice(3).forEach((submission, idx) => {
             // Skip player's line - will draw it separately
-            if (submission.player_id === playerSession.id) return;
+            if (submission.player_id == playerSession.id) return;
             
             console.log(`[LINE FIT RESULTS] Gray line ${idx + 4}: slope=${submission.slope}, intercept=${submission.intercept}`);
             drawLine(submission.slope, submission.intercept, 'rgba(156, 163, 175, 0.5)', 2);
@@ -1286,7 +1286,7 @@ function drawLineFitResultsCanvas(canvasId, gameSpecific) {
         console.log('[LINE FIT RESULTS] Drawing', top3.length, 'green lines (top 3)');
         top3.forEach((submission, idx) => {
             // Skip player's line - will draw it separately
-            if (submission.player_id === playerSession.id) return;
+            if (submission.player_id == playerSession.id) return;
             
             console.log(`[LINE FIT RESULTS] Green line ${idx + 1}: slope=${submission.slope}, intercept=${submission.intercept}`);
             drawLine(submission.slope, submission.intercept, 'rgba(16, 185, 129, 0.5)', 3);

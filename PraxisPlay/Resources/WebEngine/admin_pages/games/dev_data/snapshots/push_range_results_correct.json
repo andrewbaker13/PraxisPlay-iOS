@@ -19,12 +19,23 @@
     "average_score": 75
   },
   "game_specific": {
+    "is_correct": true,
     "final_range": "75-92%",
     "top_pressers": [
-      {"player_id": 999, "player_name": "You", "team": "left", "presses": 45},
-      {"player_id": 1, "player_name": "Alice", "team": "left", "presses": 42},
-      {"player_id": 2, "player_name": "Bob", "team": "right", "presses": 38}
-    ]
+      {"player_id": 999, "player_name": "You", "team": "left", "presses": 45, "points": 90},
+      {"player_id": 1, "player_name": "Alice", "team": "left", "presses": 42, "points": 84},
+      {"player_id": 2, "player_name": "Bob", "team": "right", "presses": 38, "points": 76}
+    ],
+    "chart_data": {
+      "final_left": 75,
+      "final_right": 92,
+      "correct_answer": 87,
+      "top_pressers": [
+        {"player_id": 999, "player_name": "You", "team": "left", "presses": 45, "points": 90},
+        {"player_id": 1, "player_name": "Alice", "team": "left", "presses": 42, "points": 84},
+        {"player_id": 2, "player_name": "Bob", "team": "right", "presses": 38, "points": 76}
+      ]
+    }
   },
   "leaderboard": [
     {"player_id": 1, "player_name": "Alice Johnson", "score": 565, "round_scores": [95, 92, 80]},

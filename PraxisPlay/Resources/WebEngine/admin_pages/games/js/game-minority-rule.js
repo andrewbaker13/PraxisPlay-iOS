@@ -234,12 +234,18 @@ function submitSelectedMinorityOption() {
         triggerHapticAlert(35);
     }
 
-    // Send payload over WebSocket
-    if (typeof socket !== 'undefined' && socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-            action: 'minority_rule_submit',
+    // Send payload over WebSocket (via sendGameAction / global websocket)
+    if (typeof sendGameAction === 'function') {
+        sendGameAction('minority_rule_submit', {
             option_index: chosenIdx,
             round_instance_id: window.currentRoundInstanceId || null
+        });
+    } else if (typeof websocket !== 'undefined' && websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify({
+            action: 'minority_rule_submit',
+            option_index: chosenIdx,
+            round_instance_id: window.currentRoundInstanceId || null,
+            player_session_id: (typeof playerSession !== 'undefined' && playerSession.id) || 999
         }));
     }
 
@@ -321,6 +327,11 @@ function setupMinorityRuleTimer(timeLimit) {
                 submitBtn.disabled = true;
                 submitBtn.style.opacity = '0.5';
                 submitBtn.textContent = 'Time Expired';
+            }
+            if (!minorityRuleState.isSubmitted && typeof sendGameAction === 'function') {
+                sendGameAction('minority_rule_timeout', {
+                    round_instance_id: window.currentRoundInstanceId || null
+                });
             }
         }
     }
@@ -570,7 +581,19 @@ function handleMinorityRuleResults(message) {
         </div>
     `;
 
+    const scoreEl = document.getElementById('playerScore');
+    if (scoreEl && earnedPoints > 0) {
+        const currentScore = parseInt(scoreEl.textContent, 10) || 0;
+        const targetScore = (message.leaderboard && Array.isArray(message.leaderboard))
+            ? ((message.leaderboard.find(p => p.player_id == (typeof playerSession !== 'undefined' ? playerSession.id : 999)) || {}).score || (currentScore + earnedPoints))
+            : (currentScore + earnedPoints);
+        if (typeof animateScoreCountUp === 'function') {
+            animateScoreCountUp(scoreEl, targetScore, 900);
+        } else {
+            scoreEl.textContent = targetScore;
+        }
+    }
     if (earnedPoints > 0 && typeof spawnFloatingPoints === 'function') {
-        spawnFloatingPoints(`+${earnedPoints} pts`, window.innerWidth / 2, window.innerHeight * 0.35);
+        spawnFloatingPoints(earnedPoints, scoreEl);
     }
 }

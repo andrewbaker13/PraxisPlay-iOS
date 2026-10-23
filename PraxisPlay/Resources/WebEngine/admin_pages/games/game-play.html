@@ -1492,12 +1492,15 @@
                     instructor_name: 'Praxis Solo Arcade',
                     course_name: 'Analytics Practice'
                 }));
+                let existingPlayer = {};
+                try { existingPlayer = JSON.parse(sessionStorage.getItem('playerSession') || '{}'); } catch (e) {}
+                const resolvedName = params.get('name') || existingPlayer.display_name || existingPlayer.guest_name || 'You (iPad Practice)';
                 sessionStorage.setItem('playerSession', JSON.stringify({
                     id: 999,
-                    display_name: params.get('name') || 'You (iPad Practice)',
-                    guest_name: params.get('name') || 'You (iPad Practice)',
-                    score: 380,
-                    rank: 2
+                    display_name: resolvedName,
+                    guest_name: resolvedName,
+                    score: typeof existingPlayer.score === 'number' ? existingPlayer.score : 380,
+                    rank: existingPlayer.rank || 2
                 }));
             } else if (params.get('native_ios') === '1') {
                 window.__PRAXIS_IOS_NATIVE = true;
