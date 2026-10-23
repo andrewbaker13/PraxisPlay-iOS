@@ -201,7 +201,9 @@ struct ProfileSettingsView: View {
                     HStack {
                         Text("Version")
                         Spacer()
-                        Text("1.0.0")
+                        let shortVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+                        let buildNum = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+                        Text("\(shortVer) (Build \(buildNum))")
                             .font(.caption.monospaced())
                             .foregroundStyle(.secondary)
                     }

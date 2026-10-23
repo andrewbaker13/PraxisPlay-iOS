@@ -33,6 +33,8 @@ targets:
       path: PraxisPlay/Info.plist
       properties:
         CFBundleDisplayName: "Praxis Play"
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         ITSAppUsesNonExemptEncryption: false
         NSCameraUsageDescription: "Praxis Play uses the camera to scan the classroom projector QR code so you can join your live game session in one tap."
         UILaunchScreen:
