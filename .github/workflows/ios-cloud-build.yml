@@ -3,6 +3,9 @@ name: PraxisPlay iOS Cloud Build & TestFlight
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'privacy.html'
+      - '*.md'
   workflow_dispatch:
     inputs:
       deploy_to_testflight:
