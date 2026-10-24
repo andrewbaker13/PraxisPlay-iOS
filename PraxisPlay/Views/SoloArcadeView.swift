@@ -50,15 +50,24 @@ struct SoloArcadeView: View {
                                 } label: {
                                     Text(category)
                                         .font(.system(size: 13, weight: .bold))
-                                        .foregroundStyle(selectedCategory == category ? .white : .white.opacity(0.7))
+                                        .foregroundStyle(selectedCategory == category ? .white : Color(red: 0.28, green: 0.33, blue: 0.41))
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 9)
                                         .background(
                                             selectedCategory == category
-                                                ? Color.blue
-                                                : Color.white.opacity(0.08)
+                                                ? Color(red: 0.31, green: 0.27, blue: 0.90)
+                                                : Color.white
                                         )
                                         .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(
+                                                    selectedCategory == category
+                                                        ? Color.clear
+                                                        : Color(red: 0.80, green: 0.84, blue: 0.88),
+                                                    lineWidth: 1
+                                                )
+                                        )
                                 }
                             }
                         }
@@ -85,8 +94,8 @@ struct SoloArcadeView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(red: 0.06, green: 0.09, blue: 0.16),
-                        Color(red: 0.10, green: 0.15, blue: 0.26)
+                        Color(red: 0.93, green: 0.95, blue: 1.0),
+                        Color(red: 0.97, green: 0.98, blue: 0.99)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -108,15 +117,15 @@ struct SoloArcadeView: View {
                 Text("ANALYTICS DRILL DECK")
                     .font(.system(size: 11, weight: .heavy))
                     .tracking(1.0)
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
 
                 Text("\(completedCount) of \(totalModes) Game Modes Practiced")
                     .font(.system(size: 18, weight: .black))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
 
                 Text("Practice every MktPraxis game mode anytime — no live classroom room code needed.")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.70))
+                    .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
             }
 
             Spacer()
@@ -124,23 +133,28 @@ struct SoloArcadeView: View {
             VStack(spacing: 2) {
                 Text("\(totalPoints)")
                     .font(.system(size: 24, weight: .black, design: .rounded))
-                    .foregroundStyle(.mint)
+                    .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
                 Text("BEST PTS")
                     .font(.system(size: 10, weight: .heavy))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(Color.white.opacity(0.08))
+            .background(Color(red: 0.93, green: 0.99, blue: 0.96))
             .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(Color(red: 0.65, green: 0.95, blue: 0.82), lineWidth: 1)
+            )
         }
         .padding(18)
-        .background(Color.white.opacity(0.06))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1.5)
         )
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
     }
 }
 
@@ -175,24 +189,24 @@ struct SoloGameCardView: View {
                             .tracking(0.8)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(mode.gradientColors.first?.opacity(0.25) ?? Color.blue.opacity(0.25))
-                            .foregroundStyle(.cyan)
+                            .background(Color(red: 0.93, green: 0.95, blue: 1.0))
+                            .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
                             .clipShape(Capsule())
 
                         if let score = bestScore {
                             Label("Best: \(score) pts", systemImage: "checkmark.seal.fill")
                                 .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(.mint)
+                                .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
                         }
                     }
 
                     Text(mode.title)
                         .font(.system(size: 20, weight: .black))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
 
                     Text(mode.marketingConcept)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.75))
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                 }
 
                 Spacer()
@@ -200,7 +214,7 @@ struct SoloGameCardView: View {
 
             Text(mode.description)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.white.opacity(0.72))
+                .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: onLaunch) {
@@ -227,11 +241,12 @@ struct SoloGameCardView: View {
             }
         }
         .padding(18)
-        .background(Color.white.opacity(0.06))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1.5)
         )
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
     }
 }

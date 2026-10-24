@@ -257,13 +257,13 @@ struct MktPraxisLoginSheetView: View {
 
                         Text(sessionStore.mfaPendingUserId != nil ? "Enter Verification Code" : "Sign In to MktPraxis")
                             .font(.system(size: 24, weight: .black, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
 
                         Text(sessionStore.mfaPendingUserId != nil
                              ? "We sent a 6-digit verification code to \(sessionStore.mfaEmailHint)."
                              : "Use your MktPraxis.com username or email to link classroom scores to your course account.")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.72))
+                            .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 16)
                     }
@@ -282,8 +282,8 @@ struct MktPraxisLoginSheetView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(red: 0.06, green: 0.09, blue: 0.16),
-                        Color(red: 0.10, green: 0.15, blue: 0.26)
+                        Color(red: 0.93, green: 0.95, blue: 1.0),
+                        Color(red: 0.97, green: 0.98, blue: 0.99)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -297,7 +297,7 @@ struct MktPraxisLoginSheetView: View {
                         sessionStore.cancelMFAPrompt()
                         dismiss()
                     }
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                 }
             }
         }
@@ -309,11 +309,11 @@ struct MktPraxisLoginSheetView: View {
                 Text("USERNAME OR EMAIL")
                     .font(.system(size: 11, weight: .heavy))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
 
                 HStack(spacing: 10) {
                     Image(systemName: "person.fill")
-                        .foregroundStyle(.cyan)
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                     TextField("username or you@university.edu", text: $usernameInput)
                         .focused($focusedField, equals: .username)
                         .textInputAutocapitalization(.never)
@@ -321,18 +321,18 @@ struct MktPraxisLoginSheetView: View {
                         .keyboardType(.emailAddress)
                         .textContentType(.username)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                         .submitLabel(.next)
                         .onSubmit {
                             focusedField = .password
                         }
                 }
                 .padding(14)
-                .background(Color.white.opacity(0.08))
+                .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(focusedField == .username ? Color.cyan : Color.white.opacity(0.16), lineWidth: 1.5)
+                        .strokeBorder(focusedField == .username ? Color(red: 0.31, green: 0.27, blue: 0.90) : Color(red: 0.80, green: 0.84, blue: 0.88), lineWidth: 1.5)
                 )
             }
 
@@ -340,29 +340,29 @@ struct MktPraxisLoginSheetView: View {
                 Text("PASSWORD")
                     .font(.system(size: 11, weight: .heavy))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
 
                 HStack(spacing: 10) {
                     Image(systemName: "lock.fill")
-                        .foregroundStyle(.cyan)
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                     SecureField("Your MktPraxis password", text: $passwordInput)
                         .focused($focusedField, equals: .password)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .textContentType(.password)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                         .submitLabel(.go)
                         .onSubmit {
                             submitCredentials()
                         }
                 }
                 .padding(14)
-                .background(Color.white.opacity(0.08))
+                .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(focusedField == .password ? Color.cyan : Color.white.opacity(0.16), lineWidth: 1.5)
+                        .strokeBorder(focusedField == .password ? Color(red: 0.31, green: 0.27, blue: 0.90) : Color(red: 0.80, green: 0.84, blue: 0.88), lineWidth: 1.5)
                 )
             }
 
@@ -372,11 +372,11 @@ struct MktPraxisLoginSheetView: View {
                         .foregroundStyle(.red)
                     Text(err)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.60, green: 0.11, blue: 0.11))
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.red.opacity(0.22))
+                .background(Color(red: 1.0, green: 0.95, blue: 0.95))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
 
@@ -401,7 +401,7 @@ struct MktPraxisLoginSheetView: View {
                 .padding(.vertical, 15)
                 .background(
                     LinearGradient(
-                        colors: [.blue, .cyan],
+                        colors: [Color(red: 0.31, green: 0.27, blue: 0.90), Color(red: 0.15, green: 0.39, blue: 0.92)],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -411,11 +411,11 @@ struct MktPraxisLoginSheetView: View {
             .disabled(sessionStore.isAuthenticating)
         }
         .padding(20)
-        .background(Color.white.opacity(0.06))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay(
             RoundedRectangle(cornerRadius: 22)
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1.5)
         )
     }
 
@@ -425,7 +425,7 @@ struct MktPraxisLoginSheetView: View {
                 Text("6-DIGIT EMAIL VERIFICATION CODE")
                     .font(.system(size: 11, weight: .heavy))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
 
                 TextField("123456", text: $mfaCodeInput)
                     .focused($focusedField, equals: .mfaCode)
@@ -433,13 +433,13 @@ struct MktPraxisLoginSheetView: View {
                     .textContentType(.oneTimeCode)
                     .font(.system(size: 28, weight: .black, design: .monospaced))
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                     .padding(14)
-                    .background(Color.white.opacity(0.08))
+                    .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .strokeBorder(Color.cyan, lineWidth: 1.5)
+                            .strokeBorder(Color(red: 0.31, green: 0.27, blue: 0.90), lineWidth: 1.5)
                     )
             }
 
@@ -449,11 +449,11 @@ struct MktPraxisLoginSheetView: View {
                         .foregroundStyle(.red)
                     Text(err)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.60, green: 0.11, blue: 0.11))
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.red.opacity(0.22))
+                .background(Color(red: 1.0, green: 0.95, blue: 0.95))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
 
@@ -493,7 +493,7 @@ struct MktPraxisLoginSheetView: View {
                     mfaCodeInput = ""
                 }
                 .font(.caption.bold())
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
 
                 Spacer()
 
@@ -503,16 +503,16 @@ struct MktPraxisLoginSheetView: View {
                     }
                 }
                 .font(.caption.bold())
-                .foregroundStyle(.cyan)
+                .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
             }
             .padding(.top, 4)
         }
         .padding(20)
-        .background(Color.white.opacity(0.06))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay(
             RoundedRectangle(cornerRadius: 22)
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1.5)
         )
         .onAppear {
             focusedField = .mfaCode

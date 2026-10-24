@@ -35,7 +35,7 @@ struct MainTabView: View {
                 }
                 .tag(2)
         }
-        .tint(.blue)
+        .tint(Color(red: 0.31, green: 0.27, blue: 0.90))
         .fullScreenCover(item: $sessionStore.activeArenaLaunch) { launchMode in
             LiveGameArenaView(launchMode: launchMode)
         }

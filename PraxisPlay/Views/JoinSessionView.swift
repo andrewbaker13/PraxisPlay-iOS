@@ -50,8 +50,8 @@ struct JoinSessionView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(red: 0.06, green: 0.09, blue: 0.16),
-                        Color(red: 0.10, green: 0.15, blue: 0.26)
+                        Color(red: 0.93, green: 0.95, blue: 1.0),
+                        Color(red: 0.97, green: 0.98, blue: 0.99)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -63,10 +63,10 @@ struct JoinSessionView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack(spacing: 6) {
                         Image(systemName: "gamecontroller.fill")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                         Text("Praxis Play")
                             .font(.headline.weight(.heavy))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -80,10 +80,10 @@ struct JoinSessionView: View {
                                 Text(sessionStore.isAuthenticated ? "@\(sessionStore.loggedInUsername)" : "Sign In")
                             }
                             .font(.subheadline.weight(.bold))
-                            .foregroundStyle(sessionStore.isAuthenticated ? .mint : .cyan)
+                            .foregroundStyle(sessionStore.isAuthenticated ? Color(red: 0.02, green: 0.47, blue: 0.34) : Color(red: 0.26, green: 0.22, blue: 0.79))
                             .padding(.horizontal, 11)
                             .padding(.vertical, 6)
-                            .background(Color.white.opacity(0.10))
+                            .background(sessionStore.isAuthenticated ? Color(red: 0.82, green: 0.98, blue: 0.90) : Color(red: 0.88, green: 0.91, blue: 1.0))
                             .clipShape(Capsule())
                         }
 
@@ -96,7 +96,7 @@ struct JoinSessionView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color.blue.opacity(0.85))
+                                .background(Color(red: 0.31, green: 0.27, blue: 0.90))
                                 .clipShape(Capsule())
                         }
                     }
@@ -141,25 +141,25 @@ struct JoinSessionView: View {
             HStack(spacing: 8) {
                 Image(systemName: "bolt.horizontal.fill")
                     .font(.caption.bold())
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
                 Text("MKTPRAXIS LIVE CLASSROOM CONTROLLER")
                     .font(.system(size: 11, weight: .heavy))
                     .tracking(1.1)
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 5)
-            .background(Color.cyan.opacity(0.14))
+            .background(Color(red: 0.88, green: 0.91, blue: 1.0))
             .clipShape(Capsule())
 
             Text("Make Analytics Competitive")
                 .font(.system(size: 26, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                 .multilineTextAlignment(.center)
 
             Text("Scan your instructor's projector QR code or enter the 4-character room code to jump in.")
                 .font(.subheadline)
-                .foregroundStyle(Color.white.opacity(0.70))
+                .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
         }
@@ -178,7 +178,7 @@ struct JoinSessionView: View {
                     Text("ROOM CODE")
                         .font(.system(size: 12, weight: .heavy))
                         .tracking(0.8)
-                        .foregroundStyle(Color.white.opacity(0.7))
+                        .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                     Spacer()
                     Button {
                         HapticsManager.shared.playTap()
@@ -189,7 +189,7 @@ struct JoinSessionView: View {
                             Text("Scan Projector QR")
                         }
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(.cyan)
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                     }
                 }
 
@@ -200,14 +200,14 @@ struct JoinSessionView: View {
                         .disableAutocorrection(true)
                         .font(.system(size: 28, weight: .black, design: .monospaced))
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                         .padding(.vertical, 14)
-                        .background(Color.white.opacity(0.08))
+                        .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
                                 .strokeBorder(
-                                    focusedField == .roomCode ? Color.blue : Color.white.opacity(0.18),
+                                    focusedField == .roomCode ? Color(red: 0.31, green: 0.27, blue: 0.90) : Color(red: 0.80, green: 0.84, blue: 0.88),
                                     lineWidth: 2
                                 )
                         )
@@ -233,7 +233,7 @@ struct JoinSessionView: View {
                         .frame(width: 64, height: 64)
                         .background(
                             LinearGradient(
-                                colors: [Color.blue, Color(red: 0.15, green: 0.39, blue: 0.92)],
+                                colors: [Color(red: 0.31, green: 0.27, blue: 0.90), Color(red: 0.15, green: 0.39, blue: 0.92)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -250,23 +250,23 @@ struct JoinSessionView: View {
                         Text("YOUR DISPLAY NAME (GUEST)")
                             .font(.system(size: 12, weight: .heavy))
                             .tracking(0.8)
-                            .foregroundStyle(Color.white.opacity(0.7))
+                            .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                         Spacer()
                         if !roomCodeInput.isEmpty {
                             Text("ID Tag: #\(sessionStore.guestTag(for: roomCodeInput))")
                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundStyle(.mint)
+                                .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
                         }
                     }
 
                     HStack(spacing: 10) {
                         Image(systemName: "person.crop.circle.fill")
                             .font(.system(size: 20))
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                         TextField("e.g. Alex, Jordan", text: $playerNameInput)
                             .focused($focusedField, equals: .playerName)
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                             .submitLabel(.go)
                             .onSubmit {
                                 submitJoin()
@@ -274,12 +274,12 @@ struct JoinSessionView: View {
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 14)
-                    .background(Color.white.opacity(0.08))
+                    .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
                             .strokeBorder(
-                                focusedField == .playerName ? Color.blue : Color.white.opacity(0.16),
+                                focusedField == .playerName ? Color(red: 0.31, green: 0.27, blue: 0.90) : Color(red: 0.80, green: 0.84, blue: 0.88),
                                 lineWidth: 1.5
                             )
                     )
@@ -293,17 +293,21 @@ struct JoinSessionView: View {
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                     .padding(12)
-                    .background(Color.white.opacity(0.07))
+                    .background(Color(red: 0.97, green: 0.98, blue: 0.99))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .strokeBorder(Color(red: 0.80, green: 0.84, blue: 0.88), lineWidth: 1)
+                    )
                     .padding(.top, 8)
             } label: {
                 Text("Have an instructor Guest Room PIN? (Optional)")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.white.opacity(0.65))
+                    .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
             }
-            .tint(.cyan)
+            .tint(Color(red: 0.31, green: 0.27, blue: 0.90))
 
             // Error / Warning Banner
             if let errorMsg = sessionStore.joinErrorMessage {
@@ -312,15 +316,15 @@ struct JoinSessionView: View {
                         .foregroundStyle(.red)
                     Text(errorMsg)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.60, green: 0.11, blue: 0.11))
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.red.opacity(0.22))
+                .background(Color(red: 1.0, green: 0.95, blue: 0.95))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(Color.red.opacity(0.5), lineWidth: 1)
+                        .strokeBorder(Color.red.opacity(0.45), lineWidth: 1)
                 )
             }
 
@@ -346,23 +350,24 @@ struct JoinSessionView: View {
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [Color(red: 0.23, green: 0.51, blue: 0.96), Color(red: 0.15, green: 0.39, blue: 0.92)],
+                        colors: [Color(red: 0.31, green: 0.27, blue: 0.90), Color(red: 0.15, green: 0.39, blue: 0.92)],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: Color.blue.opacity(0.40), radius: 12, x: 0, y: 6)
+                .shadow(color: Color(red: 0.31, green: 0.27, blue: 0.90).opacity(0.32), radius: 10, x: 0, y: 5)
             }
             .disabled(sessionStore.isJoining)
         }
         .padding(20)
-        .background(Color.white.opacity(0.06))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay(
             RoundedRectangle(cornerRadius: 22)
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1.5)
         )
+        .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 6)
     }
 
     // MARK: - MktPraxis Account vs Guest Identity Banner
@@ -373,32 +378,32 @@ struct JoinSessionView: View {
                     HStack(spacing: 10) {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.mint)
+                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
 
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 Text("Signed in as \(sessionStore.accountDisplayLabel)")
                                     .font(.system(size: 13.5, weight: .heavy))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Color(red: 0.02, green: 0.37, blue: 0.27))
                                 if sessionStore.isStaffUser {
                                     Text("INSTRUCTOR")
                                         .font(.system(size: 9, weight: .heavy))
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
-                                        .background(Color.cyan.opacity(0.22))
-                                        .foregroundStyle(.cyan)
+                                        .background(Color(red: 0.88, green: 0.91, blue: 1.0))
+                                        .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
                                         .clipShape(Capsule())
                                 }
                             }
                             if let firstCourse = sessionStore.enrolledCourses.first {
                                 Text(firstCourse)
                                     .font(.system(size: 11.5, weight: .medium))
-                                    .foregroundStyle(.white.opacity(0.68))
+                                    .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
                                     .lineLimit(1)
                             } else {
                                 Text("Scores sync directly to your MktPraxis account")
                                     .font(.system(size: 11.5, weight: .medium))
-                                    .foregroundStyle(.white.opacity(0.68))
+                                    .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
                             }
                         }
 
@@ -410,34 +415,38 @@ struct JoinSessionView: View {
                         } label: {
                             Text(sessionStore.useGuestMode ? "Use Account" : "Guest Mode")
                                 .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(.cyan)
+                                .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
                                 .padding(.horizontal, 9)
                                 .padding(.vertical, 5)
-                                .background(Color.white.opacity(0.08))
+                                .background(Color.white)
                                 .clipShape(Capsule())
+                                .overlay(
+                                    Capsule()
+                                        .strokeBorder(Color(red: 0.43, green: 0.91, blue: 0.72), lineWidth: 1)
+                                )
                         }
                     }
                 }
                 .padding(12)
-                .background(Color.mint.opacity(0.12))
+                .background(Color(red: 0.93, green: 0.99, blue: 0.96))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(Color.mint.opacity(0.35), lineWidth: 1)
+                        .strokeBorder(Color(red: 0.43, green: 0.91, blue: 0.72), lineWidth: 1)
                 )
             } else {
                 HStack(spacing: 10) {
                     Image(systemName: "person.badge.key.fill")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.cyan)
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Have a MktPraxis Account?")
                             .font(.system(size: 13, weight: .heavy))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(red: 0.12, green: 0.11, blue: 0.29))
                         Text("Sign in for course credit, or enter a guest name below")
                             .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.68))
+                            .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
                     }
 
                     Spacer()
@@ -453,7 +462,7 @@ struct JoinSessionView: View {
                             .padding(.vertical, 7)
                             .background(
                                 LinearGradient(
-                                    colors: [.blue, .cyan],
+                                    colors: [Color(red: 0.31, green: 0.27, blue: 0.90), Color(red: 0.15, green: 0.39, blue: 0.92)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
@@ -462,11 +471,11 @@ struct JoinSessionView: View {
                     }
                 }
                 .padding(12)
-                .background(Color.white.opacity(0.06))
+                .background(Color(red: 0.93, green: 0.95, blue: 1.0))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(Color.cyan.opacity(0.30), lineWidth: 1)
+                        .strokeBorder(Color(red: 0.78, green: 0.82, blue: 0.99), lineWidth: 1)
                 )
             }
         }
@@ -478,11 +487,11 @@ struct JoinSessionView: View {
             HStack {
                 Label("Active Live Games on Your Account", systemImage: "dot.radiowaves.left.and.right")
                     .font(.system(size: 14, weight: .heavy))
-                    .foregroundStyle(.mint)
+                    .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
                 Spacer()
                 Text("Live Now")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.mint)
+                    .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
             }
 
             ForEach(sessionStore.activeServerSessions) { active in
@@ -501,17 +510,17 @@ struct JoinSessionView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
-                            .background(Color.green.opacity(0.32))
+                            .background(Color(red: 0.02, green: 0.59, blue: 0.41))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(active.courseName)
                                 .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color(red: 0.02, green: 0.37, blue: 0.27))
                                 .lineLimit(1)
                             Text("Round \(active.currentRound)/\(active.totalRounds) • \(active.score) pts • \(active.instructorName)")
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(Color(red: 0.02, green: 0.47, blue: 0.34))
                                 .lineLimit(1)
                         }
 
@@ -519,14 +528,14 @@ struct JoinSessionView: View {
 
                         Image(systemName: "play.circle.fill")
                             .font(.system(size: 24))
-                            .foregroundStyle(.mint)
+                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
                     }
                     .padding(14)
-                    .background(Color.mint.opacity(0.10))
+                    .background(Color(red: 0.93, green: 0.99, blue: 0.96))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(Color.mint.opacity(0.35), lineWidth: 1)
+                            .strokeBorder(Color(red: 0.43, green: 0.91, blue: 0.72), lineWidth: 1)
                     )
                 }
             }
@@ -539,11 +548,11 @@ struct JoinSessionView: View {
             HStack {
                 Label("Recent Classroom Rooms", systemImage: "clock.arrow.circlepath")
                     .font(.system(size: 14, weight: .heavy))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                 Spacer()
                 Text("1-Tap Rejoin")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
             }
 
             ForEach(sessionStore.recentSessions.prefix(4)) { session in
@@ -553,20 +562,20 @@ struct JoinSessionView: View {
                     HStack(spacing: 14) {
                         Text(session.roomCode)
                             .font(.system(size: 16, weight: .black, design: .monospaced))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(red: 0.26, green: 0.22, blue: 0.79))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
-                            .background(Color.blue.opacity(0.28))
+                            .background(Color(red: 0.88, green: 0.91, blue: 1.0))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(session.courseName)
                                 .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                                 .lineLimit(1)
                             Text("Joined as \(session.playerName) • \(session.lastScore) pts")
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.65))
+                                .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                                 .lineLimit(1)
                         }
 
@@ -574,14 +583,14 @@ struct JoinSessionView: View {
 
                         Image(systemName: "arrow.right.circle.fill")
                             .font(.system(size: 22))
-                            .foregroundStyle(.cyan)
+                            .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
                     }
                     .padding(14)
-                    .background(Color.white.opacity(0.06))
+                    .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(Color.white.opacity(0.10), lineWidth: 1)
+                            .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
                     )
                 }
             }
@@ -613,21 +622,21 @@ struct JoinSessionView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Not in a live class right now?")
                         .font(.system(size: 15, weight: .heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.30, green: 0.11, blue: 0.58))
                     Text("Try all 9 interactive analytics games in the Solo Practice Arcade →")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.75))
+                        .foregroundStyle(Color(red: 0.43, green: 0.16, blue: 0.85))
                         .multilineTextAlignment(.leading)
                 }
 
                 Spacer()
             }
             .padding(16)
-            .background(Color.purple.opacity(0.16))
+            .background(Color(red: 0.96, green: 0.95, blue: 1.0))
             .clipShape(RoundedRectangle(cornerRadius: 18))
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
-                    .strokeBorder(Color.purple.opacity(0.40), lineWidth: 1)
+                    .strokeBorder(Color(red: 0.87, green: 0.84, blue: 1.0), lineWidth: 1.5)
             )
         }
     }

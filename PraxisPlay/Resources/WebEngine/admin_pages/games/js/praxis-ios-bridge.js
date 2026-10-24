@@ -69,7 +69,7 @@
     window.triggerHapticAndAudioAlert = window.triggerHapticAlert;
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 2. Native iOS Dark-Glass Theme & Single-Screen Centered Viewport Layout
+    // 2. Native Lively Classroom Daylight Theme & Single-Screen Viewport Layout
     // ─────────────────────────────────────────────────────────────────────────
     function injectIOSStyles() {
         if (document.getElementById('praxis-ios-native-styles')) return;
@@ -77,22 +77,22 @@
         style.id = 'praxis-ios-native-styles';
         style.textContent = `
             :root {
-                --ios-bg-top: #090D16;
-                --ios-bg-mid: #0F172A;
-                --ios-bg-bot: #131C31;
-                --ios-card-bg: rgba(21, 31, 52, 0.94);
-                --ios-surface: rgba(30, 41, 59, 0.88);
-                --ios-surface-elevated: rgba(51, 65, 85, 0.65);
-                --ios-surface-deep: rgba(11, 17, 32, 0.88);
-                --ios-border: rgba(148, 163, 184, 0.18);
-                --ios-border-highlight: rgba(56, 189, 248, 0.45);
-                --ios-text-primary: #F8FAFC;
-                --ios-text-secondary: #94A3B8;
-                --ios-accent-blue: #38BDF8;
-                --ios-accent-indigo: #6366F1;
+                --ios-bg-top: #5B6CF9;
+                --ios-bg-mid: #6366F1;
+                --ios-bg-bot: #7C3AED;
+                --ios-card-bg: #FFFFFF;
+                --ios-surface: #F8FAFC;
+                --ios-surface-elevated: #F1F5F9;
+                --ios-surface-deep: #F8FAFC;
+                --ios-border: #CBD5E1;
+                --ios-border-highlight: #3B82F6;
+                --ios-text-primary: #0F172A;
+                --ios-text-secondary: #475569;
+                --ios-accent-blue: #2563EB;
+                --ios-accent-indigo: #4F46E5;
                 --ios-accent-emerald: #10B981;
-                --ios-accent-amber: #F59E0B;
-                --ios-accent-rose: #F43F5E;
+                --ios-accent-amber: #D97706;
+                --ios-accent-rose: #E11D48;
             }
 
             * {
@@ -109,7 +109,7 @@
                 margin: 0 !important;
                 padding: 4px 8px env(safe-area-inset-bottom, 12px) 8px !important;
                 min-height: 100vh !important;
-                background: linear-gradient(180deg, var(--ios-bg-top) 0%, var(--ios-bg-mid) 52%, var(--ios-bg-bot) 100%) !important;
+                background: linear-gradient(135deg, var(--ios-bg-top) 0%, var(--ios-bg-mid) 50%, var(--ios-bg-bot) 100%) !important;
                 color: var(--ios-text-primary) !important;
                 overflow-x: hidden;
             }
@@ -136,28 +136,26 @@
                 gap: 10px !important;
             }
 
-            /* Frosted Dark-Slate Main Arena Card */
+            /* Crisp Daylight White Main Arena Card */
             .game-area {
                 margin-bottom: 0 !important;
                 padding: 14px !important;
                 border-radius: 22px !important;
                 min-height: auto !important;
-                background: linear-gradient(180deg, rgba(23, 33, 56, 0.96) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
-                border: 1px solid var(--ios-border) !important;
-                box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+                background: #FFFFFF !important;
+                border: 1px solid rgba(255, 255, 255, 0.85) !important;
+                box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22) !important;
                 color: var(--ios-text-primary) !important;
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
             }
 
-            /* Collapsible Dark-Glass Leaderboard Pill */
+            /* Collapsible Daylight Leaderboard Pill */
             .leaderboard {
                 padding: 10px 16px !important;
                 border-radius: 16px !important;
                 margin-top: 0 !important;
-                background: rgba(19, 28, 49, 0.88) !important;
-                border: 1px solid var(--ios-border) !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+                background: rgba(255, 255, 255, 0.96) !important;
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16) !important;
                 cursor: pointer;
                 user-select: none;
             }
@@ -165,7 +163,7 @@
                 margin: 0 !important;
                 font-size: 0.9rem !important;
                 font-weight: 700 !important;
-                color: #E2E8F0 !important;
+                color: #0F172A !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
@@ -173,9 +171,10 @@
             .leaderboard h3::after {
                 content: 'Tap to expand ▾';
                 font-size: 0.75rem;
-                font-weight: 600;
-                color: var(--ios-accent-blue);
-                background: rgba(56, 189, 248, 0.12);
+                font-weight: 700;
+                color: #2563EB;
+                background: #EFF6FF;
+                border: 1px solid #BFDBFE;
                 padding: 3px 9px;
                 border-radius: 999px;
             }
@@ -192,17 +191,17 @@
                 display: block !important;
             }
             .leaderboard-item {
-                background: rgba(30, 41, 59, 0.85) !important;
-                border: 1px solid rgba(255, 255, 255, 0.07) !important;
-                color: var(--ios-text-primary) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #E2E8F0 !important;
+                color: #0F172A !important;
                 border-radius: 10px !important;
                 padding: 8px 12px !important;
                 margin-bottom: 6px !important;
             }
             .leaderboard-item.own {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.22) 100%) !important;
+                background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important;
                 border: 1.5px solid #10B981 !important;
-                color: #FFFFFF !important;
+                color: #065F46 !important;
             }
 
             /* Universal Question & Timer Styling */
@@ -213,7 +212,7 @@
                 font-size: 1.06rem !important;
                 font-weight: 700 !important;
                 line-height: 1.32 !important;
-                color: var(--ios-text-primary) !important;
+                color: #0F172A !important;
                 margin-bottom: 6px !important;
                 letter-spacing: -0.01em !important;
             }
@@ -222,9 +221,9 @@
                 font-weight: 800 !important;
                 line-height: 1.1 !important;
                 margin: 2px 0 !important;
-                color: #FDA4AF !important;
-                background: rgba(244, 63, 94, 0.16) !important;
-                border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
+                color: #E11D48 !important;
+                background: #FFF1F2 !important;
+                border: 1.5px solid #FECDD3 !important;
                 padding: 4px 12px !important;
                 border-radius: 12px !important;
                 display: inline-block !important;
@@ -232,37 +231,38 @@
             }
             #availablePoints, .available-points {
                 font-variant-numeric: tabular-nums !important;
-                background: rgba(16, 185, 129, 0.14) !important;
-                border: 1px solid rgba(16, 185, 129, 0.35) !important;
+                background: #ECFDF5 !important;
+                border: 1px solid #A7F3D0 !important;
+                color: #059669 !important;
                 padding: 4px 10px !important;
                 border-radius: 10px !important;
                 font-size: 1.05rem !important;
             }
 
-            /* Waiting State & Alerts in Dark Glass */
+            /* Waiting State & Alerts in Classroom Daylight */
             .waiting-state h2 {
-                color: var(--ios-text-primary) !important;
+                color: #0F172A !important;
             }
             .waiting-state p {
-                color: var(--ios-text-secondary) !important;
+                color: #475569 !important;
             }
             .alert-info {
-                background: rgba(56, 189, 248, 0.14) !important;
-                border: 1px solid rgba(56, 189, 248, 0.3) !important;
-                color: #BAE6FD !important;
+                background: #EFF6FF !important;
+                border: 1px solid #BFDBFE !important;
+                color: #1E40AF !important;
             }
             .alert-success {
-                background: rgba(16, 185, 129, 0.18) !important;
-                border: 1px solid rgba(16, 185, 129, 0.4) !important;
-                color: #A7F3D0 !important;
+                background: #ECFDF5 !important;
+                border: 1px solid #A7F3D0 !important;
+                color: #065F46 !important;
             }
             .alert-error, .alert-danger {
-                background: rgba(244, 63, 94, 0.18) !important;
-                border: 1px solid rgba(244, 63, 94, 0.4) !important;
-                color: #FECDD3 !important;
+                background: #FFF1F2 !important;
+                border: 1px solid #FECDD3 !important;
+                color: #9F1239 !important;
             }
 
-            /* ── 1. SPEED TAP: 3D Tactile Dark-Glass Answer Cards ── */
+            /* ── 1. SPEED TAP: 3D Tactile Daylight Answer Cards ── */
             .answer-options {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 10px !important;
@@ -273,32 +273,32 @@
                 font-size: 0.98rem !important;
                 font-weight: 700 !important;
                 min-height: 64px !important;
-                color: var(--ios-text-primary) !important;
-                background: linear-gradient(180deg, rgba(38, 52, 79, 0.95) 0%, rgba(22, 32, 54, 0.95) 100%) !important;
-                border: 1.5px solid rgba(148, 163, 184, 0.25) !important;
+                color: #0F172A !important;
+                background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
+                border: 2px solid #CBD5E1 !important;
                 border-radius: 16px !important;
-                box-shadow: 0 4px 0 rgba(8, 12, 24, 0.85), 0 8px 16px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 4px 0 #CBD5E1, 0 6px 14px rgba(15, 23, 42, 0.08) !important;
                 transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease !important;
             }
             .answer-btn:active:not(:disabled) {
                 transform: translateY(3px) scale(0.98) !important;
-                box-shadow: 0 1px 0 rgba(8, 12, 24, 0.85) !important;
+                box-shadow: 0 1px 0 #CBD5E1 !important;
             }
             .answer-btn.selected, .answer-btn.correct {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.32) 0%, rgba(5, 150, 105, 0.25) 100%) !important;
-                border-color: #10B981 !important;
+                background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+                border-color: #047857 !important;
                 color: #FFFFFF !important;
-                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
+                box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
             }
             .answer-btn.unselected {
-                background: rgba(15, 23, 42, 0.6) !important;
-                border-color: rgba(148, 163, 184, 0.12) !important;
-                color: #64748B !important;
-                opacity: 0.55 !important;
+                background: #F1F5F9 !important;
+                border-color: #E2E8F0 !important;
+                color: #94A3B8 !important;
+                opacity: 0.65 !important;
                 box-shadow: none !important;
             }
 
-            /* ── 2. BUDGET BLITZ: 3-Column Dark-Slate Optimizer ── */
+            /* ── 2. BUDGET BLITZ: 3-Column Daylight Optimizer ── */
             .bb-area {
                 padding: 2px !important;
             }
@@ -317,9 +317,9 @@
                 line-height: 1.28 !important;
                 padding: 8px 11px !important;
                 min-width: 0 !important;
-                background: var(--ios-surface) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: var(--ios-text-primary) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 border-radius: 14px !important;
             }
             .bb-remaining {
@@ -327,14 +327,14 @@
                 padding: 6px 10px !important;
                 flex-shrink: 0 !important;
                 line-height: 1.1 !important;
-                background: rgba(56, 189, 248, 0.14) !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
-                color: #38BDF8 !important;
+                background: #EFF6FF !important;
+                border: 1.5px solid #93C5FD !important;
+                color: #1D4ED8 !important;
                 border-radius: 14px !important;
                 font-variant-numeric: tabular-nums !important;
             }
             .bb-remaining small {
-                color: #94A3B8 !important;
+                color: #475569 !important;
             }
             .bb-channels {
                 grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -343,15 +343,15 @@
             }
             .bb-channel {
                 padding: 9px 6px !important;
-                background: var(--ios-surface) !important;
-                border: 1.5px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #CBD5E1 !important;
                 border-radius: 15px !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06) !important;
             }
             .bb-channel.bb-has-tokens {
-                border-color: #38BDF8 !important;
-                background: linear-gradient(180deg, rgba(14, 165, 233, 0.22) 0%, rgba(30, 41, 59, 0.92) 100%) !important;
-                box-shadow: 0 0 18px rgba(56, 189, 248, 0.2) !important;
+                border-color: #2563EB !important;
+                background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%) !important;
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14) !important;
             }
             .bb-channel-name {
                 font-size: 0.76rem !important;
@@ -361,21 +361,22 @@
                 align-items: center !important;
                 justify-content: center !important;
                 margin-bottom: 2px !important;
-                color: #F1F5F9 !important;
+                color: #0F172A !important;
+                font-weight: 700 !important;
             }
             .bb-channel-tokens {
                 font-size: 1.7rem !important;
-                color: #38BDF8 !important;
+                color: #2563EB !important;
                 font-variant-numeric: tabular-nums !important;
             }
             .bb-channel-stats {
                 font-size: 0.68rem !important;
                 margin: 4px 0 6px 0 !important;
                 line-height: 1.2 !important;
-                color: #94A3B8 !important;
+                color: #475569 !important;
             }
             .bb-channel-stats strong {
-                color: #E2E8F0 !important;
+                color: #0F172A !important;
             }
             .bb-controls {
                 gap: 6px !important;
@@ -391,55 +392,55 @@
                 transform: scale(0.91) !important;
             }
             .bb-minus {
-                background: rgba(51, 65, 85, 0.9) !important;
-                color: #F8FAFC !important;
-                border: 1px solid rgba(255, 255, 255, 0.14) !important;
+                background: #E2E8F0 !important;
+                color: #0F172A !important;
+                border: 1px solid #CBD5E1 !important;
             }
             .bb-plus {
-                background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
+                background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%) !important;
                 color: #FFFFFF !important;
-                box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35) !important;
+                box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25) !important;
             }
             .bb-outcome {
                 padding: 8px 12px !important;
                 font-size: 0.95rem !important;
                 margin-bottom: 7px !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: #E2E8F0 !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 border-radius: 12px !important;
             }
             .bb-outcome strong {
-                color: #34D399 !important;
+                color: #059669 !important;
                 font-size: 1.08rem !important;
             }
             .bb-table {
                 padding: 6px 12px !important;
                 margin-bottom: 9px !important;
                 font-size: 0.8rem !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: #CBD5E1 !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #334155 !important;
                 border-radius: 12px !important;
             }
             .bb-table th, .bb-table td {
-                border-bottom: 1px solid rgba(148, 163, 184, 0.15) !important;
-                color: #E2E8F0 !important;
+                border-bottom: 1px solid #E2E8F0 !important;
+                color: #0F172A !important;
             }
             .bb-lock {
                 padding: 13px !important;
                 font-size: 1rem !important;
                 border-radius: 14px !important;
                 background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
-                box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+                box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3) !important;
             }
             .bb-lock:disabled {
-                background: rgba(51, 65, 85, 0.75) !important;
-                color: #94A3B8 !important;
+                background: #E2E8F0 !important;
+                color: #64748B !important;
                 box-shadow: none !important;
             }
 
-            /* ── 3. MINORITY RULE: Dark-Glass Blue Ocean Cards ── */
+            /* ── 3. MINORITY RULE: Daylight Blue Ocean Cards ── */
             .mr-area {
                 padding: 2px !important;
             }
@@ -449,43 +450,43 @@
             .mr-area > div:nth-child(2) {
                 padding: 11px 14px !important;
                 margin-bottom: 10px !important;
-                background: var(--ios-surface) !important;
-                border: 1px solid rgba(56, 189, 248, 0.3) !important;
-                border-top: 3px solid #38BDF8 !important;
+                background: #F0F9FF !important;
+                border: 1px solid #BAE6FD !important;
+                border-top: 3px solid #0284C7 !important;
                 border-radius: 16px !important;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08) !important;
             }
             .mr-area > div:nth-child(2) > div {
                 font-size: 0.95rem !important;
                 line-height: 1.32 !important;
-                color: var(--ios-text-primary) !important;
+                color: #0F172A !important;
             }
             .mr-option-card {
                 padding: 10px 12px !important;
                 margin-bottom: 7px !important;
                 border-radius: 14px !important;
                 gap: 10px !important;
-                background: linear-gradient(180deg, rgba(34, 47, 73, 0.92) 0%, rgba(22, 32, 54, 0.92) 100%) !important;
-                border: 1.5px solid rgba(148, 163, 184, 0.22) !important;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #CBD5E1 !important;
+                box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
             }
             .mr-option-card .mr-badge {
                 width: 30px !important;
                 height: 30px !important;
                 font-size: 14px !important;
-                background: rgba(15, 23, 42, 0.85) !important;
-                color: #38BDF8 !important;
-                border: 1px solid rgba(56, 189, 248, 0.35) !important;
+                background: #EFF6FF !important;
+                color: #2563EB !important;
+                border: 1px solid #93C5FD !important;
             }
             .mr-option-card > div:nth-child(2) {
                 font-size: 0.91rem !important;
                 line-height: 1.25 !important;
-                color: var(--ios-text-primary) !important;
+                color: #0F172A !important;
             }
             .mr-option-card.selected {
-                border-color: #38BDF8 !important;
-                background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(37, 99, 235, 0.25)) !important;
-                box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35), 0 6px 18px rgba(14, 165, 233, 0.25) !important;
+                border-color: #0284C7 !important;
+                background: #E0F2FE !important;
+                box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25), 0 4px 12px rgba(2, 132, 199, 0.14) !important;
             }
             #mrActionContainer {
                 margin-top: 10px !important;
@@ -496,7 +497,7 @@
                 border-radius: 14px !important;
             }
 
-            /* ── 4. BUY A CLUE: Dark-Glass VoI Decision Cards ── */
+            /* ── 4. BUY A CLUE: Daylight VoI Decision Cards ── */
             .bac-area {
                 padding: 2px !important;
             }
@@ -510,33 +511,33 @@
                 line-height: 1.28 !important;
                 padding: 9px 12px !important;
                 min-width: 0 !important;
-                background: var(--ios-surface) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: var(--ios-text-primary) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 border-radius: 14px !important;
             }
             .bac-rules {
                 padding: 7px 10px !important;
                 margin-bottom: 8px !important;
                 font-size: 0.8rem !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: #CBD5E1 !important;
+                background: #F1F5F9 !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #334155 !important;
                 border-radius: 12px !important;
             }
             .bac-rules strong {
-                color: #38BDF8 !important;
+                color: #2563EB !important;
             }
             .bac-rules-note {
-                color: #94A3B8 !important;
+                color: #475569 !important;
             }
             .bac-clue {
                 padding: 9px 12px !important;
                 margin-bottom: 8px !important;
                 font-size: 0.88rem !important;
-                background: rgba(250, 204, 21, 0.14) !important;
-                border: 1.5px solid #FACC15 !important;
-                color: #FEF08A !important;
+                background: #FEF9C3 !important;
+                border: 1.5px solid #EAB308 !important;
+                color: #713F12 !important;
                 border-radius: 12px !important;
             }
             .bac-options {
@@ -546,9 +547,9 @@
             .bac-option {
                 padding: 11px 13px !important;
                 font-size: 0.92rem !important;
-                background: linear-gradient(180deg, rgba(34, 47, 73, 0.92) 0%, rgba(22, 32, 54, 0.92) 100%) !important;
-                border: 1.5px solid rgba(148, 163, 184, 0.22) !important;
-                color: var(--ios-text-primary) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 border-radius: 14px !important;
                 transition: transform 0.08s ease, border-color 0.15s ease !important;
             }
@@ -556,10 +557,10 @@
                 transform: scale(0.985) !important;
             }
             .bac-option.bac-selected {
-                border-color: #38BDF8 !important;
-                background: linear-gradient(135deg, rgba(14, 165, 233, 0.26) 0%, rgba(37, 99, 235, 0.24) 100%) !important;
-                color: #FFFFFF !important;
-                box-shadow: 0 0 16px rgba(56, 189, 248, 0.25) !important;
+                border-color: #2563EB !important;
+                background: #EFF6FF !important;
+                color: #1E3A8A !important;
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
             }
             .bac-actions {
                 grid-template-columns: 1fr 1fr !important;
@@ -568,9 +569,9 @@
             .bac-buy {
                 padding: 11px 8px !important;
                 font-size: 0.88rem !important;
-                background: rgba(245, 158, 11, 0.14) !important;
-                border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
-                color: #FCD34D !important;
+                background: #FEF3C7 !important;
+                border: 1.5px solid #F59E0B !important;
+                color: #92400E !important;
                 border-radius: 14px !important;
             }
             .bac-lock {
@@ -578,10 +579,11 @@
                 font-size: 0.92rem !important;
                 border-radius: 14px !important;
                 background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+                color: #FFFFFF !important;
             }
             .bac-lock:disabled {
-                background: rgba(51, 65, 85, 0.75) !important;
-                color: #94A3B8 !important;
+                background: #E2E8F0 !important;
+                color: #64748B !important;
             }
 
             /* ── 5. CLOSEST GUESS: Tactile Sliders + Stepper Pills ── */
@@ -593,7 +595,7 @@
                 gap: 8px !important;
             }
             .range-input-group label {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 font-size: 0.74rem !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.06em !important;
@@ -603,9 +605,9 @@
                 padding: 8px !important;
                 font-size: 1.3rem !important;
                 font-weight: 800 !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.4) !important;
-                color: #F8FAFC !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #3B82F6 !important;
+                color: #0F172A !important;
                 border-radius: 12px !important;
                 font-variant-numeric: tabular-nums !important;
             }
@@ -614,7 +616,7 @@
                 color: #64748B !important;
                 font-weight: 700 !important;
             }
-            /* Custom iOS Tactile Stepper & Slider Controls */
+            /* Custom Tactile Stepper & Slider Controls */
             .ios-cg-touch-deck {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -622,8 +624,8 @@
                 margin: 6px 0 8px 0;
             }
             .ios-cg-col {
-                background: rgba(15, 23, 42, 0.65);
-                border: 1px solid rgba(148, 163, 184, 0.16);
+                background: #F8FAFC;
+                border: 1px solid #CBD5E1;
                 border-radius: 12px;
                 padding: 7px 8px;
             }
@@ -633,7 +635,7 @@
                 width: 100%;
                 height: 6px;
                 border-radius: 999px;
-                background: rgba(51, 65, 85, 0.9);
+                background: #CBD5E1;
                 outline: none;
                 margin: 4px 0 8px 0;
             }
@@ -643,9 +645,9 @@
                 width: 22px;
                 height: 22px;
                 border-radius: 50%;
-                background: #38BDF8;
+                background: #2563EB;
                 border: 2.5px solid #FFFFFF;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+                box-shadow: 0 2px 6px rgba(15, 23, 42, 0.3);
                 cursor: pointer;
             }
             .ios-cg-steppers {
@@ -654,9 +656,9 @@
                 gap: 4px;
             }
             .ios-cg-step-btn {
-                background: rgba(30, 41, 59, 0.95);
-                border: 1px solid rgba(148, 163, 184, 0.25);
-                color: #E2E8F0;
+                background: #FFFFFF;
+                border: 1px solid #CBD5E1;
+                color: #0F172A;
                 font-size: 0.74rem;
                 font-weight: 700;
                 padding: 5px 0;
@@ -664,26 +666,27 @@
                 cursor: pointer;
                 text-align: center;
                 user-select: none;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
             }
             .ios-cg-step-btn:active {
                 transform: scale(0.92);
-                background: rgba(56, 189, 248, 0.25);
-                border-color: #38BDF8;
+                background: #EFF6FF;
+                border-color: #2563EB;
             }
             .closest-guess-preview-card {
                 margin: 6px auto !important;
                 padding: 8px 12px !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 12px !important;
             }
             #bracketWidthLabel {
-                color: #E2E8F0 !important;
+                color: #0F172A !important;
             }
             #bracketBadge {
-                background: rgba(56, 189, 248, 0.16) !important;
-                border: 1px solid rgba(56, 189, 248, 0.38) !important;
-                color: #7DD3FC !important;
+                background: #EFF6FF !important;
+                border: 1px solid #93C5FD !important;
+                color: #1D4ED8 !important;
             }
             .submit-guess-btn {
                 padding: 12px !important;
@@ -691,18 +694,18 @@
                 font-weight: 800 !important;
                 margin-top: 6px !important;
                 border-radius: 14px !important;
-                box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+                box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3) !important;
             }
             .numberline-container {
                 margin: 8px 0 2px 0 !important;
                 padding: 10px !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 14px !important;
             }
             .numberline-title {
                 font-size: 0.72rem !important;
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 margin-bottom: 6px !important;
             }
             .numberline {
@@ -710,27 +713,27 @@
                 margin: 6px 0 !important;
             }
             .numberline-axis {
-                background: rgba(148, 163, 184, 0.35) !important;
+                background: #94A3B8 !important;
             }
             .range-box {
                 height: 52px !important;
-                background: rgba(56, 189, 248, 0.22) !important;
-                border: 1px solid rgba(56, 189, 248, 0.4) !important;
+                background: rgba(37, 99, 235, 0.18) !important;
+                border: 1px solid #3B82F6 !important;
             }
             .range-box.own {
-                background: rgba(16, 185, 129, 0.32) !important;
-                border: 1.5px solid #10B981 !important;
+                background: rgba(16, 185, 129, 0.25) !important;
+                border: 1.5px solid #059669 !important;
             }
             .numberline-labels,
             .numberline-labels span,
             .numberline-labels div,
             #numberlineMin,
             #numberlineMax {
-                color: #CBD5E1 !important;
+                color: #334155 !important;
                 font-size: 0.82rem !important;
             }
 
-            /* ── 6. CROWD WISDOM: Dark-Glass Live Distribution Bars ── */
+            /* ── 6. CROWD WISDOM: Daylight Live Distribution Bars ── */
             .crowd-wisdom-area {
                 padding: 2px !important;
             }
@@ -743,62 +746,62 @@
             .distribution-row {
                 padding: 7px 8px !important;
                 margin-bottom: 7px !important;
-                background: var(--ios-surface) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 14px !important;
             }
             .distribution-row.unanswered-row {
-                background: rgba(244, 63, 94, 0.12) !important;
-                border: 1px solid rgba(244, 63, 94, 0.3) !important;
+                background: #FFF1F2 !important;
+                border: 1px solid #FECDD3 !important;
             }
             .distribution-label {
                 width: 130px !important;
                 font-size: 0.82rem !important;
-                color: #FDA4AF !important;
+                color: #E11D48 !important;
             }
             .crowd-wisdom-btn {
                 width: 130px !important;
                 padding: 9px 10px !important;
                 font-size: 0.85rem !important;
                 font-weight: 700 !important;
-                background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(11, 17, 32, 0.95) 100%) !important;
-                border: 1.5px solid #38BDF8 !important;
-                color: #F8FAFC !important;
+                background: #FFFFFF !important;
+                border: 1.5px solid #2563EB !important;
+                color: #1E3A8A !important;
                 border-radius: 10px !important;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12) !important;
             }
             .crowd-wisdom-btn.selected {
-                background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
-                border-color: #7DD3FC !important;
+                background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%) !important;
+                border-color: #1D4ED8 !important;
                 color: #FFFFFF !important;
             }
             .distribution-bar-wrapper {
-                background: rgba(11, 17, 32, 0.85) !important;
+                background: #E2E8F0 !important;
                 height: 20px !important;
                 border-radius: 10px !important;
-                border: 1px solid rgba(255, 255, 255, 0.06) !important;
+                border: 1px solid #CBD5E1 !important;
             }
             .distribution-percent {
-                color: #E2E8F0 !important;
+                color: #0F172A !important;
                 font-size: 0.85rem !important;
                 font-variant-numeric: tabular-nums !important;
             }
 
-            /* ── 7. PUSH RANGE: Dark-Glass Team Tug-of-War ── */
+            /* ── 7. PUSH RANGE: Daylight Team Tug-of-War ── */
             .push-range-area {
                 padding: 2px !important;
             }
             .push-range-visualization {
                 margin: 8px 0 !important;
                 padding: 10px !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 16px !important;
             }
             .push-range-bar {
                 height: 40px !important;
-                background: rgba(254, 243, 199, 0.12) !important;
-                border: 1.5px solid rgba(251, 191, 36, 0.35) !important;
+                background: #FEF3C7 !important;
+                border: 1.5px solid #F59E0B !important;
                 border-radius: 10px !important;
             }
             .guess-range-bracket {
@@ -808,25 +811,26 @@
             }
             .bracket-left-edge, .bracket-right-edge,
             .bracket-bottom::before, .bracket-bottom::after {
-                background: #64748B !important;
+                background: #475569 !important;
             }
             .bracket-left-edge .edge-value {
                 font-size: 1.1rem !important;
                 top: -26px !important;
-                color: #60A5FA !important;
+                color: #2563EB !important;
             }
             .bracket-right-edge .edge-value {
                 font-size: 1.1rem !important;
                 top: -26px !important;
-                color: #F87171 !important;
+                color: #DC2626 !important;
             }
             .bracket-label {
-                background: #1E293B !important;
-                border: 1px solid rgba(148, 163, 184, 0.25) !important;
+                background: #F1F5F9 !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 padding: 3px 10px !important;
             }
             .range-label {
-                color: #CBD5E1 !important;
+                color: #334155 !important;
             }
             .push-button-container {
                 margin: 10px 0 !important;
@@ -848,28 +852,29 @@
                 padding: 8px !important;
                 max-height: 120px !important;
                 overflow-y: auto !important;
-                background: var(--ios-surface-deep) !important;
+                background: #F8FAFC !important;
                 border-width: 1.5px !important;
                 border-radius: 14px !important;
             }
             .team-panel.left {
-                border-color: rgba(59, 130, 246, 0.5) !important;
+                border-color: #93C5FD !important;
             }
             .team-panel.right {
-                border-color: rgba(239, 68, 68, 0.5) !important;
+                border-color: #FCA5A5 !important;
             }
             .team-panel h4 {
                 font-size: 0.85rem !important;
                 margin-bottom: 6px !important;
             }
             .team-member {
-                background: rgba(30, 41, 59, 0.8) !important;
-                color: #E2E8F0 !important;
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                color: #0F172A !important;
                 font-size: 0.82rem !important;
                 padding: 5px 8px !important;
             }
 
-            /* ── 8. WORD GUESS: Dark-Glass Tiles + Built-in Tactile QWERTY Pad ── */
+            /* ── 8. WORD GUESS: Daylight Tiles + Built-in Tactile QWERTY Pad ── */
             .word-guess-area {
                 padding: 2px !important;
             }
@@ -883,18 +888,18 @@
             .letter-box {
                 width: 32px !important;
                 height: 40px !important;
-                background: var(--ios-surface-deep) !important;
-                border: 1.5px solid #38BDF8 !important;
+                background: #F0F9FF !important;
+                border: 1.5px solid #0284C7 !important;
                 border-radius: 8px !important;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12) !important;
                 font-size: 18px !important;
             }
             .player-letter {
-                color: #F8FAFC !important;
+                color: #0F172A !important;
                 font-weight: 800 !important;
             }
             .revealed-letter {
-                color: #38BDF8 !important;
+                color: #0284C7 !important;
                 font-weight: 800 !important;
             }
             .word-guess-input-area {
@@ -902,7 +907,10 @@
             }
             .ios-wg-keyboard {
                 margin-top: 10px;
-                padding: 0 2px;
+                padding: 6px 4px;
+                background: #F1F5F9;
+                border-radius: 14px;
+                border: 1px solid #E2E8F0;
                 width: 100%;
                 box-sizing: border-box;
                 display: flex;
@@ -923,10 +931,10 @@
                 height: 39px;
                 padding: 0;
                 border-radius: 7px;
-                background: linear-gradient(180deg, rgba(51, 65, 85, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
-                border: 1px solid rgba(148, 163, 184, 0.28);
-                box-shadow: 0 2px 0 rgba(2, 6, 23, 0.9);
-                color: #F8FAFC;
+                background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+                border: 1px solid #CBD5E1;
+                box-shadow: 0 2px 0 #94A3B8;
+                color: #0F172A;
                 font-size: 0.88rem;
                 font-weight: 700;
                 display: flex;
@@ -943,21 +951,23 @@
             }
             .ios-wg-key.ios-wg-go {
                 background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                border-color: #34D399;
+                border-color: #047857;
+                box-shadow: 0 2px 0 #065F46;
                 color: #FFFFFF;
             }
             .ios-wg-key.ios-wg-go.disabled {
-                background: rgba(51, 65, 85, 0.5);
-                border-color: rgba(148, 163, 184, 0.15);
-                color: #64748B;
+                background: #E2E8F0;
+                border-color: #CBD5E1;
+                box-shadow: none;
+                color: #94A3B8;
             }
             .ios-wg-key:active {
                 transform: translateY(2px) scale(0.94);
-                background: #38BDF8;
-                color: #0F172A;
+                background: #2563EB;
+                color: #FFFFFF;
             }
 
-            /* ── 9. LINE FIT: Dark-Slate Analytics Chart & Live Drag Controls ── */
+            /* ── 9. LINE FIT: Daylight Analytics Chart & Live Drag Controls ── */
             .line-fit-area {
                 padding: 2px !important;
             }
@@ -969,39 +979,39 @@
                 width: auto !important;
                 max-width: 100% !important;
                 object-fit: contain !important;
-                background: #0B1120 !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #93C5FD !important;
                 border-radius: 14px !important;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+                box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
             }
             #lineStats {
                 padding: 6px 10px !important;
                 margin-bottom: 6px !important;
-                background: rgba(14, 165, 233, 0.14) !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.4) !important;
+                background: #F0F9FF !important;
+                border: 1.5px solid #BAE6FD !important;
                 border-radius: 12px !important;
             }
             #lineStats > div:first-child {
-                color: #BAE6FD !important;
+                color: #0369A1 !important;
                 font-size: 0.78rem !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.05em !important;
             }
             #lineEquation {
                 font-size: 0.92rem !important;
-                color: #38BDF8 !important;
+                color: #0284C7 !important;
             }
             #lineCorrelation {
                 font-size: 0.82rem !important;
-                color: #A78BFA !important;
+                color: #6D28D9 !important;
             }
             .canvas-instructions {
                 margin-top: 6px !important;
                 padding: 7px 10px !important;
                 font-size: 0.88rem !important;
-                background: rgba(15, 23, 42, 0.85) !important;
-                border: 1px solid rgba(56, 189, 248, 0.35) !important;
-                color: #38BDF8 !important;
+                background: #EFF6FF !important;
+                border: 1px solid #93C5FD !important;
+                color: #1D4ED8 !important;
                 border-radius: 10px !important;
             }
             .line-fit-controls {
@@ -1017,27 +1027,25 @@
             }
 
             /* ── 10. BETWEEN-ROUND DEBRIEFS, VISUALIZATIONS & TRANSITIONS ── */
-            /* Hide Student QR Code Box (Students are already on their iPhones) */
             .qr-code-box {
                 display: none !important;
             }
 
-            /* Compact Pre-Game & Between-Round Waiting State */
             .waiting-state {
                 padding: 20px 12px !important;
             }
             .waiting-state h2 {
                 font-size: 1.25rem !important;
                 font-weight: 800 !important;
-                color: #F8FAFC !important;
+                color: #0F172A !important;
                 margin-bottom: 6px !important;
             }
 
             /* Countdown Overlay (5, 4, 3, 2, 1, GO!) */
             #countdownOverlay {
-                background: rgba(9, 13, 22, 0.88) !important;
-                backdrop-filter: blur(22px) !important;
-                -webkit-backdrop-filter: blur(22px) !important;
+                background: rgba(79, 70, 229, 0.92) !important;
+                backdrop-filter: blur(18px) !important;
+                -webkit-backdrop-filter: blur(18px) !important;
             }
             #countdownNumber {
                 font-size: 92px !important;
@@ -1046,37 +1054,38 @@
             }
             #countdownRoundInfo {
                 font-size: 1.2rem !important;
-                color: #CBD5E1 !important;
+                color: #E0E7FF !important;
                 margin-top: 16px !important;
             }
 
-            /* Locked-In Stamp & Suspense Shimmer (game-utils.js) */
+            /* Locked-In Stamp & Suspense Shimmer */
             .locked-in-stamp-card {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.24) 0%, rgba(5, 150, 105, 0.28) 100%) !important;
+                background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important;
                 border: 1.5px solid #10B981 !important;
-                color: #ECFDF5 !important;
+                color: #065F46 !important;
                 border-radius: 14px !important;
                 padding: 10px 14px !important;
-                box-shadow: 0 8px 22px rgba(16, 185, 129, 0.25) !important;
+                box-shadow: 0 6px 18px rgba(16, 185, 129, 0.16) !important;
             }
             .locked-in-stamp-sub {
-                color: #A7F3D0 !important;
+                color: #047857 !important;
             }
             .suspense-shimmer-bar {
-                background: rgba(15, 23, 42, 0.85) !important;
-                border: 1px solid rgba(56, 189, 248, 0.35) !important;
-                color: #BAE6FD !important;
+                background: #EFF6FF !important;
+                border: 1px solid #93C5FD !important;
+                color: #1D4ED8 !important;
                 border-radius: 12px !important;
             }
 
             /* Unified Round Complete Banner (#roundCompleteBanner) */
             #roundCompleteBanner {
-                background: linear-gradient(180deg, rgba(22, 32, 54, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%) !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.32) !important;
+                background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
+                border: 1.5px solid #CBD5E1 !important;
                 border-radius: 18px !important;
                 padding: 10px 12px !important;
                 margin-bottom: 4px !important;
-                box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+                color: #0F172A !important;
+                box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12) !important;
             }
             #roundCompleteBanner ~ div {
                 display: none !important;
@@ -1090,6 +1099,7 @@
             #roundCompleteBanner h2 {
                 font-size: 1.12rem !important;
                 margin: 0 0 6px 0 !important;
+                color: #0F172A !important;
                 letter-spacing: -0.01em !important;
             }
             #gameSpecificResults {
@@ -1101,18 +1111,18 @@
                 width: auto !important;
                 max-width: 100% !important;
                 object-fit: contain !important;
-                background: #0B1120 !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #93C5FD !important;
                 border-radius: 12px !important;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
             }
             #speedTapResultsDotPlot {
                 max-height: 20vh !important;
                 width: 100% !important;
-                background: #0B1120 !important;
-                border: 1.5px solid rgba(56, 189, 248, 0.38) !important;
+                background: #F8FAFC !important;
+                border: 1.5px solid #93C5FD !important;
                 border-radius: 12px !important;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
             }
 
             /* Budget Blitz Results Debrief (.bb-results) */
@@ -1132,60 +1142,60 @@
                 margin-bottom: 8px !important;
             }
             .bb-res-stat {
-                background: var(--ios-surface) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 12px !important;
                 padding: 8px 6px !important;
             }
             .bb-res-stat-label {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 font-size: 0.65rem !important;
             }
             .bb-res-stat-val {
-                color: #38BDF8 !important;
+                color: #2563EB !important;
                 font-size: 1.15rem !important;
             }
             .bb-res-card {
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 14px !important;
                 padding: 10px 12px !important;
                 margin-bottom: 8px !important;
-                color: #F8FAFC !important;
+                color: #0F172A !important;
             }
             .bb-res-card h4 {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 margin: 0 0 6px 0 !important;
                 font-size: 0.75rem !important;
             }
             .bb-alloc-row {
-                border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+                border-bottom: 1px solid #E2E8F0 !important;
                 padding: 5px 0 !important;
                 font-size: 0.84rem !important;
-                color: #E2E8F0 !important;
+                color: #0F172A !important;
             }
             .bb-alloc-opt {
-                background: rgba(16, 185, 129, 0.18) !important;
-                border: 1px solid rgba(16, 185, 129, 0.4) !important;
-                color: #6EE7B7 !important;
+                background: #ECFDF5 !important;
+                border: 1px solid #6EE7B7 !important;
+                color: #065F46 !important;
             }
             .bb-alloc-you {
-                background: rgba(56, 189, 248, 0.16) !important;
-                border: 1px solid rgba(56, 189, 248, 0.35) !important;
-                color: #7DD3FC !important;
+                background: #EFF6FF !important;
+                border: 1px solid #93C5FD !important;
+                color: #1D4ED8 !important;
             }
             .bb-takeaway {
-                background: rgba(14, 165, 233, 0.14) !important;
-                border: 1px solid rgba(56, 189, 248, 0.35) !important;
-                border-left: 4px solid #38BDF8 !important;
-                color: #E0F2FE !important;
+                background: #F0F9FF !important;
+                border: 1px solid #BAE6FD !important;
+                border-left: 4px solid #0284C7 !important;
+                color: #0C4A6E !important;
                 padding: 9px 11px !important;
                 border-radius: 12px !important;
                 font-size: 0.82rem !important;
                 margin-bottom: 6px !important;
             }
             .bb-wait {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 margin-top: 6px !important;
                 font-size: 0.82rem !important;
             }
@@ -1207,51 +1217,51 @@
                 margin-bottom: 8px !important;
             }
             .bac-ledger-cell {
-                background: var(--ios-surface) !important;
-                border: 1px solid var(--ios-border) !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
                 border-radius: 12px !important;
                 padding: 8px 6px !important;
             }
             .bac-ledger-cell span {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 font-size: 0.65rem !important;
             }
             .bac-ledger-cell strong {
-                color: #F8FAFC !important;
+                color: #0F172A !important;
                 font-size: 1.15rem !important;
             }
             .bac-ledger-net {
-                background: rgba(56, 189, 248, 0.14) !important;
-                border-color: rgba(56, 189, 248, 0.4) !important;
+                background: #EFF6FF !important;
+                border-color: #93C5FD !important;
             }
             .bac-ledger-net strong {
-                color: #38BDF8 !important;
+                color: #2563EB !important;
             }
             .bac-res-card {
-                background: var(--ios-surface-deep) !important;
-                border: 1px solid var(--ios-border) !important;
-                color: #E2E8F0 !important;
+                background: #F8FAFC !important;
+                border: 1px solid #CBD5E1 !important;
+                color: #0F172A !important;
                 border-radius: 12px !important;
                 padding: 9px 11px !important;
                 margin-bottom: 7px !important;
                 font-size: 0.84rem !important;
             }
             .bac-res-card p {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 margin: 4px 0 0 0 !important;
             }
             .bac-takeaway {
-                background: rgba(245, 158, 11, 0.14) !important;
-                border: 1px solid rgba(245, 158, 11, 0.4) !important;
+                background: #FFFBEB !important;
+                border: 1px solid #FDE68A !important;
                 border-left: 4px solid #F59E0B !important;
-                color: #FEF3C7 !important;
+                color: #78350F !important;
                 padding: 9px 11px !important;
                 border-radius: 12px !important;
                 font-size: 0.82rem !important;
                 margin-bottom: 6px !important;
             }
             .bac-wait {
-                color: #94A3B8 !important;
+                color: #475569 !important;
                 margin-top: 6px !important;
                 font-size: 0.82rem !important;
             }
@@ -1442,24 +1452,24 @@
             const html = `
                 <div style="margin: 6px 0;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                        <div style="background: rgba(250, 204, 21, 0.12); border: 1.5px solid rgba(250, 204, 21, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
-                            <div style="font-size: 0.66rem; font-weight: 800; color: #FDE047; text-transform: uppercase; letter-spacing: 0.05em;">✨ True OLS Line</div>
-                            <div style="font-size: 0.88rem; font-weight: 800; color: #FEF08A; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${trueEq}</div>
-                            <div style="font-size: 0.68rem; color: #CBD5E1; margin-top: 2px;">R² = ${Number(rSquared || 0.85).toFixed(2)} • r = ${Number(correlation || 0.92).toFixed(2)}</div>
+                        <div style="background: #FFFBEB; border: 1.5px solid #F59E0B; border-radius: 12px; padding: 7px 10px; text-align: left;">
+                            <div style="font-size: 0.66rem; font-weight: 800; color: #B45309; text-transform: uppercase; letter-spacing: 0.05em;">✨ True OLS Line</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #78350F; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${trueEq}</div>
+                            <div style="font-size: 0.68rem; color: #92400E; margin-top: 2px;">R² = ${Number(rSquared || 0.85).toFixed(2)} • r = ${Number(correlation || 0.92).toFixed(2)}</div>
                         </div>
-                        <div style="background: rgba(56, 189, 248, 0.14); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 12px; padding: 7px 10px; text-align: left;">
-                            <div style="font-size: 0.66rem; font-weight: 800; color: #7DD3FC; text-transform: uppercase; letter-spacing: 0.05em;">🎯 Your Fit</div>
-                            <div style="font-size: 0.88rem; font-weight: 800; color: #E0F2FE; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${youEq}</div>
-                            <div style="font-size: 0.68rem; color: #BAE6FD; margin-top: 2px;">${playerSub && playerSub.rank ? ('Rank #' + playerSub.rank + ' • SSE ' + Number(playerSub.sse || 0).toFixed(1)) : 'Visual OLS Fit'}</div>
+                        <div style="background: #EFF6FF; border: 1.5px solid #3B82F6; border-radius: 12px; padding: 7px 10px; text-align: left;">
+                            <div style="font-size: 0.66rem; font-weight: 800; color: #1D4ED8; text-transform: uppercase; letter-spacing: 0.05em;">🎯 Your Fit</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #1E3A8A; font-family: ui-monospace, SFMono-Regular, monospace; margin-top: 2px;">${youEq}</div>
+                            <div style="font-size: 0.68rem; color: #1E40AF; margin-top: 2px;">${playerSub && playerSub.rank ? ('Rank #' + playerSub.rank + ' • SSE ' + Number(playerSub.sse || 0).toFixed(1)) : 'Visual OLS Fit'}</div>
                         </div>
                     </div>
-                    <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 8px; text-align: center;">
+                    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 14px; padding: 8px; text-align: center;">
                         <canvas id="lineFitResultsCanvas" width="600" height="390"></canvas>
-                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">
-                            <span><strong style="color: #FACC15;">━━</strong> True OLS</span>
-                            <span><strong style="color: #38BDF8;">╌╌</strong> ★ You</span>
-                            <span><strong style="color: #10B981;">━━</strong> Top 3</span>
-                            <span><strong style="color: #64748B;">━━</strong> Class (${allSubmissions.length})</span>
+                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 0.72rem; color: #334155; font-weight: 600;">
+                            <span><strong style="color: #D97706;">━━</strong> True OLS</span>
+                            <span><strong style="color: #2563EB;">╌╌</strong> ★ You</span>
+                            <span><strong style="color: #059669;">━━</strong> Top 3</span>
+                            <span><strong style="color: #94A3B8;">━━</strong> Class (${allSubmissions.length})</span>
                         </div>
                     </div>
                 </div>
@@ -1520,12 +1530,12 @@
                 return null;
             };
 
-            // 1. Dark-Slate Canvas Fill
-            ctx.fillStyle = '#0B1120';
+            // 1. Crisp Daylight Canvas Fill
+            ctx.fillStyle = '#F8FAFC';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // 2. Subtle Gridlines
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+            ctx.strokeStyle = '#E2E8F0';
             ctx.lineWidth = 1;
             for (let i = 1; i <= 4; i++) {
                 const gx = margins.left + (plotW * i) / 4;
@@ -1541,7 +1551,7 @@
             }
 
             // 3. Axes & Labels
-            ctx.strokeStyle = '#64748B';
+            ctx.strokeStyle = '#475569';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(margins.left, margins.top + plotH);
@@ -1551,13 +1561,13 @@
             ctx.stroke();
 
             const labels = scatterData.axis_labels || { x: 'X', y: 'Y' };
-            ctx.fillStyle = '#E2E8F0';
+            ctx.fillStyle = '#0F172A';
             ctx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(labels.x || 'X', margins.left + plotW / 2, canvas.height - 8);
 
             ctx.font = '600 12px -apple-system, BlinkMacSystemFont, sans-serif';
-            ctx.fillStyle = '#94A3B8';
+            ctx.fillStyle = '#475569';
             ctx.textBaseline = 'top';
             ctx.fillText(bounds.x_min.toFixed(1), margins.left, margins.top + plotH + 6);
             ctx.fillText(((bounds.x_min + bounds.x_max) / 2).toFixed(1), margins.left + plotW / 2, margins.top + plotH + 6);
@@ -1575,7 +1585,7 @@
             (allSubmissions || []).forEach(function (sub) {
                 if (sub.player_id == myId) playerSub = sub;
                 if (sub.rank > 3 && sub.player_id != myId) {
-                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.30)';
+                    ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
                     ctx.lineWidth = 1.75;
                     ctx.setLineDash([]);
                     drawClippedLine(sub.slope, sub.intercept);
@@ -1585,31 +1595,31 @@
             // 5. Top 3 Class Submissions (Emerald)
             (allSubmissions || []).forEach(function (sub) {
                 if (sub.rank <= 3 && sub.player_id != myId) {
-                    ctx.strokeStyle = '#10B981';
+                    ctx.strokeStyle = '#059669';
                     ctx.lineWidth = 2.5;
                     ctx.setLineDash([]);
                     drawClippedLine(sub.slope, sub.intercept);
                 }
             });
 
-            // 6. True OLS Regression Line (Glowing Gold)
+            // 6. True OLS Regression Line (Warm Gold-Amber)
             if (trueLine) {
                 ctx.save();
-                ctx.shadowColor = 'rgba(250, 204, 21, 0.55)';
-                ctx.shadowBlur = 10;
-                ctx.strokeStyle = '#FACC15';
+                ctx.shadowColor = 'rgba(217, 119, 6, 0.35)';
+                ctx.shadowBlur = 6;
+                ctx.strokeStyle = '#D97706';
                 ctx.lineWidth = 4;
                 ctx.setLineDash([]);
                 drawClippedLine(trueLine.slope, trueLine.intercept);
                 ctx.restore();
             }
 
-            // 7. Player's Own Line (Glowing Dashed Cyan + ★ YOU Badge)
+            // 7. Player's Own Line (Dashed Royal Blue + ★ YOU Badge)
             if (playerSub) {
                 ctx.save();
-                ctx.shadowColor = 'rgba(56, 189, 248, 0.6)';
-                ctx.shadowBlur = 10;
-                ctx.strokeStyle = '#38BDF8';
+                ctx.shadowColor = 'rgba(37, 99, 235, 0.35)';
+                ctx.shadowBlur = 6;
+                ctx.strokeStyle = '#2563EB';
                 ctx.lineWidth = 3.5;
                 ctx.setLineDash([8, 5]);
                 const endPt = drawClippedLine(playerSub.slope, playerSub.intercept);
@@ -1619,7 +1629,7 @@
                     const bx = Math.max(margins.left + 40, Math.min(margins.left + plotW - 36, endPt.x - 28));
                     const by = Math.max(margins.top + 16, Math.min(margins.top + plotH - 16, endPt.y - 18));
                     ctx.save();
-                    ctx.fillStyle = '#0EA5E9';
+                    ctx.fillStyle = '#2563EB';
                     ctx.beginPath();
                     ctx.roundRect(bx - 28, by - 11, 56, 22, 6);
                     ctx.fill();
@@ -1638,8 +1648,8 @@
                 const y = Array.isArray(pt) ? pt[1] : pt.y;
                 const c = toCanvas(x, y);
                 ctx.save();
-                ctx.fillStyle = '#0B1120';
-                ctx.strokeStyle = '#38BDF8';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.strokeStyle = '#2563EB';
                 ctx.lineWidth = 2.75;
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, 6.5, 0, 2 * Math.PI);
@@ -1649,20 +1659,20 @@
             });
         };
 
-        // B. Speed Tap Between-Round Response-Time Dot Plot Renderer (Dark-Slate)
+        // B. Speed Tap Between-Round Response-Time Dot Plot Renderer (Daylight)
         window.showSpeedTapDotPlot = function (chartData) {
             const canvasId = 'speedTapResultsDotPlot';
             setTimeout(function () {
                 window.drawSpeedTapDotPlot(canvasId, chartData, (chartData && chartData.game_time_limit) || 12);
             }, 60);
             return `
-                <div style="margin: 6px 0; padding: 8px 10px; background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; text-align: center;">
-                    <div style="font-size: 0.78rem; color: #E2E8F0; margin-bottom: 6px; font-weight: 700;">⚡ Class Response Time Distribution</div>
+                <div style="margin: 6px 0; padding: 8px 10px; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 14px; text-align: center;">
+                    <div style="font-size: 0.78rem; color: #0F172A; margin-bottom: 6px; font-weight: 700;">⚡ Class Response Time Distribution</div>
                     <canvas id="${canvasId}" width="600" height="175"></canvas>
-                    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 5px; font-size: 0.7rem; color: #CBD5E1; font-weight: 600;">
-                        <span><strong style="color: #10B981;">●</strong> Correct</span>
-                        <span><strong style="color: #F43F5E;">●</strong> Missed</span>
-                        <span><strong style="color: #FACC15;">★</strong> Your Speed</span>
+                    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 5px; font-size: 0.7rem; color: #334155; font-weight: 600;">
+                        <span><strong style="color: #059669;">●</strong> Correct</span>
+                        <span><strong style="color: #E11D48;">●</strong> Missed</span>
+                        <span><strong style="color: #D97706;">★</strong> Your Speed</span>
                     </div>
                 </div>
             `;
@@ -1692,7 +1702,7 @@
             const pad = { left: 36, right: 36, top: 32, bottom: 34 };
             const plotW = W - pad.left - pad.right;
 
-            ctx.fillStyle = '#0B1120';
+            ctx.fillStyle = '#F8FAFC';
             ctx.fillRect(0, 0, W, H);
 
             const axisY = H - pad.bottom;
@@ -1705,19 +1715,19 @@
                 const t = (maxTime / numTicks) * i;
                 const x = pad.left + (i / numTicks) * plotW;
 
-                ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+                ctx.strokeStyle = '#E2E8F0';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(x, pad.top - 8);
                 ctx.lineTo(x, axisY);
                 ctx.stroke();
 
-                ctx.fillStyle = '#94A3B8';
+                ctx.fillStyle = '#475569';
                 ctx.fillText(`${t.toFixed(0)}s`, x, axisY + 17);
             }
 
             // Horizontal axis line
-            ctx.strokeStyle = '#475569';
+            ctx.strokeStyle = '#64748B';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(pad.left, axisY);
@@ -1752,7 +1762,7 @@
                     ctx.fillStyle = item.is_correct ? '#10B981' : '#F43F5E';
                     ctx.fill();
                     ctx.lineWidth = isMe ? 3 : 1.5;
-                    ctx.strokeStyle = isMe ? '#FACC15' : '#0B1120';
+                    ctx.strokeStyle = isMe ? '#D97706' : '#FFFFFF';
                     ctx.stroke();
                     ctx.restore();
 
@@ -1766,11 +1776,11 @@
                 const bx = Math.max(54, Math.min(W - 54, currentPlayerDot.x));
                 const by = Math.max(16, currentPlayerDot.y - 22);
                 ctx.save();
-                ctx.fillStyle = '#FACC15';
+                ctx.fillStyle = '#F59E0B';
                 ctx.beginPath();
                 ctx.roundRect(bx - 44, by - 10, 88, 20, 6);
                 ctx.fill();
-                ctx.fillStyle = '#0F172A';
+                ctx.fillStyle = '#FFFFFF';
                 ctx.font = '800 11px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -1779,7 +1789,7 @@
             }
         };
 
-        // C. Push Range Between-Round Final Tug-of-War Bracket (Compact Dark-Glass)
+        // C. Push Range Between-Round Final Tug-of-War Bracket (Compact Daylight)
         window.showPushRangeResults = function (data) {
             const gs = (data && data.game_specific) ? data.game_specific : (data || {});
             const rangeMatch = (gs.final_range || '').match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
@@ -1793,23 +1803,23 @@
                 <div style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
                     ${topPressers.slice(0, 3).map(function (p, i) {
                         const medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
-                        const color = p.team === 'left' ? '#60A5FA' : '#F87171';
-                        return `<span style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 999px; padding: 3px 9px; font-size: 0.72rem; color: #E2E8F0; font-weight: 700;">${medal} <span style="color:${color};">${p.player_name}</span> (${p.presses} taps)</span>`;
+                        const color = p.team === 'left' ? '#2563EB' : '#DC2626';
+                        return `<span style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 999px; padding: 3px 9px; font-size: 0.72rem; color: #0F172A; font-weight: 700;">${medal} <span style="color:${color};">${p.player_name}</span> (${p.presses} taps)</span>`;
                     }).join('')}
                 </div>
             ` : '';
 
             return `
-                <div style="background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; padding: 32px 12px 10px 12px; margin: 6px 0; position: relative;">
-                    <div style="position: relative; height: 34px; background: rgba(254, 243, 199, 0.12); border: 1.5px solid rgba(251, 191, 36, 0.4); border-radius: 10px; overflow: visible;">
+                <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 14px; padding: 32px 12px 10px 12px; margin: 6px 0; position: relative;">
+                    <div style="position: relative; height: 34px; background: #FEF3C7; border: 1.5px solid #F59E0B; border-radius: 10px; overflow: visible;">
                         <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${leftVal}%; background: linear-gradient(90deg, #2563EB, #3B82F6); border-radius: 8px 0 0 8px;"></div>
                         <div style="position: absolute; right: 0; top: 0; bottom: 0; width: ${Math.max(0, 100 - rightVal)}%; background: linear-gradient(270deg, #DC2626, #EF4444); border-radius: 0 8px 8px 0;"></div>
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.76rem; font-weight: 800; color: #FEF08A; text-shadow: 0 1px 4px rgba(0,0,0,0.85);">
+                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.76rem; font-weight: 800; color: #78350F;">
                             FINAL TEAM BRACKET: ${leftVal.toFixed(0)}% – ${rightVal.toFixed(0)}%
                         </div>
                         ${hasCorrect ? `
-                            <div style="position: absolute; left: ${correctVal}%; top: -24px; bottom: -4px; width: 3px; background: #10B981; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #10B981;">
-                                <div style="position: absolute; top: -3px; left: 50%; transform: translate(-50%, -100%); background: #10B981; color: #052E16; font-size: 0.68rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+                            <div style="position: absolute; left: ${correctVal}%; top: -24px; bottom: -4px; width: 3px; background: #10B981; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);">
+                                <div style="position: absolute; top: -3px; left: 50%; transform: translate(-50%, -100%); background: #10B981; color: #FFFFFF; font-size: 0.68rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
                                     🎯 Truth: ${correctVal}%
                                 </div>
                             </div>
@@ -1826,7 +1836,7 @@
         const gameArea = document.getElementById('gameArea');
         if (!gameArea) return;
 
-        // A. Compact & Dark-Mode #roundCompleteBanner
+        // A. Compact Daylight #roundCompleteBanner
         const banner = document.getElementById('roundCompleteBanner');
         if (banner && !banner.__iosBannerEnhanced) {
             banner.__iosBannerEnhanced = true;
@@ -1840,11 +1850,18 @@
                     div.style.marginTop = '8px';
                     Array.from(div.children).forEach(function (cell) {
                         cell.style.padding = '7px 6px';
-                        cell.style.background = 'rgba(15, 23, 42, 0.85)';
-                        cell.style.border = '1px solid rgba(148, 163, 184, 0.2)';
+                        cell.style.background = '#F8FAFC';
+                        cell.style.border = '1px solid #CBD5E1';
                         cell.style.borderRadius = '10px';
-                        if (cell.children[0]) cell.children[0].style.fontSize = '0.68rem';
-                        if (cell.children[1]) cell.children[1].style.fontSize = '1.15rem';
+                        cell.style.color = '#0F172A';
+                        if (cell.children[0]) {
+                            cell.children[0].style.fontSize = '0.68rem';
+                            cell.children[0].style.color = '#475569';
+                        }
+                        if (cell.children[1]) {
+                            cell.children[1].style.fontSize = '1.15rem';
+                            cell.children[1].style.color = '#0F172A';
+                        }
                     });
                 }
 
@@ -1853,54 +1870,39 @@
                     if (!st.includes('backdrop-filter')) {
                         div.style.padding = '7px 10px';
                         div.style.marginBottom = '6px';
-                        div.style.background = 'rgba(30, 41, 59, 0.85)';
-                        div.style.border = '1px solid rgba(148, 163, 184, 0.2)';
+                        div.style.background = '#F8FAFC';
+                        div.style.border = '1px solid #CBD5E1';
                         div.style.borderRadius = '10px';
+                        div.style.color = '#0F172A';
                         div.querySelectorAll('div').forEach(function (inner) {
                             inner.style.fontSize = '0.88rem';
+                            inner.style.color = '#0F172A';
                         });
                     }
                 }
 
-                // Convert Closest Guess "All Player Ranges" white container into Dark-Slate Laser Numberline
+                // Compact Closest Guess "All Player Ranges" Laser Numberline in Daylight
                 if (div.querySelector && div.querySelector('.laser-answer-line') && st.includes('position: relative')) {
                     const outerWrap = div.parentElement;
                     if (outerWrap) {
                         outerWrap.style.margin = '6px 0';
                         const titleEl = outerWrap.firstElementChild;
                         if (titleEl && titleEl !== div) {
-                            titleEl.style.color = '#E2E8F0';
+                            titleEl.style.color = '#0F172A';
                             titleEl.style.fontSize = '0.8rem';
                             titleEl.style.marginBottom = '6px';
                         }
-                        // Brighten summary pills below the track
                         const pillsWrap = outerWrap.lastElementChild;
                         if (pillsWrap && pillsWrap !== div) {
                             pillsWrap.style.marginTop = '8px';
                             pillsWrap.style.gap = '6px';
-                            pillsWrap.querySelectorAll('span').forEach(function (sp) {
-                                const spSt = (sp.getAttribute('style') || '').toLowerCase();
-                                if (spSt.includes('#065f46')) {
-                                    sp.style.color = '#6EE7B7';
-                                    sp.style.fontSize = '0.7rem';
-                                    sp.style.padding = '3px 9px';
-                                } else if (spSt.includes('#475569')) {
-                                    sp.style.color = '#CBD5E1';
-                                    sp.style.fontSize = '0.7rem';
-                                    sp.style.padding = '3px 9px';
-                                } else if (spSt.includes('#92400e')) {
-                                    sp.style.color = '#FDE047';
-                                    sp.style.fontSize = '0.7rem';
-                                    sp.style.padding = '3px 9px';
-                                }
-                            });
                         }
                     }
 
                     div.style.minHeight = '126px';
                     div.style.height = '126px';
-                    div.style.background = '#0B1120';
-                    div.style.border = '1.5px solid rgba(56, 189, 248, 0.35)';
+                    div.style.background = '#F8FAFC';
+                    div.style.border = '1.5px solid #93C5FD';
                     div.style.borderRadius = '14px';
                     div.style.padding = '10px 12px';
 
@@ -1916,67 +1918,65 @@
                         } else if (cst.includes('dotted')) {
                             child.style.height = '50px';
                             child.style.bottom = '20px';
-                            child.style.borderLeft = '2px dashed #38BDF8';
+                            child.style.borderLeft = '2px dashed #2563EB';
                         } else if (txt.includes('Average Guess')) {
                             child.style.bottom = '74px';
                             child.style.padding = '3px 7px';
                             child.style.borderRadius = '8px';
-                            child.style.background = 'rgba(15, 23, 42, 0.96)';
-                            child.style.border = '1.5px solid #38BDF8';
+                            child.style.background = '#EFF6FF';
+                            child.style.border = '1.5px solid #2563EB';
                             child.style.transform = 'translateX(-105%)';
                             if (child.children[0]) {
                                 child.children[0].style.fontSize = '0.78rem';
-                                child.children[0].style.color = '#38BDF8';
+                                child.children[0].style.color = '#1D4ED8';
                             }
                             if (child.children[1]) {
                                 child.children[1].style.fontSize = '0.6rem';
-                                child.children[1].style.color = '#BAE6FD';
+                                child.children[1].style.color = '#2563EB';
                             }
                         } else if (txt.includes('Correct Answer')) {
                             child.style.bottom = '74px';
                             child.style.padding = '3px 7px';
                             child.style.borderRadius = '8px';
-                            child.style.background = 'rgba(6, 78, 59, 0.96)';
-                            child.style.border = '1.5px solid #10B981';
+                            child.style.background = '#ECFDF5';
+                            child.style.border = '1.5px solid #059669';
                             child.style.transform = 'translateX(5%)';
                             if (child.children[0]) {
                                 child.children[0].style.fontSize = '0.78rem';
-                                child.children[0].style.color = '#34D399';
+                                child.children[0].style.color = '#065F46';
                             }
                             if (child.children[1]) {
                                 child.children[1].style.fontSize = '0.6rem';
-                                child.children[1].style.color = '#A7F3D0';
+                                child.children[1].style.color = '#047857';
                             }
                         } else if (txt.includes('(min)') || txt.includes('(max)')) {
                             child.style.bottom = '10px';
                             if (child.children[0]) {
                                 child.children[0].style.fontSize = '0.76rem';
-                                child.children[0].style.color = '#E2E8F0';
+                                child.children[0].style.color = '#0F172A';
                             }
                             if (child.children[1]) {
                                 child.children[1].style.fontSize = '0.62rem';
-                                child.children[1].style.color = '#94A3B8';
+                                child.children[1].style.color = '#475569';
                             }
                         }
                     });
                 }
 
-                // Convert Crowd Wisdom white/light-slate result rows into dark glass
+                // Compact Crowd Wisdom result rows in Daylight
                 if (st.includes('background: #f8fafc') || st.includes('background:#f8fafc')) {
-                    div.style.background = 'rgba(15, 23, 42, 0.78)';
-                    div.style.border = '1px solid rgba(148, 163, 184, 0.16)';
                     div.style.padding = '6px 8px';
                     div.style.marginBottom = '5px';
                 }
                 if (st.includes('width: 180px')) {
                     div.style.width = '112px';
                     div.style.fontSize = '0.76rem';
-                    div.style.color = '#F1F5F9';
+                    div.style.color = '#0F172A';
                 }
             });
         }
 
-        // B. Minority Rule Results (.mr-results) Dark-Glass Transformation
+        // B. Minority Rule Results (.mr-results) Compact Daylight Layout
         const mrResults = gameArea.querySelector('.mr-results');
         if (mrResults && !mrResults.__iosMrEnhanced) {
             mrResults.__iosMrEnhanced = true;
@@ -1990,39 +1990,21 @@
                     if (div.children[0]) div.children[0].style.fontSize = '28px';
                     if (div.children[1]) div.children[1].style.fontSize = '1.08rem';
                 } else if (st.includes('background: white')) {
-                    div.style.background = 'rgba(11, 17, 32, 0.92)';
-                    div.style.border = '1px solid rgba(148, 163, 184, 0.22)';
                     div.style.padding = '8px 10px';
                     div.style.marginBottom = '7px';
                     div.style.borderRadius = '12px';
                 } else if (st.includes('#f8fafc') || st.includes('#eff6ff') || st.includes('#f0f9ff') || st.includes('#e0f2fe')) {
-                    div.style.background = 'rgba(14, 165, 233, 0.14)';
-                    div.style.border = '1px solid rgba(56, 189, 248, 0.35)';
                     div.style.padding = '8px 10px';
                     div.style.marginBottom = '6px';
                     div.style.borderRadius = '12px';
-                } else if (st.includes('background: #f1f5f9')) {
-                    div.style.background = 'rgba(30, 41, 59, 0.9)';
-                }
-                if (st.includes('color: #1e293b') || st.includes('color: #334155') || st.includes('color: #0c4a6e') || st.includes('color: #0369a1')) {
-                    div.style.color = '#E0F2FE';
                 }
             });
         }
 
-        // C. Finale Screen ("That's a Wrap!" .results-display) Dark-Glass Polish
+        // C. Finale Screen ("That's a Wrap!" .results-display)
         const finalDisplay = gameArea.querySelector('.results-display');
         if (finalDisplay && !finalDisplay.__iosFinalEnhanced) {
             finalDisplay.__iosFinalEnhanced = true;
-            finalDisplay.querySelectorAll('h2, h3, p, div').forEach(function (el) {
-                const st = (el.getAttribute('style') || '').toLowerCase();
-                if (st.includes('color: #64748b')) el.style.color = '#94A3B8';
-                if (st.includes('color: #1e293b')) el.style.color = '#F8FAFC';
-                if (st.includes('background: #f8fafc')) {
-                    el.style.background = 'rgba(30, 41, 59, 0.85)';
-                    el.style.border = '1px solid rgba(148, 163, 184, 0.2)';
-                }
-            });
         }
 
         // D. Solo Practice Mode: Next Game / Replay Controls, Push Range Lock-In Button, & Timer-Expiry Auto-Grading
@@ -2048,8 +2030,11 @@
                 postToNative({ type: 'haptic', pattern: [20, 40, 20] });
                 window.__PRAXIS_IOS_SOLO_RESULTS = false;
                 const url = new URL(window.location.href);
+                url.searchParams.set('room', 'SOLO');
+                url.searchParams.set('dev', '1');
                 url.searchParams.set('solo', '1');
                 url.searchParams.set('game', targetObj.game);
+                url.searchParams.set('state', targetObj.snap);
                 url.searchParams.set('snapshot', targetObj.snap);
                 url.searchParams.delete('results');
                 window.location.href = url.toString();
@@ -2062,7 +2047,7 @@
                 finishBtn.type = 'button';
                 finishBtn.id = 'iosSoloPushFinishBtn';
                 finishBtn.innerHTML = '⚡ Lock In Team Range & View Results';
-                finishBtn.style.cssText = 'display: block; width: 100%; max-width: 340px; margin: 10px auto 0 auto; padding: 11px 16px; border-radius: 12px; border: 1.5px solid rgba(56, 189, 248, 0.45); background: rgba(15, 23, 42, 0.88); color: #38BDF8; font-size: 0.9rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25);';
+                finishBtn.style.cssText = 'display: block; width: 100%; max-width: 340px; margin: 10px auto 0 auto; padding: 11px 16px; border-radius: 12px; border: 1.5px solid #2563EB; background: #EFF6FF; color: #1D4ED8; font-size: 0.9rem; font-weight: 800; cursor: pointer; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.14);';
                 finishBtn.addEventListener('click', function () {
                     postToNative({ type: 'haptic', pattern: [25, 40] });
                     finishBtn.disabled = true;
@@ -2148,7 +2133,7 @@
         if (!canvas || canvas.__iosLineFitEnhanced) return;
         canvas.__iosLineFitEnhanced = true;
 
-        // Upgrade global drawScatterPlot to render a crisp Dark-Slate Analytics Chart
+        // Upgrade global drawScatterPlot to render a crisp Daylight Analytics Chart
         window.drawScatterPlot = function () {
             if (typeof lineFitState === 'undefined') return;
             const ctx = lineFitState.ctx;
@@ -2161,8 +2146,8 @@
                 return;
             }
 
-            // Dark-slate background
-            ctx.fillStyle = '#0B1120';
+            // Crisp daylight background
+            ctx.fillStyle = '#F8FAFC';
             ctx.fillRect(0, 0, cvs.width, cvs.height);
 
             const plotWidth = cvs.width - margins.left - margins.right;
@@ -2171,7 +2156,7 @@
             const plotTop = margins.top;
 
             // Subtle coordinate gridlines
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+            ctx.strokeStyle = '#E2E8F0';
             ctx.lineWidth = 1;
             for (let i = 1; i <= 4; i++) {
                 const gx = plotLeft + (plotWidth * i) / 4;
@@ -2188,7 +2173,7 @@
             }
 
             // Crisp Axes
-            ctx.strokeStyle = '#64748B';
+            ctx.strokeStyle = '#475569';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(plotLeft, plotTop + plotHeight);
@@ -2198,7 +2183,7 @@
             ctx.stroke();
 
             // Axis Titles
-            ctx.fillStyle = '#E2E8F0';
+            ctx.fillStyle = '#0F172A';
             ctx.font = '600 15px -apple-system, BlinkMacSystemFont, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(config.x_label || 'X', plotLeft + plotWidth / 2, cvs.height - 12);
@@ -2211,7 +2196,7 @@
 
             // Tick Labels
             ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
-            ctx.fillStyle = '#94A3B8';
+            ctx.fillStyle = '#475569';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             const xMid = (config.x_min + config.x_max) / 2;
@@ -2229,7 +2214,7 @@
             // Peer lines (if any)
             ctx.lineWidth = 2;
             (lineFitState.otherLines || []).forEach(function (line) {
-                ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
                 drawLine(line.slope, line.intercept);
             });
 
@@ -2244,11 +2229,11 @@
                         const pLine = dataToCanvas(pt.x, yPred);
                         const residual = Math.abs(pt.y - yPred);
                         if (residual < 2.2) {
-                            ctx.strokeStyle = 'rgba(16, 185, 129, 0.85)';
+                            ctx.strokeStyle = 'rgba(5, 150, 105, 0.85)';
                         } else if (residual < 5.0) {
-                            ctx.strokeStyle = 'rgba(245, 158, 11, 0.8)';
+                            ctx.strokeStyle = 'rgba(217, 119, 6, 0.8)';
                         } else {
-                            ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
+                            ctx.strokeStyle = 'rgba(225, 29, 72, 0.75)';
                         }
                         ctx.lineWidth = 1.75;
                         ctx.beginPath();
@@ -2260,21 +2245,21 @@
                 }
 
                 ctx.save();
-                ctx.shadowColor = 'rgba(34, 211, 238, 0.6)';
-                ctx.shadowBlur = 10;
-                ctx.strokeStyle = '#22D3EE';
+                ctx.shadowColor = 'rgba(2, 132, 199, 0.35)';
+                ctx.shadowBlur = 6;
+                ctx.strokeStyle = '#0284C7';
                 ctx.lineWidth = 3.5;
                 drawLine(lineFitState.proposedLine.slope, lineFitState.proposedLine.intercept);
                 ctx.restore();
             }
 
-            // Glowing Scatter Points
+            // Scatter Points
             if (lineFitState.scatterData && lineFitState.scatterData.points) {
                 lineFitState.scatterData.points.forEach(function (pt) {
                     const c = dataToCanvas(pt.x, pt.y);
                     ctx.save();
-                    ctx.fillStyle = '#0B1120';
-                    ctx.strokeStyle = '#38BDF8';
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.strokeStyle = '#2563EB';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.arc(c.x, c.y, 7.5, 0, 2 * Math.PI);
@@ -2288,12 +2273,12 @@
             const drawHandle = function (pt) {
                 const c = dataToCanvas(pt.x, pt.y);
                 ctx.save();
-                ctx.fillStyle = 'rgba(34, 211, 238, 0.22)';
+                ctx.fillStyle = 'rgba(2, 132, 199, 0.20)';
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, 18, 0, 2 * Math.PI);
                 ctx.fill();
 
-                ctx.fillStyle = '#22D3EE';
+                ctx.fillStyle = '#0284C7';
                 ctx.strokeStyle = '#FFFFFF';
                 ctx.lineWidth = 2.5;
                 ctx.beginPath();

@@ -23,7 +23,17 @@ struct LiveGameArenaView: View {
             )
             .ignoresSafeArea(edges: .bottom)
         }
-        .background(Color(red: 0.07, green: 0.10, blue: 0.17).ignoresSafeArea())
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.36, green: 0.42, blue: 0.98),
+                    Color(red: 0.49, green: 0.23, blue: 0.93)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        )
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
             bootstrapInitialHUD()
@@ -51,7 +61,7 @@ struct LiveGameArenaView: View {
         }
     }
 
-    // MARK: - Native Top HUD Component
+    // MARK: - Native Top HUD Component (Lively Classroom Daylight Theme)
     private var nativeTopHUDBar: some View {
         HStack(spacing: 10) {
             // Back / Leave Button
@@ -70,11 +80,15 @@ struct LiveGameArenaView: View {
                         .font(.system(size: 13, weight: .bold))
                         .lineLimit(1)
                 }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 11)
+                .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
+                .padding(.horizontal, 12)
                 .padding(.vertical, 7)
-                .background(Color.white.opacity(0.14))
+                .background(Color(red: 0.93, green: 0.95, blue: 1.0))
                 .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .strokeBorder(Color(red: 0.78, green: 0.82, blue: 0.99), lineWidth: 1)
+                )
             }
             .fixedSize(horizontal: true, vertical: false)
 
@@ -86,14 +100,14 @@ struct LiveGameArenaView: View {
                         .frame(width: 7, height: 7)
                     Text(roomBadgeText)
                         .font(.system(size: 13, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
                 }
 
                 Text("\(telemetry.connectionStatus.rawValue) • \(playerSubtitleText)")
-                    .font(.system(size: 10.5, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.68))
+                    .font(.system(size: 10.5, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -103,35 +117,39 @@ struct LiveGameArenaView: View {
                 VStack(alignment: .trailing, spacing: 0) {
                     Text("SCORE")
                         .font(.system(size: 9, weight: .heavy))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                         .lineLimit(1)
                     Text("\(telemetry.score)")
                         .font(.system(size: 15, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(red: 0.38, green: 0.65, blue: 0.98))
+                        .foregroundStyle(Color(red: 0.15, green: 0.39, blue: 0.92))
                         .lineLimit(1)
                 }
 
                 if telemetry.rank != "-" && !telemetry.rank.isEmpty {
                     Divider()
                         .frame(height: 22)
-                        .overlay(Color.white.opacity(0.2))
+                        .overlay(Color(red: 0.80, green: 0.84, blue: 0.88))
 
                     VStack(alignment: .trailing, spacing: 0) {
                         Text("RANK")
                             .font(.system(size: 9, weight: .heavy))
-                            .foregroundStyle(.white.opacity(0.6))
+                            .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                             .lineLimit(1)
                         Text("#\(telemetry.rank.replacingOccurrences(of: "#", with: ""))")
                             .font(.system(size: 15, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(red: 0.20, green: 0.83, blue: 0.60))
+                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
                             .lineLimit(1)
                     }
                 }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(Color.white.opacity(0.10))
+            .background(Color(red: 0.97, green: 0.98, blue: 0.99))
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+            )
             .fixedSize(horizontal: true, vertical: false)
 
             // Quick Actions Menu
@@ -169,24 +187,15 @@ struct LiveGameArenaView: View {
             } label: {
                 Image(systemName: "ellipsis.circle.fill")
                     .font(.system(size: 22))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.08, green: 0.12, blue: 0.22),
-                    Color(red: 0.11, green: 0.16, blue: 0.29)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+        .background(Color.white)
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color(red: 0.89, green: 0.91, blue: 0.94))
                 .frame(height: 1)
         }
     }

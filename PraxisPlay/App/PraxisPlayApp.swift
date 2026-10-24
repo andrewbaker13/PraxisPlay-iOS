@@ -7,7 +7,7 @@ struct PraxisPlayApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(.light)
                 .onOpenURL { incomingURL in
                     handleIncomingDeepLink(incomingURL)
                 }
