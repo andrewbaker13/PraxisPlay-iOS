@@ -31,6 +31,10 @@
     window.WS_BASE = window.__PRAXIS_IOS_WS_BASE || (isLocal 
         ? `ws://${backendHost}:8000` 
         : 'wss://drbaker-backend.onrender.com');
+
+    window.TEAM_PLAY_JOIN_URL = isLocal
+        ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/admin_pages/team_play/play.html`
+        : 'https://www.mktpraxis.com/play';
         
     window.JOIN_URL = isLocal
         ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/admin_pages/games/game-join.html`

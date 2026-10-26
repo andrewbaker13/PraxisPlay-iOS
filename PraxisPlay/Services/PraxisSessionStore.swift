@@ -60,6 +60,26 @@ final class PraxisSessionStore: ObservableObject {
     @Published var mfaPendingUserId: Int? = nil
     @Published var mfaEmailHint: String = ""
 
+    // MARK: - Instructor Host Management State (Team Edition + Classic Edition)
+    @Published var instructorCourses: [InstructorCourseItem] = []
+    @Published var instructorTemplates: [InstructorGameTemplateItem] = []
+    @Published var activeClassicHostRooms: [ActiveClassicHostRoom] = []
+    @Published var currentClassicHostRoom: ActiveClassicHostRoom? = nil
+    @Published var teamPlayCases: [TeamPlayCaseItem] = [
+        TeamPlayCaseItem(
+            caseId: "kf-r2-001",
+            client: "Kestrel & Fern",
+            title: "The Loyal Doubters",
+            rung: 2,
+            trap: "The quote qualifies the number"
+        )
+    ]
+    @Published var hostedTeamRoomCodes: [String] = []
+    @Published var currentTeamHostState: TeamPlayHostState? = nil
+    @Published var isHostingBusy: Bool = false
+    @Published var hostStatusMessage: String? = nil
+    @Published var hostErrorMessage: String? = nil
+
     var isAuthenticated: Bool {
         !authToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
@@ -76,6 +96,7 @@ final class PraxisSessionStore: ObservableObject {
 
     private let recentSessionsKey = "praxis_recent_sessions_v1"
     private let soloScoresKey = "praxis_solo_high_scores_v1"
+    private let hostedTeamRoomsKey = "praxis_hosted_team_rooms_v1"
     private let guestTagChars = Array("ABCDEFGHJKMNPQRSTUVWXYZ23456789")
 
     private init() {
@@ -106,6 +127,9 @@ final class PraxisSessionStore: ObservableObject {
             Task {
                 await fetchUserProfile()
                 await fetchMyActiveSessions()
+                if self.isStaffUser {
+                    await fetchInstructorSetupData()
+                }
             }
         }
     }
@@ -153,7 +177,6 @@ final class PraxisSessionStore: ObservableObject {
                 return false
             }
 
-            // Check if 2FA / Email Verification Code is required (staff/instructor accounts)
             if let mfaReq = json["mfa_required"] as? Bool, mfaReq,
                let mfaUid = json["mfa_user_id"] as? Int {
                 self.mfaPendingUserId = mfaUid
@@ -260,6 +283,9 @@ final class PraxisSessionStore: ObservableObject {
 
         await fetchUserProfile()
         await fetchMyActiveSessions()
+        if self.isStaffUser {
+            await fetchInstructorSetupData()
+        }
         HapticsManager.shared.playNotification(.success)
         return true
     }
@@ -276,7 +302,6 @@ final class PraxisSessionStore: ObservableObject {
             let (data, response) = try await URLSession.shared.data(for: req)
             guard let http = response as? HTTPURLResponse else { return }
             if http.statusCode == 401 {
-                // Token expired on server
                 clearAuthState()
                 return
             }
@@ -302,9 +327,7 @@ final class PraxisSessionStore: ObservableObject {
             } else if let singleCourse = json["course"] as? String, !singleCourse.isEmpty {
                 self.enrolledCourses = [singleCourse]
             }
-        } catch {
-            // Keep cached profile info on transient offline errors
-        }
+        } catch {}
     }
 
     func fetchMyActiveSessions() async {
@@ -359,6 +382,8 @@ final class PraxisSessionStore: ObservableObject {
         isStaffUser = false
         enrolledCourses = []
         activeServerSessions = []
+        currentTeamHostState = nil
+        currentClassicHostRoom = nil
         mfaPendingUserId = nil
         mfaEmailHint = ""
         useGuestMode = true
@@ -383,8 +408,13 @@ final class PraxisSessionStore: ObservableObject {
         return trimmed + suffix
     }
 
-    // MARK: - Join Classroom Session (with 429 Campus Rate-Limit Auto-Queue)
-    func joinRoom(roomCode rawCode: String, displayName rawName: String, guestPin: String = "") async {
+    // MARK: - Universal Join Classroom Session (Classic Edition + Team Edition Auto-Detection)
+    func joinRoom(
+        roomCode rawCode: String,
+        displayName rawName: String,
+        guestPin: String = "",
+        preferTeamPlay: Bool = false
+    ) async {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         let name = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -416,13 +446,19 @@ final class PraxisSessionStore: ObservableObject {
             joinStatusText = ""
         }
 
+        if preferTeamPlay {
+            let teamResult = await attemptTeamPlayJoin(code: code, name: name, guestPin: guestPin, effectiveGuestMode: effectiveGuestMode)
+            if teamResult == .joined || teamResult == .failedDefinitively {
+                return
+            }
+        }
+
         let decoratedName = decorateGuestName(roomCode: code, typedName: name.isEmpty ? "Player" : name)
         var payload: [String: Any] = ["room_code": code]
 
         if effectiveGuestMode {
             payload["guest_name"] = decoratedName
-            // Check if we have a previous player_session_id for this exact room + name
-            if let existing = recentSessions.first(where: { $0.roomCode.uppercased() == code && $0.decoratedGuestName == decoratedName }) {
+            if let existing = recentSessions.first(where: { !$0.isTeamPlay && $0.roomCode.uppercased() == code && $0.decoratedGuestName == decoratedName }) {
                 payload["player_session_id"] = existing.playerSessionId
             }
             if !guestPin.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -466,7 +502,6 @@ final class PraxisSessionStore: ObservableObject {
                     break
                 }
 
-                // Campus Wi-Fi 429 rate-limit handling (matches game-join.html lines 509-527)
                 let jsonObj = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
                 let detail = (jsonObj?["detail"] as? String) ?? (jsonObj?["error"] as? String) ?? ""
                 let waitSeconds = parseThrottleSeconds(from: detail)
@@ -492,6 +527,15 @@ final class PraxisSessionStore: ObservableObject {
         guard let http = lastResponse else {
             joinErrorMessage = "No response from game server."
             return
+        }
+
+        // If Classic /api/game/join/ returns 404, automatically check if this is a Team Edition room!
+        if http.statusCode == 404 && !preferTeamPlay {
+            joinStatusText = "Checking Team Edition room \(code)…"
+            let teamResult = await attemptTeamPlayJoin(code: code, name: name, guestPin: guestPin, effectiveGuestMode: effectiveGuestMode)
+            if teamResult == .joined || teamResult == .failedDefinitively {
+                return
+            }
         }
 
         let rootJSON = ((try? JSONSerialization.jsonObject(with: lastData)) as? [String: Any]) ?? [:]
@@ -542,7 +586,8 @@ final class PraxisSessionStore: ObservableObject {
             waitingToEnter: waitingToEnter,
             rawGameSessionJSON: rawGameJSON,
             rawPlayerSessionJSON: rawPlayerJSON,
-            joinedAt: Date()
+            joinedAt: Date(),
+            isTeamPlay: false
         )
 
         saveRecentSession(session)
@@ -550,18 +595,647 @@ final class PraxisSessionStore: ObservableObject {
         activeArenaLaunch = .liveSession(session)
     }
 
-    // MARK: - Quick Rejoin Saved Session
+    private enum TeamJoinOutcome {
+        case joined
+        case notFound
+        case failedDefinitively
+    }
+
+    private func attemptTeamPlayJoin(
+        code: String,
+        name: String,
+        guestPin: String,
+        effectiveGuestMode: Bool
+    ) async -> TeamJoinOutcome {
+        guard let url = URL(string: "\(apiBaseURL)/team-play/sessions/join/") else {
+            return .notFound
+        }
+
+        let trimmedPin = guestPin.trimmingCharacters(in: .whitespacesAndNewlines)
+        let rawDisplay = name.isEmpty ? (loggedInFirstName.isEmpty ? loggedInUsername : loggedInFirstName) : name
+        let guestNameCapped = String((rawDisplay.isEmpty ? "Player" : rawDisplay).prefix(40))
+
+        let body: [String: Any] = [
+            "room_code": code,
+            "guest_name": guestNameCapped,
+            "guest_password": trimmedPin
+        ]
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 30
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if !effectiveGuestMode && !authToken.isEmpty {
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let start = Date()
+            let (data, response) = try await URLSession.shared.data(for: req)
+            self.backendLatencyMs = Int(Date().timeIntervalSince(start) * 1000)
+            guard let http = response as? HTTPURLResponse else { return .notFound }
+
+            if http.statusCode == 404 {
+                return .notFound
+            }
+
+            let rootJSON = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard (200...299).contains(http.statusCode) else {
+                let errMsg = (rootJSON["error"] as? String)
+                    ?? (rootJSON["detail"] as? String)
+                    ?? "Could not join Team Edition room \(code)."
+                joinErrorMessage = errMsg
+                HapticsManager.shared.playNotification(.error)
+                return .failedDefinitively
+            }
+
+            let playerId = (rootJSON["player_id"] as? Int) ?? Int.random(in: 1000...9999)
+            let playerToken = (rootJSON["player_token"] as? String) ?? ""
+            let displayName = (rootJSON["display_name"] as? String) ?? guestNameCapped
+            let teamDict = rootJSON["team"] as? [String: Any]
+            let teamKey = (teamDict?["key"] as? String) ?? ""
+            let teamName = (teamDict?["name"] as? String) ?? "Team Edition"
+            let sessionDict = (rootJSON["session"] as? [String: Any]) ?? [:]
+            let caseDict = sessionDict["case"] as? [String: Any]
+            let caseClient = (caseDict?["client"] as? String) ?? "Team Edition"
+            let caseTitle = (caseDict?["title"] as? String) ?? "Brief Relay"
+
+            var teamScore = 0
+            if let teamsArr = sessionDict["teams"] as? [[String: Any]],
+               let myTeamObj = teamsArr.first(where: { ($0["key"] as? String) == teamKey }) {
+                teamScore = (myTeamObj["score"] as? Int) ?? 0
+            }
+
+            var identityDict: [String: Any] = [
+                "player_id": playerId,
+                "player_token": playerToken,
+                "display_name": displayName
+            ]
+            if let teamDict = teamDict {
+                identityDict["team"] = teamDict
+            }
+
+            let session = RecentRoomSession(
+                roomCode: code,
+                playerName: displayName,
+                decoratedGuestName: displayName,
+                playerSessionId: playerId,
+                courseName: "\(caseClient) · \(caseTitle)",
+                instructorName: teamName,
+                gameType: "brief_relay",
+                lastScore: teamScore,
+                lastRank: teamKey.isEmpty ? "TEAM" : teamKey.uppercased(),
+                isGuest: effectiveGuestMode,
+                waitingToEnter: false,
+                rawGameSessionJSON: stringifyJSONObject(sessionDict),
+                rawPlayerSessionJSON: stringifyJSONObject(identityDict),
+                joinedAt: Date(),
+                isTeamPlay: true,
+                playerToken: playerToken,
+                teamKey: teamKey,
+                teamName: teamName
+            )
+
+            saveRecentSession(session)
+            HapticsManager.shared.playNotification(.success)
+            activeArenaLaunch = .liveSession(session)
+            return .joined
+        } catch {
+            return .notFound
+        }
+    }
+
+    // MARK: - Quick Rejoin Saved Session & Web Tools
     func resumeSession(_ session: RecentRoomSession) {
         HapticsManager.shared.playImpact(style: .medium)
         activeArenaLaunch = .liveSession(session)
     }
 
-    // MARK: - Launch Solo Practice Arcade Mode
     func launchSoloMode(_ mode: SoloGameMode, showResults: Bool = false) {
         HapticsManager.shared.playImpact(style: .medium)
         activeArenaLaunch = .soloPractice(mode, showResults: showResults)
     }
 
+    func launchWebTool(title: String, relativePath: String) {
+        HapticsManager.shared.playImpact(style: .medium)
+        activeArenaLaunch = .webTool(title: title, relativePath: relativePath)
+    }
+
+    // MARK: - Instructor Host Management API (Team Edition + Classic Edition)
+    func fetchInstructorSetupData() async {
+        guard !authToken.isEmpty else { return }
+
+        // 1. Courses (GET /api/courses/)
+        if let url = URL(string: "\(apiBaseURL)/courses/") {
+            var req = URLRequest(url: url)
+            req.timeoutInterval = 15
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            if let (data, resp) = try? await URLSession.shared.data(for: req),
+               let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode),
+               let json = try? JSONSerialization.jsonObject(with: data) {
+                let rawList: [[String: Any]]
+                if let arr = json as? [[String: Any]] {
+                    rawList = arr
+                } else if let dict = json as? [String: Any], let res = dict["results"] as? [[String: Any]] {
+                    rawList = res
+                } else {
+                    rawList = []
+                }
+                self.instructorCourses = rawList.compactMap { item in
+                    guard let id = item["id"] as? Int,
+                          let name = (item["name"] as? String) ?? (item["title"] as? String) else { return nil }
+                    return InstructorCourseItem(id: id, name: name)
+                }
+            }
+        }
+
+        // 2. Classic Game Templates (GET /api/game/templates/)
+        if let url = URL(string: "\(apiBaseURL)/game/templates/") {
+            var req = URLRequest(url: url)
+            req.timeoutInterval = 15
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            if let (data, resp) = try? await URLSession.shared.data(for: req),
+               let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode),
+               let json = try? JSONSerialization.jsonObject(with: data) {
+                let rawList: [[String: Any]]
+                if let arr = json as? [[String: Any]] {
+                    rawList = arr
+                } else if let dict = json as? [String: Any], let res = dict["results"] as? [[String: Any]] {
+                    rawList = res
+                } else if let dict = json as? [String: Any], let res = dict["templates"] as? [[String: Any]] {
+                    rawList = res
+                } else {
+                    rawList = []
+                }
+                self.instructorTemplates = rawList.compactMap { item in
+                    guard let id = item["id"] as? Int,
+                          let name = item["name"] as? String else { return nil }
+                    let gType = (item["game_type"] as? String) ?? "multi_round"
+                    let rounds = (item["rounds_count"] as? Int)
+                        ?? (item["question_count"] as? Int)
+                        ?? ((item["questions"] as? [Any])?.count ?? 1)
+                    let desc = (item["description"] as? String) ?? ""
+                    return InstructorGameTemplateItem(
+                        id: id,
+                        name: name,
+                        gameType: gType,
+                        roundsCount: max(1, rounds),
+                        description: desc
+                    )
+                }
+            }
+        }
+
+        // 3. Active Classic Host Sessions (GET /api/instructor/game-history/?status=waiting,in_progress)
+        if let url = URL(string: "\(apiBaseURL)/instructor/game-history/?status=waiting,in_progress") {
+            var req = URLRequest(url: url)
+            req.timeoutInterval = 15
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            if let (data, resp) = try? await URLSession.shared.data(for: req),
+               let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode),
+               let dict = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+               let results = dict["results"] as? [[String: Any]] {
+                self.activeClassicHostRooms = results.compactMap { item in
+                    guard let code = item["room_code"] as? String else { return nil }
+                    return ActiveClassicHostRoom(
+                        roomCode: code,
+                        templateName: (item["template_name"] as? String) ?? "Classic Game",
+                        status: (item["status"] as? String) ?? "waiting",
+                        createdAt: (item["created_at"] as? String) ?? "",
+                        currentRound: (item["current_round"] as? Int) ?? 1,
+                        totalRounds: (item["total_rounds"] as? Int) ?? 1,
+                        playerCount: (item["player_count"] as? Int) ?? (item["players_count"] as? Int) ?? 0,
+                        gameType: (item["game_type"] as? String) ?? ""
+                    )
+                }
+            }
+        }
+
+        // 4. Team Edition Cases (GET /api/team-play/cases/)
+        if let url = URL(string: "\(apiBaseURL)/team-play/cases/") {
+            var req = URLRequest(url: url)
+            req.timeoutInterval = 15
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            if let (data, resp) = try? await URLSession.shared.data(for: req),
+               let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode),
+               let dict = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+               let casesArr = dict["cases"] as? [[String: Any]], !casesArr.isEmpty {
+                self.teamPlayCases = casesArr.compactMap { c in
+                    guard let cid = c["case_id"] as? String else { return nil }
+                    return TeamPlayCaseItem(
+                        caseId: cid,
+                        client: (c["client"] as? String) ?? "Client",
+                        title: (c["title"] as? String) ?? cid,
+                        rung: (c["rung"] as? Int) ?? 1,
+                        trap: (c["trap"] as? String) ?? ""
+                    )
+                }
+            }
+        }
+    }
+
+    // MARK: - Team Edition Host Actions (/api/team-play/sessions/...)
+    func createTeamPlaySession(
+        accessMode: String,
+        guestPassword: String,
+        courseId: Int?,
+        clockSeconds: Int
+    ) async -> String? {
+        guard !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/team-play/sessions/") else {
+            hostErrorMessage = "Please sign in with an instructor account first."
+            return nil
+        }
+
+        isHostingBusy = true
+        hostErrorMessage = nil
+        hostStatusMessage = "Creating Team Edition room…"
+        defer {
+            isHostingBusy = false
+            hostStatusMessage = nil
+        }
+
+        var body: [String: Any] = [
+            "access_mode": accessMode,
+            "guest_password": guestPassword,
+            "clock_s": clockSeconds
+        ]
+        if let courseId = courseId {
+            body["course_id"] = courseId
+        }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 25
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            let http = resp as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard let status = http?.statusCode, (200...299).contains(status),
+                  let code = (json["room_code"] as? String)?.uppercased(), !code.isEmpty else {
+                hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Could not create Team Edition room."
+                HapticsManager.shared.playNotification(.error)
+                return nil
+            }
+            addHostedTeamRoom(code)
+            _ = await fetchTeamPlayHostState(roomCode: code)
+            HapticsManager.shared.playNotification(.success)
+            return code
+        } catch {
+            hostErrorMessage = "Network error creating room (\(error.localizedDescription))."
+            HapticsManager.shared.playNotification(.error)
+            return nil
+        }
+    }
+
+    func fetchTeamPlayHostState(roomCode rawCode: String) async -> Bool {
+        let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !code.isEmpty, !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/team-play/sessions/\(code)/host/") else {
+            return false
+        }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.timeoutInterval = 15
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard let http = resp as? HTTPURLResponse else { return false }
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard (200...299).contains(http.statusCode) else {
+                hostErrorMessage = (json["error"] as? String) ?? "Could not load host state for \(code) (HTTP \(http.statusCode))."
+                return false
+            }
+            if let parsed = parseTeamPlayHostPayload(json) {
+                self.currentTeamHostState = parsed
+                addHostedTeamRoom(parsed.roomCode)
+                return true
+            }
+            return false
+        } catch {
+            return false
+        }
+    }
+
+    func performTeamPlayHostAction(
+        roomCode rawCode: String,
+        action: String,
+        body: [String: Any] = [:]
+    ) async -> Bool {
+        let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !code.isEmpty, !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/team-play/sessions/\(code)/\(action)/") else {
+            return false
+        }
+
+        isHostingBusy = true
+        hostErrorMessage = nil
+        defer { isHostingBusy = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 20
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard let http = resp as? HTTPURLResponse else { return false }
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard (200...299).contains(http.statusCode) else {
+                hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Action \(action) failed."
+                HapticsManager.shared.playNotification(.error)
+                return false
+            }
+            if let parsed = parseTeamPlayHostPayload(json) {
+                self.currentTeamHostState = parsed
+            } else {
+                _ = await fetchTeamPlayHostState(roomCode: code)
+            }
+            HapticsManager.shared.playImpact(style: .medium)
+            return true
+        } catch {
+            hostErrorMessage = "Network error (\(error.localizedDescription))."
+            return false
+        }
+    }
+
+    private func parseTeamPlayHostPayload(_ json: [String: Any]) -> TeamPlayHostState? {
+        guard let roomCode = json["room_code"] as? String else { return nil }
+        let status = (json["status"] as? String) ?? "waiting"
+        let accessMode = (json["access_mode"] as? String) ?? "open_access"
+        let playerCount = (json["player_count"] as? Int) ?? 0
+        let caseDict = json["case"] as? [String: Any]
+        let caseId = (caseDict?["case_id"] as? String) ?? "kf-r2-001"
+        let caseClient = (caseDict?["client"] as? String) ?? "Kestrel & Fern"
+        let caseTitle = (caseDict?["title"] as? String) ?? "The Loyal Doubters"
+
+        let matchDict = json["match"] as? [String: Any]
+        let matchState = (matchDict?["state"] as? String) ?? "waiting"
+        let currentRound = (matchDict?["current_round"] as? Int) ?? 0
+        let roundsTotal = (matchDict?["rounds_total"] as? Int) ?? 5
+        let roundEndsAt = matchDict?["round_ends_at"] as? String
+        let roundTimeLimit = (matchDict?["round_time_limit"] as? Int) ?? 90
+        let multiplier = (matchDict?["multiplier"] as? Double) ?? Double((matchDict?["multiplier"] as? Int) ?? 1)
+        let revealStep = (matchDict?["reveal_step"] as? Int) ?? 0
+
+        let teamsArr = (json["teams"] as? [[String: Any]]) ?? []
+        let teams: [TeamPlayHostTeamSummary] = teamsArr.compactMap { t in
+            guard let key = t["key"] as? String else { return nil }
+            return TeamPlayHostTeamSummary(
+                key: key,
+                name: (t["name"] as? String) ?? key.capitalized,
+                colour: (t["colour"] as? String) ?? "#2563eb",
+                score: (t["score"] as? Int) ?? 0,
+                players: (t["players"] as? Int) ?? 0
+            )
+        }
+
+        let hostDict = (json["host"] as? [String: Any]) ?? [:]
+        let resultsDict = (hostDict["results"] as? [String: Any]) ?? [:]
+        var desksByTeam: [String: [TeamPlayDeskStatus]] = [:]
+        if let rawDesks = hostDict["desks"] as? [String: [String: Any]] {
+            let order = ["analytics", "research", "environment", "brand"]
+            for (tKey, teamDesks) in rawDesks {
+                let tRes = resultsDict[tKey] as? [String: Any]
+                let choices = tRes?["choices"] as? [String: String]
+                let agreedMap = tRes?["agreed"] as? [String: Bool]
+                var list: [TeamPlayDeskStatus] = []
+                for dk in order {
+                    guard let dObj = teamDesks[dk] as? [String: Any] else { continue }
+                    let decides = (dObj["decides"] as? String) ?? ""
+                    let holders: [String]
+                    if let strArr = dObj["holders"] as? [String] {
+                        holders = strArr
+                    } else if let objArr = dObj["holders"] as? [[String: Any]] {
+                        holders = objArr.compactMap { $0["name"] as? String }
+                    } else {
+                        holders = []
+                    }
+                    let locked = (dObj["locked"] as? Int) ?? 0
+                    var votes: [String: Int] = [:]
+                    if let rawVotes = dObj["votes"] as? [String: Any] {
+                        for (vk, vv) in rawVotes {
+                            if let count = vv as? Int { votes[vk] = count }
+                        }
+                    }
+                    list.append(
+                        TeamPlayDeskStatus(
+                            desk: dk,
+                            label: (dObj["label"] as? String) ?? dk.capitalized,
+                            decides: decides,
+                            holders: holders,
+                            locked: locked,
+                            votes: votes,
+                            choice: choices?[decides],
+                            agreed: agreedMap?[decides]
+                        )
+                    )
+                }
+                desksByTeam[tKey] = list
+            }
+        }
+
+        var clientKey: [String: String] = [:]
+        if let rawKey = hostDict["key"] as? [String: String] {
+            clientKey = rawKey
+        }
+        let lesson = (hostDict["lesson"] as? String) ?? ""
+        let projectorPin = (json["projector_pin"] as? String) ?? ""
+
+        return TeamPlayHostState(
+            roomCode: roomCode,
+            status: status,
+            accessMode: accessMode,
+            playerCount: playerCount,
+            caseId: caseId,
+            caseClient: caseClient,
+            caseTitle: caseTitle,
+            matchState: matchState,
+            currentRound: currentRound,
+            roundsTotal: roundsTotal,
+            roundEndsAt: roundEndsAt,
+            roundTimeLimit: roundTimeLimit,
+            multiplier: multiplier,
+            revealStep: revealStep,
+            teams: teams,
+            desksByTeam: desksByTeam,
+            clientKey: clientKey,
+            lesson: lesson,
+            projectorPin: projectorPin
+        )
+    }
+
+    private func addHostedTeamRoom(_ code: String) {
+        let clean = code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !clean.isEmpty else { return }
+        hostedTeamRoomCodes.removeAll { $0 == clean }
+        hostedTeamRoomCodes.insert(clean, at: 0)
+        if hostedTeamRoomCodes.count > 10 {
+            hostedTeamRoomCodes = Array(hostedTeamRoomCodes.prefix(10))
+        }
+        UserDefaults.standard.set(hostedTeamRoomCodes, forKey: hostedTeamRoomsKey)
+    }
+
+    // MARK: - Classic Edition Host Actions (/api/game/create/, /api/game/<CODE>/...)
+    func createClassicGameSession(
+        templateId: Int,
+        courseId: Int?,
+        accessMode: String,
+        guestPassword: String,
+        timeOverride: Int?,
+        scoringMultiplier: Double
+    ) async -> String? {
+        guard !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/game/create/") else {
+            hostErrorMessage = "Please sign in with an instructor account first."
+            return nil
+        }
+
+        isHostingBusy = true
+        hostErrorMessage = nil
+        hostStatusMessage = "Creating Classic Game room…"
+        defer {
+            isHostingBusy = false
+            hostStatusMessage = nil
+        }
+
+        var settings: [String: Any] = ["scoring_multiplier": scoringMultiplier]
+        if let t = timeOverride, t >= 5 {
+            settings["time_override"] = t
+        }
+
+        var payload: [String: Any] = [
+            "game_template_id": templateId,
+            "guest_password": guestPassword,
+            "access_mode": accessMode,
+            "game_settings": settings
+        ]
+        if let courseId = courseId {
+            payload["course_id"] = courseId
+        }
+
+        for forceAttempt in [false, true] {
+            if forceAttempt {
+                payload["force"] = true
+            }
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.timeoutInterval = 25
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            req.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+
+            do {
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                let http = resp as? HTTPURLResponse
+                let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+                if http?.statusCode == 409 && !forceAttempt {
+                    continue
+                }
+                guard let status = http?.statusCode, (200...299).contains(status) else {
+                    hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Could not create Classic game session."
+                    HapticsManager.shared.playNotification(.error)
+                    return nil
+                }
+                let gs = (json["game_session"] as? [String: Any]) ?? json
+                if let code = (gs["room_code"] as? String)?.uppercased(), !code.isEmpty {
+                    await fetchClassicHostSession(roomCode: code)
+                    await fetchInstructorSetupData()
+                    HapticsManager.shared.playNotification(.success)
+                    return code
+                }
+            } catch {
+                hostErrorMessage = "Network error creating Classic session (\(error.localizedDescription))."
+                HapticsManager.shared.playNotification(.error)
+                return nil
+            }
+        }
+        return nil
+    }
+
+    func fetchClassicHostSession(roomCode rawCode: String) async {
+        let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !code.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/game/\(code)/") else { return }
+
+        var req = URLRequest(url: url)
+        req.timeoutInterval = 15
+        if !authToken.isEmpty {
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode),
+                  let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else { return }
+
+            let gs = (json["game_session"] as? [String: Any]) ?? json
+            let playersArr = (gs["players"] as? [Any]) ?? (json["players"] as? [Any]) ?? []
+            let playerCount = (gs["player_count"] as? Int) ?? playersArr.count
+            let roomObj = ActiveClassicHostRoom(
+                roomCode: code,
+                templateName: (gs["template_name"] as? String) ?? (gs["course_name"] as? String) ?? "Classic Game",
+                status: (gs["status"] as? String) ?? "waiting",
+                createdAt: (gs["created_at"] as? String) ?? "",
+                currentRound: (gs["current_round"] as? Int) ?? 1,
+                totalRounds: (gs["total_rounds"] as? Int) ?? 1,
+                playerCount: playerCount,
+                gameType: (gs["game_type"] as? String) ?? "",
+                projectorPin: (json["projector_pin"] as? String) ?? (gs["projector_pin"] as? String) ?? ""
+            )
+            self.currentClassicHostRoom = roomObj
+            if let idx = activeClassicHostRooms.firstIndex(where: { $0.roomCode == code }) {
+                activeClassicHostRooms[idx] = roomObj
+            } else {
+                activeClassicHostRooms.insert(roomObj, at: 0)
+            }
+        } catch {}
+    }
+
+    func performClassicHostAction(roomCode rawCode: String, action: String) async -> Bool {
+        let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !code.isEmpty, !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/game/\(code)/\(action)/") else { return false }
+
+        isHostingBusy = true
+        hostErrorMessage = nil
+        defer { isHostingBusy = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 20
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        req.httpBody = Data("{}".utf8)
+
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            let http = resp as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard let status = http?.statusCode, (200...299).contains(status) else {
+                hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Classic host action '\(action)' failed."
+                HapticsManager.shared.playNotification(.error)
+                return false
+            }
+            await fetchClassicHostSession(roomCode: code)
+            HapticsManager.shared.playImpact(style: .medium)
+            return true
+        } catch {
+            hostErrorMessage = "Network error (\(error.localizedDescription))."
+            return false
+        }
+    }
+
+    // MARK: - Solo Scores & Telemetry
     func recordSoloScore(gameType: String, points: Int) {
         let currentBest = soloHighScores[gameType] ?? 0
         if points > currentBest {
@@ -643,6 +1317,9 @@ final class PraxisSessionStore: ObservableObject {
         }
         if let scores = UserDefaults.standard.dictionary(forKey: soloScoresKey) as? [String: Int] {
             self.soloHighScores = scores
+        }
+        if let rooms = UserDefaults.standard.stringArray(forKey: hostedTeamRoomsKey) {
+            self.hostedTeamRoomCodes = rooms
         }
     }
 }

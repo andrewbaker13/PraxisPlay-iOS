@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praxis Play - Projector Mode</title>
+    <link rel="icon" type="image/svg+xml" href="../../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    
+    <link rel="stylesheet" href="../../shared/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" defer integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 28px; /* Larger for projection */
+        }
+        
+        .game-container {
+            max-width: 1800px;
+            margin: 1rem auto;
+            padding: 1rem;
+        }
+        
+        /* Override game-play.html styles for larger projection display */
+        .game-header {
+            background: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .player-info h2 {
+            margin: 0;
+            color: #667eea;
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .player-info .room-code {
+            color: #64748b;
+            font-size: 22px;
+            font-weight: 500;
+        }
+        
+        .player-info img {
+            height: 50px !important;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .stat-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 12px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 18px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 48px;
+            color: #1e293b;
+            font-weight: 800;
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 10px;
+            padding: 12px 30px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .setting-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #667eea;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+        
+        /* Hide player input controls in projector mode (but NOT crowd-wisdom buttons) */
+        .projector-mode input:not([readonly]),
+        .projector-mode .submit-btn,
+        .projector-mode .submit-guess-btn,
+        .projector-mode .submit-word-btn {
+            display: none !important;
+        }
+        
+        /* For Speed Tap, hide the onclick functionality but show buttons */
+        .projector-mode .answer-options .answer-btn {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+        
+        /* Make game content larger for projector */
+        .game-area {
+            font-size: 36px;
+        }
+        
+        #gameArea h2 {
+            font-size: 72px !important;
+        }
+        
+        #gameArea h3 {
+            font-size: 56px !important;
+        }
+        
+        #gameArea p {
+            font-size: 36px !important;
+        }
+        
+        /* Fix next round preview - change to white background */
+        #gameArea .waiting-state,
+        #gameArea .results-display {
+            background: white !important;
+        }
+        
+        /* Word Guess - larger letter boxes and text */
+        .projector-mode .word-display {
+            font-size: 120px !important;
+            letter-spacing: 30px !important;
+        }
+        
+        .projector-mode .letter-box {
+            width: 100px !important;
+            height: 120px !important;
+            font-size: 80px !important;
+        }
+        
+        .projector-mode .clue-text {
+            font-size: 48px !important;
+            color: white !important;
+            background: rgba(102, 126, 234, 0.9) !important;
+            padding: 20px 40px !important;
+            border-radius: 12px !important;
+        }
+        
+        .projector-mode .hint-text {
+            font-size: 40px !important;
+            color: white !important;
+        }
+        
+        /* Crowd Wisdom - ensure answer labels are visible */
+        .projector-mode .bar-label,
+        .projector-mode .answer-label {
+            font-size: 32px !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+        }
+        
+        .projector-mode .bar-container {
+            margin: 20px 0 !important;
+        }
+        
+        /* Closest Guess - fix chart and timer positioning */
+        .projector-mode .numberline-container {
+            min-height: 200px !important;
+        }
+        
+        .projector-mode .timer {
+            position: relative !important;
+            left: 0 !important;
+            right: 0 !important;
+            text-align: center !important;
+            font-size: 80px !important;
+        }
+        
+        .projector-mode .question-text {
+            font-size: 48px !important;
+        }
+        
+        /* Speed Tap - show answer options */
+        .projector-mode .answer-options {
+            display: grid !important;
+            pointer-events: none;
+        }
+        
+        .projector-mode .answer-btn {
+            font-size: 36px !important;
+            padding: 30px !important;
+            min-height: 100px !important;
+            cursor: default !important;
+        }
+        
+        /* Overall projector text scaling */
+        .projector-mode .results-display h2 {
+            font-size: 64px !important;
+        }
+        
+        .projector-mode .results-display p {
+            font-size: 40px !important;
+        }
+        
+        /* Leaderboard larger */
+        .leaderboard-item {
+            font-size: 32px !important;
+            padding: 20px !important;
+        }
+        
+        .leaderboard-rank {
+            font-size: 40px !important;
+        }
+        
+        .leaderboard-score {
+            font-size: 40px !important;
+        }
+        
+        /* Animations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        /* Waiting state */
+        .waiting-state {
+            padding: 3rem;
+            text-align: center;
+            background: white;
+            border-radius: 16px;
+        }
+        
+        /* Center QR code in projector mode */
+        .projector-mode .qr-code-box {
+            margin: 3rem auto !important;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .projector-mode .qr-code-box h3 {
+            font-size: 48px !important;
+        }
+        
+        .projector-mode .qr-code-box p {
+            font-size: 32px !important;
+        }
+        
+        /* Next round preview - white text, larger elements */
+        .projector-mode #gameArea h3 {
+            color: white !important;
+            font-size: 56px !important;
+        }
+        
+        /* Override for QR code heading - needs to be black */
+        .projector-mode #gameArea .qr-code-box h3 {
+            color: #000000 !important;
+        }
+        
+        .projector-mode .instruction-card {
+            font-size: 48px !important;
+        }
+        
+        .projector-mode .instruction-card .title {
+            font-size: 64px !important;
+        }
+        
+        .projector-mode .instruction-card .description {
+            font-size: 40px !important;
+            line-height: 1.6 !important;
+        }
+        
+        /* Push Range - BASE styles (needed for chart to work) */
+        .push-range-bar {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #fef3c7 0%, #fef3c7 100%);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .push-range-left-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: width 0.1s ease-out;
+            z-index: 1;
+        }
+        
+        .push-range-right-fill {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            transition: width 0.1s ease-out;
+            z-index: 1;
+        }
+        
+        /* Whisker-style Guess Range Indicator */
+        .guess-range-bracket {
+            position: relative;
+            margin-top: 8px;
+            height: 65px;
+            transition: all 0.15s ease-out;
+        }
+        
+        .bracket-left-edge, .bracket-right-edge {
+            position: absolute;
+            width: 3px;
+            background: #0f172a;
+            transition: left 0.15s ease-out, right 0.15s ease-out;
+        }
+        
+        .bracket-left-edge {
+            left: calc(0% + 25px);
+            top: 32px;
+            height: 25px;
+            border-radius: 2px;
+        }
+        
+        .bracket-right-edge {
+            right: calc(0% + 25px);
+            top: 32px;
+            height: 25px;
+            border-radius: 2px;
+        }
+        
+        .bracket-left-edge .edge-value,
+        .bracket-right-edge .edge-value {
+            position: absolute;
+            top: -46px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        
+        .bracket-left-edge .edge-value {
+            left: 50%;
+            transform: translateX(-50%);
+            color: #3b82f6;
+        }
+        
+        .bracket-right-edge .edge-value {
+            right: 50%;
+            transform: translateX(50%);
+            color: #ef4444;
+        }
+        
+        .bracket-bottom {
+            position: absolute;
+            left: calc(0% + 25px);
+            right: calc(0% + 25px);
+            top: 43px;
+            height: 3px;
+            transition: left 0.15s ease-out, right 0.15s ease-out;
+        }
+        .bracket-bottom::before,
+        .bracket-bottom::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            height: 3px;
+            background: #0f172a;
+            transition: width 0.15s ease-out;
+        }
+        .bracket-bottom::before {
+            /* Left whisker */
+            right: 50%;
+            left: 0;
+        }
+        .bracket-bottom::after {
+            /* Right whisker */
+            left: 50%;
+            right: 0;
+        }
+        
+        .range-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        
+        .bracket-label {
+            text-align: center;
+        }
+        
+        .edge-value {
+            z-index: 10;
+        }
+        
+        /* Push Range - projector mode overrides */
+        .projector-mode .push-button-container {
+            display: none !important;
+        }
+        
+        .projector-mode .push-range-visualization {
+            margin: 40px 0 !important;
+            padding: 30px !important;
+        }
+        
+        .projector-mode .push-range-bar {
+            height: 80px !important;
+        }
+        
+        .projector-mode .guess-range-bracket {
+            height: 80px !important;
+        }
+        
+        .projector-mode .edge-value {
+            font-size: 51px !important;
+            background: white !important;
+            padding: 8px 16px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            top: -16px !important;
+        }
+        
+        .projector-mode .range-label {
+            font-size: 24px !important;
+            color: white !important;
+        }
+        
+        .projector-mode .bracket-label {
+            position: static !important;
+            transform: none !important;
+            margin-bottom: 10px !important;
+            text-align: center !important;
+        }
+        
+        .projector-mode .bracket-left-edge,
+        .projector-mode .bracket-right-edge {
+            background: transparent !important;
+        }
+        
+        .projector-mode .bracket-bottom {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: transparent !important;
+            height: auto !important;
+            position: relative !important;
+            top: auto !important;
+            left: 0 !important;
+            right: 0 !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .projector-mode .bracket-bottom::before,
+        .projector-mode .bracket-bottom::after {
+            display: none !important;
+        }
+        
+        .projector-mode .push-range-teams {
+            gap: 40px !important;
+        }
+        
+        .projector-mode .team-panel {
+            padding: 30px !important;
+            background: white !important;
+            border-radius: 16px !important;
+        }
+        
+        .projector-mode .team-panel.left {
+            border: 5px solid #3b82f6 !important;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3) !important;
+        }
+        
+        .projector-mode .team-panel.right {
+            border: 5px solid #ef4444 !important;
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3) !important;
+        }
+        
+        .projector-mode .team-panel h4 {
+            font-size: 40px !important;
+            margin: 0 0 20px 0 !important;
+        }
+        
+        .projector-mode .team-panel.left h4 {
+            color: #3b82f6 !important;
+        }
+        
+        .projector-mode .team-panel.right h4 {
+            color: #ef4444 !important;
+        }
+        
+        .projector-mode .team-roster {
+            font-size: 28px !important;
+        }
+        
+        .projector-mode .team-member {
+            display: flex !important;
+            justify-content: space-between !important;
+            padding: 8px 0 !important;
+        }
+        
+        .projector-mode .team-member .player-name {
+            flex: 1 !important;
+        }
+        
+        .projector-mode .team-member .press-count {
+            font-weight: 700 !important;
+            min-width: 60px !important;
+            text-align: right !important;
+        }
+        
+        /* Closest Guess - scale up for projector, hide input controls */
+        .projector-mode .range-inputs {
+            display: none !important;
+        }
+        
+        .projector-mode .submit-guess-btn {
+            display: none !important;
+        }
+        
+        /* Closest Guess - BASE numberline styles (needed for chart to work) */
+        .numberline-container {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .numberline-title {
+            text-align: center;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        
+        .numberline {
+            position: relative;
+            height: 80px;
+            margin: 2rem 0;
+        }
+        
+        .numberline-axis {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #cbd5e1;
+        }
+        
+        .numberline-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .range-box {
+            position: absolute;
+            bottom: 5px;
+            height: 60px;
+            background: rgba(59, 130, 246, 0.10);
+            border: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .range-box.own {
+            background: rgba(239, 68, 68, 0.20);
+            border: none;
+            z-index: 10;
+        }
+        
+        .correct-answer-marker {
+            position: absolute;
+            bottom: 0;
+            width: 3px;
+            height: 70px;
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            z-index: 20;
+        }
+        
+        /* Closest Guess - projector mode overrides */
+        .projector-mode .numberline-container {
+            margin-top: 40px !important;
+            padding: 30px !important;
+            min-height: auto !important;
+        }
+        
+        .projector-mode .numberline-title {
+            font-size: 32px !important;
+            font-weight: 700 !important;
+            margin-bottom: 30px !important;
+        }
+        
+        .projector-mode .numberline {
+            height: 120px !important;
+            margin: 40px 0 !important;
+        }
+        
+        .projector-mode .numberline-labels {
+            font-size: 28px !important;
+            font-weight: 700 !important;
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/css/badge-notification.css">
+</head>
+<body class="projector-mode">
+    <!-- Countdown Overlay (required by game-core.js) -->
+    <div id="countdownOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; flex-direction: column;">
+        <div id="countdownNumber" style="font-size: 240px; font-weight: bold; color: #3b82f6; text-shadow: 0 0 50px rgba(59, 130, 246, 0.9); animation: pulse 0.5s ease-in-out;"></div>
+        <div id="countdownRoundInfo" style="font-size: 48px; color: white; margin-top: 30px; font-weight: 600;"></div>
+    </div>
+    
+    <div class="game-container">
+        <!-- Header -->
+        <div class="game-header">
+            <div class="player-info">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="../../art_assets/svg_logos/praxisplay_main_logo.svg" alt="Praxis Play" style="height: 50px;">
+                    <div>
+                        <h2 id="playerName" style="margin: 0; line-height: 1;">Projector Mode</h2>
+                        <div class="room-code" style="margin-top: 2px;">Room: <span id="roomCodeDisplay">----</span><span id="roomCode" style="display:none;">----</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-stats">
+                <div class="stat-chip">
+                    <span class="stat-label">Players</span>
+                    <span class="stat-value" id="playerCount">--</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-label">Round</span>
+                    <span class="stat-value" id="currentRound">--</span>
+                </div>
+                <!-- Hidden elements for game-core.js compatibility -->
+                <span id="playerScore" style="display:none;">0</span>
+                <span id="playerRank" style="display:none;">-</span>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <div class="setting-toggle">
+                <span>Show Player Names:</span>
+                <div class="toggle-switch" id="togglePlayerNames" onclick="toggleSetting('playerNames')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="setting-toggle">
+                <span>Show Leaderboard:</span>
+                <div class="toggle-switch active" id="toggleLeaderboard" onclick="toggleSetting('leaderboard')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area (reuses existing game modules) -->
+        <div class="game-area" id="gameArea">
+            <div class="waiting-state" style="text-align: center; padding: 100px 20px; background: rgba(255,255,255,0.98); border-radius: 20px;">
+                <div style="font-size: 72px; margin-bottom: 2rem;">⏳</div>
+                <h2 style="color: #667eea; font-size: 48px;">Connecting to Game...</h2>
+                <p style="color: #64748b; font-size: 28px;">Please wait while we establish connection</p>
+                <div style="margin-top: 2rem;">
+                    <div style="display: inline-block; width: 60px; height: 60px; border: 6px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hidden feedback area for game modules -->
+        <div id="feedback" style="display: none;"></div>
+    </div>
+
+    <!-- Game Modules (same as game-play.html) -->
+    <script src="../../shared/js/api-config.js"></script>
+    
+    <!-- 🚧 DEV MODE: Auth bypass and mock session data -->
+    <script>
+        if (window.DEV_MODE) {
+            console.log('🚧 DEV MODE: Bypassing auth checks and setting mock session data (PROJECTOR)');
+            
+            // Mock authentication
+            sessionStorage.setItem('authToken', 'DEV_MOCK_TOKEN');
+            sessionStorage.setItem('isGuest', 'false');
+            
+            // Mock game session
+            sessionStorage.setItem('gameSession', JSON.stringify({
+                room_code: 'DEV1',
+                game_type: 'speed_tap',
+                status: 'in_progress',
+                instructor_name: 'Dev Instructor',
+                course_name: 'Dev Course'
+            }));
+            
+            // Mock projector player session (spectator role)
+            sessionStorage.setItem('playerSession', JSON.stringify({
+                id: 998,
+                display_name: 'Projector View',
+                user: null,
+                score: 0,
+                rank: null,
+                isProjector: true
+            }));
+            
+            sessionStorage.setItem('waitingToEnter', 'false');
+            
+            console.log('🚧 DEV MODE: Mock projector session data set');
+        }
+    </script>
+    
+    <script src="js/game-config.js"></script>
+    <script src="js/game-utils.js"></script>
+    
+    <script>
+        // Set projector mode flag BEFORE loading game-config.js
+        window.isProjectorMode = true;
+        window.projectorSettings = {
+            showPlayerNames: false,
+            showLeaderboard: true
+        };
+        
+        // Get room code and snapshot from URL
+        const projectorUrlParams = new URLSearchParams(window.location.search);
+        const roomCodeFromUrl = projectorUrlParams.get('room');
+        let snapshotFile = projectorUrlParams.get('snapshot');
+        const stateParam = projectorUrlParams.get('state');
+        const devParam = projectorUrlParams.get('dev');
+        
+        // 🚧 DEV MODE: Map state parameter to snapshot file
+        if (stateParam && devParam === '1' && window.location.hostname === 'localhost') {
+            snapshotFile = `${stateParam}.json`;
+        }
+        
+        // 🚧 DEV MODE: Enable if snapshot parameter is present
+        if (snapshotFile && window.location.hostname === 'localhost') {
+            console.warn('🚧 DEV MODE ACTIVE - Using snapshot:', snapshotFile);
+            window.DEV_MODE = true;
+            window.DEV_STATE = snapshotFile.replace('.json', '');
+            window.DEV_SNAPSHOT_PATH = `dev_data/snapshots/${snapshotFile}`;
+        }
+        
+        if (roomCodeFromUrl) {
+            document.getElementById('roomCode').textContent = roomCodeFromUrl;
+        } else {
+            document.getElementById('gameArea').innerHTML = `
+                <div style="text-align: center; padding: 100px 20px; background: rgba(255,255,255,0.98); border-radius: 20px;">
+                    <h2 style="color: #ef4444;">❌ No Room Code</h2>
+                    <p style="color: #64748b;">This page must be opened from the host interface</p>
+                </div>
+            `;
+        }
+        
+        // Create a fake playerSession for projector (not counted as player)
+        sessionStorage.setItem('playerSession', JSON.stringify({
+            id: `projector_${roomCodeFromUrl}_${Date.now()}`,
+            display_name: 'Projector',
+            score: 0,
+            isProjector: true
+        }));
+        
+        sessionStorage.setItem('gameSession', JSON.stringify({
+            room_code: roomCodeFromUrl
+        }));
+        
+        // Toggle settings
+        function toggleSetting(setting) {
+            if (setting === 'playerNames') {
+                window.projectorSettings.showPlayerNames = !window.projectorSettings.showPlayerNames;
+                const toggle = document.getElementById('togglePlayerNames');
+                toggle.classList.toggle('active');
+            } else if (setting === 'leaderboard') {
+                window.projectorSettings.showLeaderboard = !window.projectorSettings.showLeaderboard;
+                const toggle = document.getElementById('toggleLeaderboard');
+                toggle.classList.toggle('active');
+            }
+            
+            // Trigger re-render if game is active
+            if (window.updateLeaderboardDisplay) {
+                window.updateLeaderboardDisplay();
+            }
+        }
+        
+        // Override getDisplayName if projector mode is hiding names
+        window.getDisplayName = function(name, index) {
+            if (window.isProjectorMode && !window.projectorSettings.showPlayerNames) {
+                return `Player ${index + 1}`;
+            }
+            return name;
+        };
+        
+        // Track participation for Speed Tap in projector mode
+        window.speedTapParticipation = {
+            totalPlayers: 0,
+            respondedPlayers: new Set()
+        };
+        
+        // Add projector-specific message handler for speed tap participation
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'speed_tap_answer' && window.isProjectorMode) {
+                window.speedTapParticipation.respondedPlayers.add(event.data.player_id);
+                updateSpeedTapParticipation();
+            }
+        });
+        
+        window.updateSpeedTapParticipation = function() {
+            const participationEl = document.getElementById('speedTapParticipation');
+            if (participationEl) {
+                if (window.speedTapParticipation.totalPlayers > 0) {
+                    const percentage = Math.round((window.speedTapParticipation.respondedPlayers.size / window.speedTapParticipation.totalPlayers) * 100);
+                    participationEl.innerHTML = `
+                        <div style="font-size: 48px; font-weight: 700; color: #667eea; margin: 20px 0;">
+                            ${window.speedTapParticipation.respondedPlayers.size} / ${window.speedTapParticipation.totalPlayers} Players Responded
+                        </div>
+                        <div style="font-size: 64px; font-weight: 800; color: #1e293b;">
+                            ${percentage}%
+                        </div>
+                    `;
+                } else {
+                    participationEl.innerHTML = `
+                        <div style="font-size: 48px; font-weight: 700; color: #64748b; margin: 20px 0;">
+                            Waiting for players...
+                        </div>
+                        <div style="font-size: 64px; font-weight: 800; color: #1e293b;">
+                            0%
+                        </div>
+                    `;
+                }
+            }
+        };
+    </script>
+    
+    <script src="js/game-core.js"></script>
+    <script src="js/game-push-range.js"></script>
+    <script src="js/game-closest-guess.js"></script>
+    <script src="js/game-word-guess.js"></script>
+    <script src="js/game-speed-tap.js"></script>
+    <script src="js/line-fit.js"></script>
+    <script src="js/game-crowd-wisdom.js"></script>
+    <script src="js/game-budget-blitz.js"></script>
+    <script src="js/game-buy-a-clue.js"></script>
+    <script src="js/game-minority-rule.js"></script>
+    <!-- Game-specific modules needed for results rendering -->
+
+    <footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.9); font-size: 20px; margin-top: 2rem;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <img src="../../art_assets/svg_logos/praxisplay_notext_logo.svg" alt="Praxis Play" style="width: 24px; height: 24px; opacity: 0.8;">
+            <span>Powered by <strong>Praxis Play</strong></span>
+        </div>
+        <div style="opacity: 0.7;">MktPraxis — Making Analytics Competitive</div>
+    </footer>
+    <script src="../../shared/js/badge-notifications.js"></script>
+</body>
+</html>

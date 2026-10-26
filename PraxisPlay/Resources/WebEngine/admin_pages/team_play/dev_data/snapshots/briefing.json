@@ -1,0 +1,71 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "briefing",
+  "round": 2,
+  "rung": 2,
+  "clock_s": 90,
+  "ready": 14,
+  "of": 14,
+  "speaker": {
+    "sprite": "kf_director_sheet",
+    "lines": [
+      "Kestrel & Fern sells one hero serum at $48. This year the look-alikes arrived at a quarter of the price. Sales are fine.",
+      "I want next quarter's brief by the end of this round: a hook, a channel, a creative and an offer.",
+      "Each agency has four desks. Nobody has the whole picture."
+    ]
+  },
+  "me": {
+    "team": "blue",
+    "desk": "research",
+    "decides": "channel",
+    "desk_mates": [
+      "Noah"
+    ],
+    "shard": null,
+    "first_time_tip": true
+  },
+  "team_map": [
+    {
+      "desk": "analytics",
+      "icon": "desk_analytics",
+      "holders": [
+        "Mei",
+        "Carlos"
+      ],
+      "decides": "hook"
+    },
+    {
+      "desk": "research",
+      "icon": "desk_research",
+      "holders": [
+        "Priya",
+        "Noah"
+      ],
+      "decides": "channel"
+    },
+    {
+      "desk": "environment",
+      "icon": "desk_environment",
+      "holders": [
+        "Zoe",
+        "Ibrahim"
+      ],
+      "decides": "creative"
+    },
+    {
+      "desk": "brand",
+      "icon": "desk_brand",
+      "holders": [
+        "Tess"
+      ],
+      "decides": "offer"
+    }
+  ],
+  "fit_line": "Nobody on Blue can answer alone: every decision needs at least two other desks' cards."
+}

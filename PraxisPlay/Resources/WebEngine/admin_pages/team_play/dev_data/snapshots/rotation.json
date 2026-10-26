@@ -1,0 +1,39 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "rotation",
+  "next_round": 3,
+  "rung": 3,
+  "clock_s": 120,
+  "multiplier": 1.5,
+  "next_case": "kf-r3-002",
+  "draw": "7c1a",
+  "standings": {
+    "blue": 11,
+    "red": 6
+  },
+  "me": {
+    "desk": "research",
+    "shard_change": "survey table + price line (Noah takes the quotes)"
+  },
+  "speaker": {
+    "sprite": "kf_director_sheet",
+    "lines": [
+      "Next round, one of your desks will need all three of the others before it can lock. Decide who talks first.",
+      "Same client. Same serum. New situation."
+    ]
+  },
+  "desk_changes": [
+    {
+      "team": "red",
+      "desk": "brand",
+      "out": "Jordan",
+      "in": "Lena"
+    }
+  ]
+}

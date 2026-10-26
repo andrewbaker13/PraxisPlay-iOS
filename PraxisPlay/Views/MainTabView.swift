@@ -29,11 +29,17 @@ struct MainTabView: View {
                 }
                 .tag(1)
 
+            InstructorHostView()
+                .tabItem {
+                    Label("Host", systemImage: "slider.horizontal.below.rectangle")
+                }
+                .tag(2)
+
             ProfileSettingsView()
                 .tabItem {
                     Label("Account", systemImage: "person.crop.circle.fill")
                 }
-                .tag(2)
+                .tag(3)
         }
         .tint(Color(red: 0.31, green: 0.27, blue: 0.90))
         .fullScreenCover(item: $sessionStore.activeArenaLaunch) { launchMode in

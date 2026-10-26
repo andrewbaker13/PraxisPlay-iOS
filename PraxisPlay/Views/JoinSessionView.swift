@@ -569,11 +569,24 @@ struct JoinSessionView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
 
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(session.courseName)
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
-                                .lineLimit(1)
-                            Text("Joined as \(session.playerName) • \(session.lastScore) pts")
+                            HStack(spacing: 6) {
+                                Text(session.courseName)
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
+                                    .lineLimit(1)
+                                if session.isTeamPlay {
+                                    Text("TEAM")
+                                        .font(.system(size: 9.5, weight: .heavy))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color(red: 0.78, green: 0.25, blue: 0.18))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            Text(session.isTeamPlay
+                                 ? "Joined as \(session.playerName) • \(session.teamName.isEmpty ? "Agency" : session.teamName) • \(session.lastScore) pts"
+                                 : "Joined as \(session.playerName) • \(session.lastScore) pts")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                                 .lineLimit(1)
@@ -623,7 +636,7 @@ struct JoinSessionView: View {
                     Text("Not in a live class right now?")
                         .font(.system(size: 15, weight: .heavy))
                         .foregroundStyle(Color(red: 0.30, green: 0.11, blue: 0.58))
-                    Text("Try all 9 interactive analytics games in the Solo Practice Arcade →")
+                    Text("Try Team Edition: Brief Relay & all 9 analytics mini-games in the Solo Practice Arcade →")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(Color(red: 0.43, green: 0.16, blue: 0.85))
                         .multilineTextAlignment(.leading)

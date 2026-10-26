@@ -1,0 +1,425 @@
+{
+  "assets": [
+    {
+      "id": "desk_analytics",
+      "file": "art_assets/pixel/desk_analytics.png",
+      "file_display": "art_assets/pixel/desk_analytics@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "base": null,
+      "frames": null,
+      "decorative": false,
+      "alt": "Pixel-art icon of a beige CRT monitor showing a bar chart: the internal analytics desk.",
+      "caption": "Pixel-art illustration (AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a chunky beige CRT computer monitor with a simple three-bar bar chart on its screen.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 1,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.533
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "desk-icon"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "desk_brand",
+      "file": "art_assets/pixel/desk_brand.png",
+      "file_display": "art_assets/pixel/desk_brand@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "base": null,
+      "frames": null,
+      "decorative": false,
+      "alt": "Pixel-art icon of a green shield badge with a gold star: the brand desk.",
+      "caption": "Pixel-art illustration (AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a shield-shaped enamel badge, dark green with a gold border and a small gold star in the centre.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 3,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.644
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "desk-icon"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "desk_environment",
+      "file": "art_assets/pixel/desk_environment.png",
+      "file_display": "art_assets/pixel/desk_environment@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "base": null,
+      "frames": null,
+      "decorative": false,
+      "alt": "Pixel-art icon of a pair of binoculars: the environment desk.",
+      "caption": "Pixel-art illustration (AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a pair of black binoculars in slight three-quarter view, the lenses catching a small highlight.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 2,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.595
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "desk-icon"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "desk_research",
+      "file": "art_assets/pixel/desk_research.png",
+      "file_display": "art_assets/pixel/desk_research@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "base": null,
+      "frames": null,
+      "decorative": false,
+      "alt": "Pixel-art icon of a clipboard with a ticked survey and a pencil: the market research desk.",
+      "caption": "Pixel-art illustration (AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a wooden clipboard holding a survey sheet with four tick boxes, a yellow pencil clipped to the top.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 3,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.479
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "desk-icon"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "hollowpines_can",
+      "file": "art_assets/pixel/hollowpines_can.png",
+      "file_display": "art_assets/pixel/hollowpines_can@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "decorative": false,
+      "alt": "Pixel-art icon of a navy-blue Hollow Pines beer can with a white pine-tree emblem and condensation drops.",
+      "caption": "Hollow Pines can (pixel-art illustration, AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a navy-blue twelve-ounce beer can with a small white pine-tree emblem and a few condensation drops.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 2,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.609
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "product",
+        "hollow-pines"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "hollowpines_founder",
+      "file": "art_assets/pixel/hollowpines_founder.png",
+      "file_display": "art_assets/pixel/hollowpines_founder@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-portrait",
+      "decorative": false,
+      "alt": "Pixel-art portrait of the Hollow Pines founder, a man with a salt-and-pepper beard wearing a navy work shirt with a pine-tree pin.",
+      "caption": "Hollow Pines founder (pixel-art illustration, AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art character portrait in the style of 1990s SNES and Genesis RPG dialogue boxes. Square canvas, subject centred, bust crop from the chest up, head about 55% of the frame height, slight three-quarter turn toward the left of the viewer. The bust runs off the bottom edge of the canvas; nothing else touches any edge. No props, headset or glasses unless listed in the subject. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nSubject: a man in his mid-forties, founder of a craft non-alcoholic beer brand. Relaxed grin. Short salt-and-pepper beard, short dark hair. Medium skin. Navy work shirt with the sleeves rolled. One accessory: a small pine-tree enamel pin on the chest pocket.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 2,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.503
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "client-contact",
+        "hollow-pines"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "kf_director",
+      "file": "art_assets/pixel/kf_director.png",
+      "file_display": "art_assets/pixel/kf_director@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-portrait",
+      "decorative": false,
+      "alt": "Pixel-art portrait of the Kestrel & Fern brand director, a woman with dark hair in a low bun wearing a sage-green blazer with a fern pin.",
+      "caption": "Kestrel & Fern brand director (pixel-art illustration, AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art character portrait in the style of 1990s SNES and Genesis RPG dialogue boxes. Square canvas, subject centred, bust crop from the chest up, head about 55% of the frame height, slight three-quarter turn toward the left of the viewer. The bust runs off the bottom edge of the canvas; nothing else touches any edge. No props, headset or glasses unless listed in the subject. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nSubject: a woman in her late thirties, brand director at a premium clean-skincare company. Warm confident half-smile. Dark hair in a low bun. Medium-light skin. Small gold hoop earrings. Sage-green linen blazer over a white tee. One accessory: a tiny fern-leaf enamel pin on the lapel.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 4,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 15,
+        "touches_edge": false,
+        "bg_removed": 0.482
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "client-contact",
+        "kestrel-and-fern"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "kf_director_sheet",
+      "file": "art_assets/pixel/kf_director_sheet.png",
+      "file_display": "art_assets/pixel/kf_director_sheet@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-sheet",
+      "base": "kf_director",
+      "frames": [
+        {
+          "row": "rest",
+          "frame": 0,
+          "change": "base portrait"
+        },
+        {
+          "row": "rest",
+          "frame": 1,
+          "change": "the eyes closed in a soft blink"
+        },
+        {
+          "row": "rest",
+          "frame": 2,
+          "change": "the eyes glancing toward the left edge of the picture, head unchanged"
+        },
+        {
+          "row": "rest",
+          "frame": 3,
+          "change": "a slightly wider closed-mouth smile"
+        },
+        {
+          "row": "talk",
+          "frame": 0,
+          "change": "the lips parted slightly as if mid-word, teeth barely visible, mouth no wider than the nose"
+        },
+        {
+          "row": "talk",
+          "frame": 1,
+          "change": "the mouth a little open in a soft 'oh', lips gently rounded, small"
+        },
+        {
+          "row": "talk",
+          "frame": 2,
+          "change": "the mouth closed in a relaxed neutral expression, as between words"
+        },
+        {
+          "row": "talk",
+          "frame": 3,
+          "change": "the lips parted in a small open smile, as if finishing a sentence"
+        }
+      ],
+      "decorative": true,
+      "alt": "",
+      "caption": "Pixel-art illustration (AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "Edit the attached 16-bit pixel-art portrait. Change ONLY this: {change}. Keep everything else identical: the same person, pose, hair, clothing, colours, one-pixel black outlines, pixel grid, crop and the plain flat white background. No text, no new props. Return the full edited image.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel/kf_director.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 1,
+      "gate": {
+        "bg_removed": null
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "client-contact",
+        "kestrel-and-fern",
+        "sheet"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    },
+    {
+      "id": "kf_serum",
+      "file": "art_assets/pixel/kf_serum.png",
+      "file_display": "art_assets/pixel/kf_serum@4x.png",
+      "hosted_url": null,
+      "kind": "generated",
+      "asset_kind": "pixel-object",
+      "decorative": false,
+      "alt": "Pixel-art icon of the Kestrel & Fern hero serum, a frosted glass dropper bottle with a sage-green fern label.",
+      "caption": "Kestrel & Fern hero serum (pixel-art illustration, AI-generated).",
+      "basis": "generated",
+      "review_needed": false,
+      "generator": "gemini-3.1-flash-image",
+      "generated_on": "2026-10-25",
+      "prompt": "16-bit era pixel art object in the style of 1990s SNES and Genesis RPG inventory icons and shop sprites. Square canvas, a single object centred, shown in a slight three-quarter view, filling about 70% of the frame. Simple readable silhouette, with a clear margin of background on every side; nothing touches any edge. No floor, no ground shadow, no scene, nothing else in frame. Uniform one-pixel black outline around every shape, including inner shapes; no line weight variation. Flat cel shading with exactly three tones per material: base, shadow, highlight. Hard edges. No gradients, no dithering, no texture, no anti-aliasing, no blur. Limited palette of about 24 colours in total. One accent colour at most. Single light source from the upper left. Large crisp square pixels on a uniform grid, as if a 96 by 96 sprite were scaled up. The background is pure flat white, edge to edge, nothing on it, no vignette, no shadow, no border. No text, no letters, no numbers, no watermark, no logo, no signature. Match the attached reference images exactly for outline weight, shading style and pixel size.\nObject: a frosted glass skincare dropper bottle with a sage-green label showing a small fern leaf, black rubber dropper cap.",
+      "style_card_version": "0.3",
+      "refs": [
+        "art_assets/pixel_head/baker_sprite.png",
+        "scripts/pixel_art/refs/kf_director_ref_v02.png"
+      ],
+      "grid": 96,
+      "colors": 32,
+      "key": "white",
+      "upscale": 4,
+      "candidate": 2,
+      "gate": {
+        "despilled": 0,
+        "interior_key": 0,
+        "bottom_leak_if_four_edges": 0,
+        "touches_edge": false,
+        "bg_removed": 0.779
+      },
+      "accepted_on": "2026-10-25",
+      "accepted_by": "Andrew",
+      "tags": [
+        "brief-relay",
+        "product",
+        "kestrel-and-fern"
+      ],
+      "used_in": [],
+      "modifications": "nearest-neighbour sample to grid, edge flood-fill key, palette quantize; no retouching"
+    }
+  ]
+}

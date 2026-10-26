@@ -1,0 +1,50 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "join",
+  "room": "KFRN",
+  "match": {
+    "case_id": "kf-r2-001",
+    "round": 2,
+    "of": 5,
+    "rung": 2,
+    "clock_s": 90,
+    "assess_s": 60,
+    "menu": 4
+  },
+  "teams": [
+    {
+      "key": "red",
+      "name": "Red Agency",
+      "players": 7
+    },
+    {
+      "key": "blue",
+      "name": "Blue Agency",
+      "players": 7
+    }
+  ],
+  "gate": {
+    "min_players": 8,
+    "joined": 14,
+    "balanced": true,
+    "desks": 4,
+    "desk_sizes": [
+      2,
+      2,
+      2,
+      1
+    ],
+    "shards_per_desk": 1,
+    "can_start": true
+  },
+  "me": {
+    "name": "Priya",
+    "team": "blue"
+  }
+}

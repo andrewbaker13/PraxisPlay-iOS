@@ -1,0 +1,94 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "round",
+  "round": 2,
+  "round_instance_id": "7f3aâ€¦",
+  "ends_at": "+47s",
+  "clock_s": 90,
+  "me": {
+    "team": "blue",
+    "desk": "research",
+    "decides": "channel",
+    "card": "research",
+    "shard": null,
+    "options": [
+      {
+        "key": "A",
+        "text": "Short-form video",
+        "detail": "Paid placements on the platforms where Clean Curious discover skincareâ€¦"
+      },
+      {
+        "key": "B",
+        "text": "Email to existing customers",
+        "detail": "A four-send sequence over the quarter to the 100,000 buyers on the listâ€¦"
+      },
+      {
+        "key": "C",
+        "text": "Podcast sponsorship",
+        "detail": "Host-read spots on three beauty and wellness podcasts, about $100,000â€¦"
+      },
+      {
+        "key": "D",
+        "text": "Local out-of-home near stockists",
+        "detail": "Posters and window takeovers within a mile of the 60 stockists, about $75,000â€¦"
+      }
+    ],
+    "desk_votes": {
+      "locked": 1,
+      "holders": 2
+    },
+    "my_choice": "B",
+    "locked": false
+  },
+  "projector": {
+    "red": {
+      "analytics": "locked",
+      "research": "1/2",
+      "environment": "talking",
+      "brand": "locked"
+    },
+    "blue": {
+      "analytics": "locked",
+      "research": "1/2",
+      "environment": "talking",
+      "brand": "locked"
+    }
+  },
+  "host": {
+    "alerts": [
+      {
+        "team": "red",
+        "desk": "brand",
+        "player": "Jordan",
+        "dropped_s": 12
+      }
+    ],
+    "votes": {
+      "red.analytics": {
+        "B": 2
+      },
+      "red.research": {
+        "A": 1
+      },
+      "red.brand": {
+        "B": 1
+      },
+      "blue.analytics": {
+        "B": 2
+      },
+      "blue.research": {
+        "B": 1
+      },
+      "blue.brand": {
+        "B": 1
+      }
+    }
+  },
+  "note": "option order is shuffled per team on the wire; every option carries a detail string for the info button"
+}

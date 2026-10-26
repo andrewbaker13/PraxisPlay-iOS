@@ -142,15 +142,26 @@ struct PraxisWebEngineView: UIViewRepresentable {
             self.webController.webView = webView
         }
 
-        // Load bundled game-play.html via custom scheme
+        // Load bundled game-play.html or team_play/play.html or host/projector console via custom scheme
         let targetURLString: String
         switch launchMode {
         case .liveSession(let session):
             let encodedRoom = session.roomCode.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? session.roomCode
-            targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=\(encodedRoom)"
+            if session.isTeamPlay {
+                targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/team_play/play.html?room=\(encodedRoom)"
+            } else {
+                targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=\(encodedRoom)"
+            }
         case .soloPractice(let mode, let showResults):
             let resFlag = showResults ? "&results=1" : ""
-            targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=SOLO&dev=1&state=\(mode.snapshotState)\(resFlag)"
+            if mode.id == "brief_relay" {
+                targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/team_play/play.html?room=SOLO&dev=1&state=\(mode.snapshotState)\(resFlag)"
+            } else {
+                targetURLString = "praxis-app://app.mktpraxis.com/admin_pages/games/game-play.html?room=SOLO&dev=1&state=\(mode.snapshotState)\(resFlag)"
+            }
+        case .webTool(_, let relativePath):
+            let trimmed = relativePath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            targetURLString = "praxis-app://app.mktpraxis.com/\(trimmed)"
         }
 
         if let url = URL(string: targetURLString) {
@@ -176,6 +187,7 @@ struct PraxisWebEngineView: UIViewRepresentable {
             let name = jsEscaped(session.playerName)
             let isGuestStr = session.isGuest ? "true" : "false"
             let waitingStr = session.waitingToEnter ? "true" : "false"
+            let isTeamPlayStr = session.isTeamPlay ? "true" : "false"
 
             return """
             (function() {
@@ -189,8 +201,12 @@ struct PraxisWebEngineView: UIViewRepresentable {
                     sessionStorage.setItem('isGuest', "\(isGuestStr)");
                     sessionStorage.setItem('waitingToEnter', "\(waitingStr)");
                     localStorage.setItem('last_praxis_player_name', "\(name)");
+                    if ("\(isTeamPlayStr)" === "true") {
+                        localStorage.setItem('teamplay:\(room):identity', "\(playerJSON)");
+                    }
                     if ("\(token)".length > 0 && "\(isGuestStr)" === "false") {
                         localStorage.setItem('token', "\(token)");
+                        localStorage.setItem('auth_token', "\(token)");
                         sessionStorage.setItem('authToken', "\(token)");
                     } else {
                         sessionStorage.removeItem('authToken');
@@ -235,6 +251,23 @@ struct PraxisWebEngineView: UIViewRepresentable {
                         score: 380,
                         rank: 2
                     }));
+                } catch (e) {}
+            })();
+            """
+
+        case .webTool(_, _):
+            return """
+            (function() {
+                window.__PRAXIS_IOS_NATIVE = true;
+                window.__PRAXIS_IOS_SOLO = false;
+                window.__PRAXIS_IOS_API_BASE = "\(apiBase)";
+                window.__PRAXIS_IOS_WS_BASE = "\(wsBase)";
+                try {
+                    if ("\(token)".length > 0) {
+                        localStorage.setItem('token', "\(token)");
+                        localStorage.setItem('auth_token', "\(token)");
+                        sessionStorage.setItem('authToken', "\(token)");
+                    }
                 } catch (e) {}
             })();
             """

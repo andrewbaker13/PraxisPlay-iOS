@@ -44,7 +44,17 @@
             } else if (typeof retryConnectionNow === 'function') {
                 retryConnectionNow();
             }
+            try {
+                document.dispatchEvent(new Event('visibilitychange'));
+            } catch (_) {}
         }
+    };
+
+    const isClassicPlayPage = function () {
+        return Boolean(
+            document.getElementById('gameArea') ||
+            (window.location.pathname.indexOf('/games/play.html') !== -1)
+        );
     };
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -72,6 +82,7 @@
     // 2. Native Lively Classroom Daylight Theme & Single-Screen Viewport Layout
     // ─────────────────────────────────────────────────────────────────────────
     function injectIOSStyles() {
+        if (!isClassicPlayPage()) return;
         if (document.getElementById('praxis-ios-native-styles')) return;
         const style = document.createElement('style');
         style.id = 'praxis-ios-native-styles';
@@ -1364,7 +1375,7 @@
     // ─────────────────────────────────────────────────────────────────────────
     document.addEventListener('touchstart', function (e) {
         const target = e.target && e.target.closest
-            ? e.target.closest('.answer-btn, .crowd-wisdom-btn, .push-button, .bb-btn, .bac-option, .mr-option-card, .buzzer-btn, #confirmBtn, #redrawBtn, #bbLockBtn, #bacLockBtn, #bacBuyBtn, #mrSubmitBtn, .submit-guess-btn, .submit-word-btn, .ios-cg-step-btn, .ios-wg-key, .ios-solo-replay-btn')
+            ? e.target.closest('.answer-btn, .crowd-wisdom-btn, .push-button, .bb-btn, .bac-option, .mr-option-card, .buzzer-btn, #confirmBtn, #redrawBtn, #bbLockBtn, #bacLockBtn, #bacBuyBtn, #mrSubmitBtn, .submit-guess-btn, .submit-word-btn, .ios-cg-step-btn, .ios-wg-key, .ios-solo-replay-btn, .pick, .btn, .info, .tp-solo-pill')
             : null;
         if (target && !target.disabled && !target.classList.contains('disabled')) {
             postToNative({ type: 'haptic', pattern: [16] });
@@ -2736,6 +2747,7 @@
     }
 
     onReady(function () {
+        if (!isClassicPlayPage()) return;
         const scoreEl = document.getElementById('playerScore');
         const rankEl = document.getElementById('playerRank');
         const lbEl = document.getElementById('leaderboard');

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Praxis Play · Team Edition</title>
+    <link rel="icon" type="image/svg+xml" href="../../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    <link rel="dns-prefetch" href="https://drbaker-backend.onrender.com">
+    <link rel="preconnect" href="https://drbaker-backend.onrender.com" crossorigin>
+    <link rel="stylesheet" href="../../shared/css/main.css">
+    <style>
+      /* The phone. The team band at the top is the player's identity for the whole session; everything
+         below it renders from the server's `me` payload. Nothing here is state that cannot be refetched. */
+      :root { --ink: #15181d; --muted: #6a7380; --line: #dfe3e8; --panel: #f8f9fb; --go: #2f6f5e; --warn: #b26a00; --bad: #b3261e; }
+      html, body { background: #eef1f4; color: var(--ink); margin: 0; }
+      body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.45; }
+      .app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; display: flex; flex-direction: column; }
+      .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; background: #1b2330; color: #fff; font-size: .8rem; position: sticky; top: 0; z-index: 3; }
+      .bar .team { font-family: ui-monospace, Consolas, monospace; font-weight: 700; letter-spacing: .06em; }
+      .bar .team::before { content: ""; display: inline-block; width: .8em; height: .8em; background: #fff; clip-path: polygon(0 0, 100% 50%, 0 100%); margin-right: 6px; vertical-align: -1px; }
+      main { padding: 14px 16px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; flex: 1; }
+      h1 { font-size: 1.15rem; margin: 0; }
+      h2 { font-size: 1rem; margin: 0; }
+      h4 { margin: 0 0 4px; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: #4f5a68; }
+      .card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); display: grid; gap: 6px; }
+      .small { font-size: .78rem; color: var(--muted); }
+      .tip { background: #fff7e6; border: 1px solid #f1dcb0; border-radius: 10px; padding: 8px 10px; font-size: .82rem; color: #5a4300; }
+      table { border-collapse: collapse; width: 100%; font-size: .75rem; font-variant-numeric: tabular-nums; }
+      th, td { text-align: left; padding: 4px 5px; border-bottom: 1px solid #e5e8ec; vertical-align: top; }
+      th { color: #4f5a68; font-weight: 600; }
+      .quote { font-style: italic; color: #2b3542; border-left: 3px solid #c9d1da; padding-left: 8px; }
+      .quote .who { font-style: normal; color: var(--muted); font-size: .78rem; }
+      .line, .item { font-size: .9rem; }
+      .creative { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 8px 10px; display: grid; gap: 2px; }
+      .opts { display: grid; gap: 8px; }
+      .opt { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff; }
+      .opt.sel { border-color: var(--go); background: #eef6f2; }
+      .opt .pick { all: unset; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; width: 100%; min-height: 44px; }
+      .opt .pick:focus-visible { outline: 2px solid var(--go); outline-offset: 2px; border-radius: 8px; }
+      .opt .k { font-family: ui-monospace, Consolas, monospace; font-weight: 700; color: #4f5a68; margin-top: 2px; }
+      .opt .info { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #c9d1da; background: #fff; color: var(--go); font-weight: 700; cursor: pointer; }
+      .opt .info[aria-expanded="true"] { background: var(--go); color: #fff; border-color: var(--go); }
+      .opt .detail { grid-column: 1 / -1; font-size: .8rem; color: #2b3542; background: #f1f4f7; border-radius: 8px; padding: 8px 10px; }
+      .btn { background: var(--go); color: #fff; border: 0; border-radius: 12px; padding: 14px; font-weight: 600; font-size: 1rem; width: 100%; cursor: pointer; }
+      .btn[disabled] { opacity: .55; cursor: default; }
+      .btn.quiet { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+      .meter { height: 8px; background: #e5e8ec; border-radius: 4px; overflow: hidden; }
+      .meter i { display: block; height: 100%; background: var(--go); transition: width .5s linear; }
+      .clockline { display: flex; justify-content: space-between; align-items: baseline; font-size: .85rem; }
+      .clockline b { font-family: ui-monospace, Consolas, monospace; font-size: 1.2rem; }
+      .px { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+      .desk-hero { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #f3f7ff; }
+      .desk-hero strong { display: block; font-size: 1.05rem; }
+      .teammap { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+      .seat { display: grid; justify-items: center; gap: 2px; border: 1px solid var(--line); border-radius: 10px; padding: 6px 4px; background: #fff; text-align: center; font-size: .74rem; }
+      .seat.you { border-color: #2b62c2; background: #f3f7ff; }
+      .seat b { font-size: .8rem; }
+      .seat .who { color: #4f5a68; }
+      .seat .dec { color: var(--go); font-weight: 600; }
+      .fit { color: #2e7d4f; font-weight: 600; } .miss { color: var(--bad); font-weight: 600; }
+      .pennant { display: inline-block; width: 14px; height: 14px; clip-path: polygon(0 0, 100% 50%, 0 100%); vertical-align: -2px; margin-right: 6px; }
+      .standing { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; font-size: .9rem; }
+      .standing .bar { all: unset; display: block; height: 10px; background: #e5e8ec; border-radius: 5px; overflow: hidden; }
+      .standing .bar i { display: block; height: 100%; }
+      .standing .score { font-family: ui-monospace, Consolas, monospace; font-weight: 700; }
+      .status { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: #1b2330; color: #fff; border-radius: 999px; padding: 8px 14px; font-size: .8rem; z-index: 4; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+      .status[hidden] { display: none; }
+      form.join { display: grid; gap: 10px; }
+      label { display: grid; gap: 4px; font-size: .85rem; font-weight: 600; }
+      input { font: inherit; padding: 12px; border: 1px solid var(--line); border-radius: 10px; min-height: 44px; }
+      input.code { text-transform: uppercase; letter-spacing: .2em; font-family: ui-monospace, Consolas, monospace; font-size: 1.3rem; text-align: center; }
+      .err { color: var(--bad); font-size: .85rem; }
+      .skip-link { position: absolute; left: -9999px; top: 8px; background: #1b2330; color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 10; }
+      .skip-link:focus { left: 8px; }
+      .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .tp-solo-deck { background: #1e293b; color: #f8fafc; padding: 10px 14px; border-bottom: 2px solid #0f172a; display: grid; gap: 8px; }
+      .tp-solo-deck .tp-solo-head { display: flex; justify-content: space-between; align-items: center; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #93c5fd; }
+      .tp-solo-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .tp-solo-pill { border: 1px solid #334155; background: #0f172a; color: #cbd5e1; border-radius: 8px; padding: 6px 4px; font-size: .72rem; font-weight: 600; cursor: pointer; text-align: center; line-height: 1.25; }
+      .tp-solo-pill.active { background: #2563eb; border-color: #60a5fa; color: #fff; }
+      .tp-solo-pill.desk.active { background: #2f6f5e; border-color: #6ee7b7; color: #fff; }
+      .tp-solo-pill .badge { display: inline-block; margin-left: 3px; padding: 0 4px; border-radius: 4px; background: rgba(255,255,255,.18); font-family: ui-monospace, Consolas, monospace; font-size: .68rem; }
+      .btn.solo-submit { background: #2563eb; margin-top: 4px; }
+      @media (prefers-reduced-motion: reduce) { .meter i { transition: none; } }
+    </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="app">
+  <h1 class="sr-only">Praxis Play Team Edition</h1>
+  <header class="bar" id="bar"><span>Praxis Play · Team Edition</span><span id="bar-right">mktpraxis.com/play</span></header>
+  <div id="tp-solo-deck" class="tp-solo-deck" hidden></div>
+  <main id="main-content" aria-live="polite"></main>
+  <div id="status" class="status" role="status" hidden></div>
+</div>
+
+<script src="../../shared/js/api-config.js"></script>
+<script src="../games/js/praxis-ios-bridge.js"></script>
+<script src="js/team-play-client.js"></script>
+<script src="js/team-play-views.js"></script>
+<script>
+(function () {
+  'use strict';
+  var V = window.TeamPlayViews, TP = window.TeamPlay;
+  var API = window.API_BASE, WS = window.WS_BASE;
+  var params = new URLSearchParams(location.search);
+  var room = (params.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  var main = document.getElementById('main-content'), bar = document.getElementById('bar'), barRight = document.getElementById('bar-right');
+  var statusEl = document.getElementById('status');
+  var client = null, me = null, clockTimer = null, lastProgress = null;
+  var storage = (function () { try { return window.localStorage; } catch (e) { return { getItem: function () { return null; }, setItem: function () {}, removeItem: function () {} }; } })();
+  var authToken = storage.getItem('token') || null;
+
+  // ------------------------------------------------------------------ chrome
+  function setBar(team, right) {
+    bar.style.background = team ? V.teamColour(team.key) : '#1b2330';
+    bar.innerHTML = '<span>' + (team ? '<span class="team">' + V.esc(team.name.split(' ')[0].toUpperCase()) + '</span> · ' : '') + 'Room ' + V.esc(room || '----') + '</span><span id="bar-right">' + (right || '') + '</span>';
+    barRight = document.getElementById('bar-right');
+  }
+  function showStatus(text, sticky) {
+    if (!text) { statusEl.hidden = true; return; }
+    statusEl.textContent = text; statusEl.hidden = false;
+    if (!sticky) setTimeout(function () { if (statusEl.textContent === text) statusEl.hidden = true; }, 4000);
+  }
+  function handleStatus(s) {
+    if (s === 'live' || s === 'connecting') { showStatus(''); syncTeamHUD(s === 'live' ? 'connected' : 'connecting'); return; }
+    if (s === 'reconnecting') { showStatus('Reconnecting…', true); syncTeamHUD('reconnecting'); }
+    else if (s === 'polling') { showStatus('Slow link: checking in every few seconds', true); syncTeamHUD('connected'); }
+    else if (s === 'closed') { showStatus('Disconnected', true); syncTeamHUD('reconnecting'); }
+  }
+
+  // ------------------------------------------------------------------ join
+  function publicSession(code) {
+    return fetch(API + '/team-play/sessions/' + encodeURIComponent(code) + '/').then(function (r) {
+      return r.ok ? r.json() : null;
+    }).catch(function () { return null; });
+  }
+
+  function renderJoin(opts) {
+    opts = opts || {};
+    setBar(null, 'mktpraxis.com/play');
+    var mode = opts.session ? opts.session.access_mode : null;
+    var h = '<h2>Join the game</h2>';
+    if (opts.session && opts.session.case) h += '<div class="tip">Tonight\'s client: <strong>' + V.esc(opts.session.case.client) + '</strong>. Two agencies pitch for the same account every round.</div>';
+    h += '<form class="join" id="join-form">';
+    h += '<label>Room code<input class="code" id="f-room" name="room" maxlength="6" autocomplete="off" autocapitalize="characters" value="' + V.esc(room) + '" ' + (room ? 'readonly' : 'required autofocus') + '></label>';
+    if (mode === 'enrollment_required' && !authToken) {
+      h += '<p class="err">This room is for students signed in to the course. Sign in on mktpraxis.com, then come back to this link.</p>';
+    } else {
+      if (!authToken) h += '<label>Your name<input id="f-name" name="name" maxlength="40" required autocomplete="given-name" placeholder="First name or nickname"></label>';
+      if (mode === 'password') h += '<label>Room password<input id="f-pass" name="pass" maxlength="50" required autocomplete="off"></label>';
+      h += '<button class="btn" type="submit">' + (authToken ? 'Join as yourself' : 'Join') + '</button>';
+    }
+    if (opts.error) h += '<p class="err" role="alert">' + V.esc(opts.error) + '</p>';
+    h += '</form>';
+    if (!room) h += '<p class="small">Your instructor shows the four-letter code and a QR on the screen.</p>';
+    main.innerHTML = h;
+    var form = document.getElementById('join-form');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var code = (document.getElementById('f-room').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (!room && code) { room = code; history.replaceState(null, '', '?room=' + room); }
+      if (!opts.session || opts.session.room_code !== room) { boot(); return; }      // first learn the room's mode
+      var name = document.getElementById('f-name') ? document.getElementById('f-name').value.trim() : '';
+      var pass = document.getElementById('f-pass') ? document.getElementById('f-pass').value : '';
+      doJoin(name, pass, opts.session);
+    });
+  }
+
+  function doJoin(name, pass, session) {
+    var headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers['Authorization'] = 'Token ' + authToken;
+    fetch(API + '/team-play/sessions/join/', { method: 'POST', headers: headers,
+      body: JSON.stringify({ room_code: room, guest_name: name, guest_password: pass }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, data: d }; }); })
+      .then(function (r) {
+        if (!r.ok) {
+          var msg = r.data.error || (r.data.guest_name ? 'Please give a name' : 'Could not join');
+          if (r.status === 401 && authToken) { authToken = null; }
+          return renderJoin({ session: session, error: msg });
+        }
+        TP.saveIdentity(storage, room, { player_id: r.data.player_id, player_token: r.data.player_token, display_name: r.data.display_name, team: r.data.team });
+        start({ player_token: r.data.player_token });
+      })
+      .catch(function () { renderJoin({ session: session, error: 'No connection. Check your signal and try again.' }); });
+  }
+
+  // ------------------------------------------------------------------ play
+  function start(identity) {
+    client = new TP.TeamPlayClient({ room: room, apiBase: API, wsBase: WS, role: 'player', playerToken: identity.player_token,
+      onEvent: handleEvent, onStatus: handleStatus });
+    client.refresh().then(function (r) {
+      if (r.status === 401) { TP.clearIdentity(storage, room); client.close(); client = null; return boot({ error: 'This room no longer knows you. Join again.' }); }
+      if (r.status === 404) { TP.clearIdentity(storage, room); client.close(); client = null; return renderJoin({ error: 'That room does not exist.' }); }
+      if (r.ok) render(r.data);
+      client.connect();
+    }).catch(function () { client.connect(); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && client) client.resume(); });
+  }
+
+  function handleEvent(ev) {
+    if (ev.type === 'view') render(ev.data);
+    else if (ev.type === 'timer') updateClock();
+    else if (ev.type === 'desk_progress') updateDeskProgress(ev);
+    else if (ev.type === 'room_gone') { main.innerHTML = '<div class="card"><h2>This room has closed.</h2></div>'; }
+    else if (ev.type === 'error') showStatus(ev.message);
+  }
+
+  var renderers = {
+    join: function (m) {
+      var t = m.team;
+      var h = '<h2>' + (t ? V.esc(m.display_name) + ', you\'re on <span style="color:' + V.esc(V.teamColour(t.key)) + '">' + V.esc(t.name) + '</span>' : 'You\'re in, ' + V.esc(m.display_name)) + '</h2>';
+      h += '<div class="card"><h4>Waiting for the host</h4><div>' + V.esc(m.session.player_count) + ' joined · ' + (m.session.teams || []).map(function (x) { return V.esc(x.name) + ' ' + V.esc(x.players); }).join(' · ') + '</div>';
+      h += '<div class="small">Keep this screen open. If your phone sleeps, come back and you\'ll be put straight back here.</div></div>';
+      if (m.session.case) h += '<div class="tip">Tonight\'s client: <strong>' + V.esc(m.session.case.client) + '</strong>. Two agencies pitch for the same account every round.</div>';
+      return h;
+    },
+    waiting: function (m) {
+      return '<div class="card"><h2>A round is under way</h2><div>You\'ll be seated at a desk when the next round starts.</div></div>' + renderers.join(m);
+    },
+    briefing: function (m) {
+      var d = m.desk, match = m.session.match;
+      var h = '<div class="small">Round ' + V.esc(match.current_round) + ' of ' + V.esc(match.rounds_total) + '</div>';
+      if (!d) return h + renderers.waiting(m);
+      var mates = (m.team_map || []).filter(function (x) { return x.desk === d.desk; })[0];
+      var others = mates ? mates.holders.filter(function (n) { return n !== m.display_name; }) : [];
+      h += '<div class="desk-hero">' + V.iconImg(d.icon, 96) + '<div><span class="small">Your desk</span><strong>' + V.esc(d.label) + '</strong><span class="small">' + (others.length ? 'with ' + others.map(V.esc).join(', ') : 'you hold it alone') + '</span></div></div>';
+      h += '<div class="card"><h4>What you hold · what you decide</h4><div>You hold the ' + V.esc(d.label.toLowerCase()) + ' card' + (d.shard_count > 1 ? ', one slice of ' + V.esc(d.shard_count) : '') + '. Nobody on the other desks sees it.</div><div>You decide <strong>' + V.esc(d.decision_label) + '</strong>. Your desk locks in by vote.</div></div>';
+      h += '<div class="card"><h4>' + V.esc(m.team.name) + '\'s four desks</h4>' + V.renderTeamMap(m.team_map, d.desk) + '<div class="small">Nobody can answer alone: every decision needs at least two other desks\' cards. When someone asks what your card says, that\'s you.</div></div>';
+      h += '<div class="tip">When a number and a quote disagree, say so out loud.</div>';
+      return h;
+    },
+    round: function (m) {
+      var d = m.desk, r = m.round || {};
+      var h = '<div class="clockline"><span>Round ' + V.esc(m.session.match.current_round) + ' · ' + V.esc(d.label) + '</span><b id="clock">--:--</b></div><div class="meter" aria-hidden="true"><i id="meter" style="width:100%"></i></div>';
+      h += '<div class="card" id="card">' + V.renderCard(d.card) + '</div>';
+      h += '<div class="card"><h4>You decide: ' + V.esc(d.decision_label) + '</h4><div class="opts" id="opts">' + (d.options || []).map(function (o) { return V.renderOption(o, o.key === r.my_vote); }).join('') + '</div></div>';
+      h += '<div class="small" id="progress">' + progressText(r.desk_locked, r.desk_holders) + '</div>';
+      h += '<button class="btn" id="lock" type="button" ' + (r.my_vote ? '' : 'disabled') + '>' + (r.my_vote ? 'Locked in ' + V.esc(r.my_vote) + ' · tap another to change' : 'Pick an option to lock in') + '</button>';
+      return h;
+    },
+    assessment: function (m) {
+      var a = m.assessment, my = a && a.my_desk;
+      var h = '<h2>Round ' + V.esc(a ? a.round : m.session.match.current_round) + ' result</h2>';
+      if (my) {
+        var cap = function (s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); };
+        h += '<div class="card"><h2>' + V.esc(cap(V.decisionLabel(my.decides))) + ': ' + V.esc(optionText(m, my.choice)) + ' <span class="' + (my.agreed ? 'fit' : 'miss') + '">' + (my.agreed ? 'client agreed' : 'client disagreed') + '</span></h2><div>' + V.esc(my.why) + '</div></div>';
+        h += '<div class="card"><h4>' + V.esc(m.team.name) + ' this round</h4><div>Client agreed with ' + V.esc(a.fits) + ' of ' + V.esc(Object.keys(a.agreed || {}).length) + (a.coherence ? ' · all four fit together +2' : '') + (a.speed ? ' · first to lock +1' : '') + ' · <strong>' + V.esc(a.points) + ' points</strong></div>';
+        h += '<div class="small">' + (Object.keys(a.why || {})).map(function (k) { return '<div><strong>' + V.esc(V.decisionLabel(k)) + ':</strong> ' + V.esc(a.why[k]) + '</div>'; }).join('') + '</div></div>';
+        if (a.lesson) h += '<div class="tip">Lesson of the round: ' + V.esc(a.lesson) + '</div>';
+      } else {
+        h += '<div class="card">Waiting for the client\'s feedback…</div>';
+      }
+      h += '<div class="card"><h4>Standings</h4>' + V.standingsHtml(m.session.teams) + '</div>';
+      return h;
+    },
+    rotation: function (m) {
+      var d = m.desk, match = m.session.match;
+      var h = '<div class="desk-hero">' + V.iconImg(d && d.icon, 96) + '<div><span class="small">You stay at</span><strong>' + V.esc(d ? d.label : 'your desk') + '</strong></div></div>';
+      h += '<div class="card"><h4>Next: round ' + V.esc(match.current_round) + ' of ' + V.esc(match.rounds_total) + '</h4><div>Worth ' + V.esc(match.multiplier) + '×. ' + (match.multiplier > 1 ? 'Nothing is settled.' : '') + '</div></div>';
+      h += '<div class="card"><h4>Standings</h4>' + V.standingsHtml(m.session.teams) + '</div><div class="small">Waiting for the host to start the round.</div>';
+      return h;
+    },
+    final: function (m) {
+      var teams = (m.session.teams || []).slice().sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
+      var winner = teams[0], rec = m.record;
+      var h = '<h2><span class="pennant" style="background:' + V.esc(V.teamColour(winner ? winner.key : '')) + '"></span>' + V.esc(winner ? winner.name : 'The match') + (teams.length > 1 && teams[0].score === teams[1].score ? ' and ' + V.esc(teams[1].name) + ' tie' : ' wins the pitch') + '</h2>';
+      h += '<div class="card"><h4>Final score</h4>' + V.standingsHtml(m.session.teams) + '</div>';
+      if (rec) h += '<div class="card"><h4>Your record</h4><div>Desk: ' + V.esc(V.deskLabel(rec.desk, m.team_map)) + ', ' + V.esc(rec.rounds) + ' rounds</div><div>Decisions made: ' + V.esc(rec.decided) + ' of ' + V.esc(rec.rounds) + ' · the client agreed with ' + V.esc(rec.client_agreed) + '</div><div class="small">This record goes to your MktPraxis history. The team\'s rank does not.</div></div>';
+      return h;
+    },
+  };
+
+  function optionText(m, key) {
+    var opts = (m.desk && m.desk.options) || [];
+    var hit = opts.filter(function (o) { return o.key === key; })[0];
+    return hit ? hit.text : key;
+  }
+  function progressText(locked, holders) {
+    if (!holders) return '';
+    return 'Your desk: ' + locked + ' of ' + holders + ' locked';
+  }
+
+  function isSoloMode() {
+    return Boolean(
+      window.__PRAXIS_IOS_SOLO ||
+      room === 'SOLO' ||
+      params.get('dev') === '1' ||
+      params.get('solo') === '1'
+    );
+  }
+
+  function syncTeamHUD(stateOverride) {
+    if (!window.PraxisIOSBridge || typeof window.PraxisIOSBridge.post !== 'function') return;
+    var myTeam = me && me.team;
+    var teams = (me && me.session && me.session.teams) || [];
+    var teamEntry = myTeam ? teams.filter(function (t) { return t.key === myTeam.key; })[0] : null;
+    var teamScore = teamEntry ? (Number(teamEntry.score) || 0) : 0;
+    var rankBadge = myTeam ? String(myTeam.name || myTeam.key).split(' ')[0].toUpperCase() : 'TEAM';
+    window.PraxisIOSBridge.post({
+      type: 'hudUpdate',
+      score: teamScore,
+      rank: rankBadge,
+      gameType: 'brief_relay',
+      roomCode: room || 'TEAM',
+      connectionState: stateOverride || (isSoloMode() ? 'solo' : 'connected')
+    });
+  }
+
+  function render(data) {
+    me = data;
+    var screen = V.screenFor(me);
+    setBar(me.team, me.session.match ? 'Round ' + me.session.match.current_round + ' of ' + me.session.match.rounds_total : '');
+    main.innerHTML = (renderers[screen] || renderers.join)(me);
+    wire(screen);
+    syncTeamHUD();
+  }
+
+  function wire(screen) {
+    if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+    if (screen !== 'round') return;
+    var opts = document.getElementById('opts');
+    opts.addEventListener('click', function (e) {
+      var info = e.target.closest('.info');
+      if (info) {
+        var open = info.getAttribute('aria-expanded') === 'true';
+        info.setAttribute('aria-expanded', String(!open));
+        var detail = document.getElementById(info.getAttribute('aria-controls'));
+        if (detail) detail.hidden = open;
+        return;
+      }
+      var pick = e.target.closest('.pick');
+      if (pick) vote(pick.getAttribute('data-key'));
+    });
+    if (isSoloMode()) {
+      var lockBtn = document.getElementById('lock');
+      if (lockBtn && !document.getElementById('tp-solo-submit-round')) {
+        var subBtn = document.createElement('button');
+        subBtn.type = 'button';
+        subBtn.id = 'tp-solo-submit-round';
+        subBtn.className = 'btn solo-submit';
+        var lockedCount = soloState ? Object.keys(soloState.votes).length : 0;
+        subBtn.textContent = 'Submit Agency Pitch (' + lockedCount + '/4 Desks Locked) →';
+        subBtn.addEventListener('click', function () {
+          if (soloState) soloState.setStage('assessment');
+        });
+        lockBtn.insertAdjacentElement('afterend', subBtn);
+      }
+    }
+    updateClock();
+    clockTimer = setInterval(updateClock, 500);
+  }
+
+  function vote(key) {
+    if (!me || !me.round) return;
+    if (isSoloMode() && soloState) {
+      soloState.recordVote(key);
+      return;
+    }
+    var prev = me.round.my_vote;
+    me.round.my_vote = key;
+    paintSelection(key);
+    client.decide(key, me.round.round_instance_id).then(function (r) {
+      if (r.ok) {
+        me.round.my_vote = r.data.my_vote;
+        me.round.desk_locked = r.data.desk_locked; me.round.desk_holders = r.data.desk_holders;
+        paintSelection(me.round.my_vote);
+        var p = document.getElementById('progress'); if (p) p.textContent = progressText(me.round.desk_locked, me.round.desk_holders);
+        return;
+      }
+      me.round.my_vote = prev;
+      paintSelection(prev);
+      showStatus(r.data.error || 'That did not go through. Try again.');
+      if (r.status === 409) client.refresh().then(function (rr) { if (rr.ok) render(rr.data); });
+    }).catch(function () { me.round.my_vote = prev; paintSelection(prev); showStatus('No connection. Your tap was not saved; try again.'); });
+  }
+
+  function paintSelection(key) {
+    Array.prototype.forEach.call(document.querySelectorAll('#opts .opt'), function (el) {
+      var on = el.getAttribute('data-key') === key;
+      el.classList.toggle('sel', on);
+      var b = el.querySelector('.pick'); if (b) b.setAttribute('aria-pressed', String(on));
+    });
+    var lock = document.getElementById('lock');
+    if (lock) { lock.disabled = !key; lock.textContent = key ? 'Locked in ' + key + ' · tap another to change' : 'Pick an option to lock in'; }
+  }
+
+  function updateClock() {
+    if (!me || !me.session.match) return;
+    var m = me.session.match;
+    var left = client ? client.secondsLeft(m.round_ends_at) : Math.max(0, Math.round((new Date(m.round_ends_at).getTime() - Date.now()) / 1000));
+    var clock = document.getElementById('clock'), meter = document.getElementById('meter');
+    if (clock) clock.textContent = V.formatClock(left);
+    if (meter && m.round_time_limit) meter.style.width = Math.max(0, Math.min(100, 100 * (left || 0) / m.round_time_limit)) + '%';
+  }
+
+  function updateDeskProgress(ev) {
+    if (!me || !me.team || !me.desk || !me.round) return;
+    if (ev.team !== me.team.key || ev.desk !== me.desk.desk) return;
+    me.round.desk_locked = ev.locked; me.round.desk_holders = ev.holders;
+    var p = document.getElementById('progress'); if (p) p.textContent = progressText(ev.locked, ev.holders);
+  }
+
+  // ------------------------------------------------------------------ solo simulator
+  var soloState = null;
+  function bootSoloSimulator() {
+    room = 'SOLO';
+    var deckEl = document.getElementById('tp-solo-deck');
+    fetch('dev_data/kf-r2-001.json')
+      .then(function (r) { return r.json(); })
+      .then(function (caseData) {
+        var deskKeys = caseData.desk_order || ['analytics', 'research', 'environment', 'brand'];
+        var shortLabels = { analytics: 'Analytics', research: 'Research', environment: 'Environ.', brand: 'Brand' };
+        var stage = 'round';
+        if (window.__PRAXIS_IOS_SOLO_RESULTS || params.get('results') === '1') {
+          stage = 'assessment';
+        }
+        var activeDesk = 'analytics';
+        var votes = { analytics: 'B', research: 'B', environment: 'A', brand: 'B' };
+        if (stage === 'round' && !window.__PRAXIS_IOS_SOLO_RESULTS) {
+          votes = {};
+        }
+        var roundEndsAt = new Date(Date.now() + 90 * 1000).toISOString();
+
+        function computeAssessment(deskKey) {
+          var agreed = {};
+          var why = {};
+          var fits = 0;
+          deskKeys.forEach(function (dk) {
+            var dSpec = caseData.desks[dk];
+            var decName = dSpec.decides;
+            var decSpec = caseData.decisions[decName];
+            var choice = votes[dk] || decSpec.default || 'A';
+            var isFit = (choice === decSpec.key);
+            agreed[decName] = isFit;
+            why[decName] = (decSpec.why && decSpec.why[choice]) || '';
+            if (isFit) fits += 1;
+          });
+          var coherence = (fits === 4);
+          var speed = (fits >= 3);
+          var pts = fits + (coherence ? 2 : 0) + (speed ? 1 : 0);
+          var myDSpec = caseData.desks[deskKey];
+          var myDecName = myDSpec.decides;
+          var myDecSpec = caseData.decisions[myDecName];
+          var myChoice = votes[deskKey] || myDecSpec.default || 'A';
+          return {
+            round: 1,
+            fits: fits,
+            agreed: agreed,
+            coherence: coherence,
+            speed: speed,
+            points: pts,
+            why: why,
+            lesson: caseData.lesson,
+            my_desk: {
+              desk: deskKey,
+              decides: myDecName,
+              choice: myChoice,
+              agreed: Boolean(agreed[myDecName]),
+              why: why[myDecName]
+            }
+          };
+        }
+
+        function buildMePayload() {
+          var dSpec = caseData.desks[activeDesk];
+          var decName = dSpec.decides;
+          var decSpec = caseData.decisions[decName];
+          var assessmentObj = (stage === 'assessment' || stage === 'final') ? computeAssessment(activeDesk) : null;
+          var redScore = assessmentObj ? assessmentObj.points : 0;
+          var blueScore = (stage === 'assessment' || stage === 'final') ? 4 : 0;
+
+          var teamMap = deskKeys.map(function (dk) {
+            var ds = caseData.desks[dk];
+            var dn = ds.decides;
+            var v = votes[dk];
+            return {
+              desk: dk,
+              label: ds.label,
+              icon: ds.icon,
+              decides: dn,
+              decision_label: caseData.decisions[dn].label,
+              holders: dk === activeDesk ? ['You (Director)'] : ['Agency Bot'],
+              locked: v ? 1 : 0
+            };
+          });
+
+          return {
+            player_id: 999,
+            display_name: 'You (Director)',
+            team: { key: 'red', name: 'Red Agency', colour: '#c8402f' },
+            session: {
+              room_code: 'SOLO',
+              status: stage === 'final' ? 'completed' : 'in_progress',
+              player_count: 8,
+              case: {
+                case_id: caseData.case_id,
+                client: caseData.client,
+                title: caseData.title
+              },
+              teams: [
+                { key: 'red', name: 'Red Agency', colour: '#c8402f', score: redScore, players: 4 },
+                { key: 'blue', name: 'Blue Agency', colour: '#2b62c2', score: blueScore, players: 4 }
+              ],
+              match: {
+                state: stage,
+                current_round: 1,
+                rounds_total: 1,
+                round_ends_at: roundEndsAt,
+                round_time_limit: 90,
+                multiplier: 1,
+                reveal_step: 9
+              }
+            },
+            desk: {
+              desk: activeDesk,
+              label: dSpec.label,
+              icon: dSpec.icon,
+              decides: decName,
+              decision_label: decSpec.label,
+              shard_count: 1,
+              card: dSpec.card,
+              options: decSpec.options
+            },
+            team_map: teamMap,
+            round: stage === 'round' ? {
+              round_instance_id: 'solo-r1',
+              my_vote: votes[activeDesk] || null,
+              desk_locked: votes[activeDesk] ? 1 : 0,
+              desk_holders: 1
+            } : null,
+            assessment: stage === 'assessment' ? assessmentObj : null,
+            record: stage === 'final' ? {
+              desk: activeDesk,
+              rounds: 4,
+              decided: Object.keys(votes).length || 4,
+              client_agreed: assessmentObj ? assessmentObj.fits : 0
+            } : null
+          };
+        }
+
+        function renderSoloDeck() {
+          if (!deckEl) return;
+          deckEl.hidden = false;
+          var stages = [
+            { k: 'briefing', label: '1. Brief' },
+            { k: 'round', label: '2. Pitch' },
+            { k: 'assessment', label: '3. Debrief' },
+            { k: 'final', label: '4. Final' }
+          ];
+          var h = '<div class="tp-solo-head"><span>Solo Practice · ' + V.esc(caseData.client) + '</span><span>Switch Desk & Stage</span></div>';
+          h += '<div class="tp-solo-row">' + stages.map(function (st) {
+            return '<button type="button" class="tp-solo-pill ' + (stage === st.k ? 'active' : '') + '" data-stage="' + st.k + '">' + V.esc(st.label) + '</button>';
+          }).join('') + '</div>';
+          h += '<div class="tp-solo-row">' + deskKeys.map(function (dk) {
+            var v = votes[dk];
+            return '<button type="button" class="tp-solo-pill desk ' + (activeDesk === dk ? 'active' : '') + '" data-desk="' + dk + '">' +
+              V.esc(shortLabels[dk] || dk) + (v ? '<span class="badge">' + V.esc(v) + '</span>' : '') + '</button>';
+          }).join('') + '</div>';
+          deckEl.innerHTML = h;
+
+          Array.prototype.forEach.call(deckEl.querySelectorAll('[data-stage]'), function (btn) {
+            btn.addEventListener('click', function () {
+              soloState.setStage(btn.getAttribute('data-stage'));
+            });
+          });
+          Array.prototype.forEach.call(deckEl.querySelectorAll('[data-desk]'), function (btn) {
+            btn.addEventListener('click', function () {
+              activeDesk = btn.getAttribute('data-desk');
+              refreshSoloView();
+            });
+          });
+        }
+
+        function refreshSoloView() {
+          renderSoloDeck();
+          var payload = buildMePayload();
+          render(payload);
+          if (stage === 'assessment' && payload.assessment && window.PraxisIOSBridge && typeof window.PraxisIOSBridge.post === 'function') {
+            window.PraxisIOSBridge.post({
+              type: 'soloCompleted',
+              gameType: 'brief_relay',
+              points: Math.max(25, (Number(payload.assessment.points) || 0) * 25)
+            });
+          }
+        }
+
+        soloState = {
+          votes: votes,
+          recordVote: function (key) {
+            votes[activeDesk] = key;
+            me.round.my_vote = key;
+            me.round.desk_locked = 1;
+            paintSelection(key);
+            var p = document.getElementById('progress');
+            if (p) p.textContent = 'Your desk: 1 of 1 locked (' + Object.keys(votes).length + ' of 4 agency desks ready)';
+            var subBtn = document.getElementById('tp-solo-submit-round');
+            if (subBtn) subBtn.textContent = 'Submit Agency Pitch (' + Object.keys(votes).length + '/4 Desks Locked) →';
+            renderSoloDeck();
+          },
+          setStage: function (nextStage) {
+            if ((nextStage === 'assessment' || nextStage === 'final') && Object.keys(votes).length === 0) {
+              votes.analytics = 'B';
+              votes.research = 'B';
+              votes.environment = 'A';
+              votes.brand = 'B';
+            }
+            stage = nextStage;
+            if (stage === 'round') {
+              roundEndsAt = new Date(Date.now() + 90 * 1000).toISOString();
+            }
+            refreshSoloView();
+          }
+        };
+
+        refreshSoloView();
+      })
+      .catch(function (err) {
+        main.innerHTML = '<div class="card"><h2>Could not load Solo Case</h2><div class="small">' + V.esc(String(err)) + '</div></div>';
+      });
+  }
+
+  // ------------------------------------------------------------------ boot
+  function boot(opts) {
+    opts = opts || {};
+    if (isSoloMode()) return bootSoloSimulator();
+    if (!room) return renderJoin(opts);
+    var identity = TP.loadIdentity(storage, room);
+    if (identity && !opts.error) return start(identity);
+    publicSession(room).then(function (session) {
+      if (!session) return renderJoin({ error: opts.error || 'That room does not exist.' });
+      renderJoin({ session: session, error: opts.error });
+    });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praxis Play · Team Edition · Projector</title>
+    <link rel="icon" type="image/svg+xml" href="../../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    <link rel="dns-prefetch" href="https://drbaker-backend.onrender.com">
+    <link rel="preconnect" href="https://drbaker-backend.onrender.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" defer integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+    <style>
+      /* The arena. A fixed 1280 x 720 canvas scaled to the window: the same picture on every screen,
+         1.5x on 1080p. Nothing scrolls. It renders from the host view the instructor's token unlocks. */
+      html, body { margin: 0; height: 100%; background: #060b16; color: #e9eef7; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      .viewport { position: fixed; inset: 0; overflow: hidden; }
+      /* The frame keeps its layout size at 1280 x 720; the transform scales the picture, so it is placed
+         by hand at (window - scaled size) / 2. Transforms never change layout, which is why grid centring
+         put the left half off screen. */
+      .frame { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; }
+      .projector { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; box-sizing: border-box; background: #0f1a2e; padding: 26px 36px 22px; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; font-size: 20px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+      .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 1px solid #243352; padding-bottom: 12px; }
+      .title { font-family: ui-monospace, Consolas, monospace; font-weight: 700; font-size: 26px; letter-spacing: .04em; color: #ffd166; white-space: nowrap; }
+      .sub { font-size: 17px; color: #aab6cc; }
+      .main { min-height: 0; display: grid; gap: 16px; align-content: start; }
+      .split { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; min-height: 0; align-items: start; }
+      .side { display: grid; gap: 10px; justify-items: center; align-content: start; }
+      .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .agency { border-radius: 10px; display: grid; gap: 10px; min-width: 0; padding: 0 0 12px; overflow: hidden; border: 2px solid; align-content: start; }
+      .agency h3 { font-family: ui-monospace, Consolas, monospace; font-size: 19px; margin: 0; padding: 8px 14px; display: flex; align-items: center; gap: 10px; color: #fff; }
+      .agency h3::before { content: ""; width: 16px; height: 16px; clip-path: polygon(0 0, 100% 50%, 0 100%); background: #fff; flex: none; }
+      .agency > :not(h3) { margin-inline: 18px; }
+      .agency.red { border-color: #e0604f; background: rgba(224, 96, 79, .14); box-shadow: inset 7px 0 0 #e0604f; }
+      .agency.blue { border-color: #6a93e3; background: rgba(106, 147, 227, .14); box-shadow: inset 7px 0 0 #6a93e3; }
+      .agency.red h3 { background: #c8402f; } .agency.blue h3 { background: #2b62c2; }
+      .agency .sub { font-size: 16px; }
+      .desks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .desk { background: rgba(15, 26, 46, .75); border-radius: 8px; padding: 8px 4px; font-size: 15px; text-align: center; display: grid; gap: 4px; justify-items: center; }
+      .desk.locked { background: #1f4d3a; } .desk .st { color: #aab6cc; font-size: 14px; } .desk.locked .st { color: #9be3bd; }
+      .ring { width: 150px; aspect-ratio: 1; border-radius: 50%; background: conic-gradient(#ffd166 0 var(--pct, 100%), #243352 var(--pct, 100%) 100%); display: grid; place-items: center; margin: 0 auto; }
+      .ring b { background: #0f1a2e; width: 78%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font-family: ui-monospace, Consolas, monospace; font-size: 30px; color: #ffd166; }
+      .stage { display: grid; grid-template-columns: 192px minmax(0, 1fr); gap: 22px; align-items: center; }
+      .stage.stacked { grid-template-columns: 1fr; justify-items: center; }
+      .head-wrap { position: relative; width: 192px; height: 204px; }
+      .head { width: 192px; height: 192px; background-position: 0% 0%; background-size: 400% 200%; background-repeat: no-repeat; image-rendering: pixelated; image-rendering: crisp-edges; animation: head-rest 8s steps(1) infinite, head-bob 4.2s ease-in-out infinite; }
+      .head.static { background-size: 100% 100%; animation: head-bob 4.2s ease-in-out infinite; }
+      .head.talking { animation: head-talk 1.05s steps(1) infinite, head-bob 1.7s ease-in-out infinite; }
+      .head.static.talking { animation: head-bob 1.7s ease-in-out infinite; }
+      .head-wrap::after { content: ""; position: absolute; left: 34px; right: 34px; bottom: 0; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, .45); filter: blur(2px); }
+      .bubble { background: #182642; border-radius: 12px; padding: 14px 18px; font-size: 20px; line-height: 1.4; position: relative; min-height: 64px; width: 100%; box-sizing: border-box; }
+      .bubble::before { content: ""; position: absolute; left: -8px; top: 50%; border: 8px solid transparent; border-right-color: #182642; border-left: 0; transform: translateY(-50%); }
+      .stage.stacked .bubble::before { left: 50%; top: -8px; border: 8px solid transparent; border-bottom-color: #182642; border-top: 0; transform: translateX(-50%); }
+      .bubble .caret { display: inline-block; width: .5em; height: 1em; background: #ffd166; vertical-align: -2px; margin-left: 2px; animation: caret 1s steps(1) infinite; }
+      .bubble .caret.off { display: none; }
+      .bubble p { margin: 0 0 .4em; } .bubble p:last-child { margin: 0; }
+      .foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 15px; color: #aab6cc; border-top: 1px solid #243352; padding-top: 10px; }
+      .code { font-family: ui-monospace, Consolas, monospace; font-weight: 700; font-size: 140px; color: #ffffff; letter-spacing: .12em; text-align: center; line-height: 1; }
+      .qr { width: 150px; height: 150px; background: #fff; padding: 8px; border-radius: 6px; }
+      .qr img, .qr canvas { width: 150px !important; height: 150px !important; }
+      table { border-collapse: collapse; width: 100%; font-size: 18px; }
+      th, td { padding: 7px 9px; border-bottom: 1px solid #243352; text-align: left; vertical-align: top; }
+      th { color: #aab6cc; font-weight: 500; }
+      td .sub { display: block; font-size: 14px; }
+      th:last-child, td:last-child { width: 150px; text-align: center; font-family: ui-monospace, Consolas, monospace; }
+      th:nth-child(2) { color: #ff8a7a; } th:nth-child(3) { color: #8fb0ff; }
+      td:nth-child(2) { box-shadow: inset 5px 0 0 #c8402f; } td:nth-child(3) { box-shadow: inset 5px 0 0 #2b62c2; }
+      .ok { color: #9be3bd; } .no { color: #ff8a7a; } .dim { color: #5b6a85; }
+      .lesson { background: #1f2f52; border-left: 7px solid #ffd166; padding: 10px 16px; font-size: 20px; }
+      .standing { display: grid; grid-template-columns: 22px minmax(0, 1fr) 260px; gap: 14px; align-items: center; font-family: ui-monospace, Consolas, monospace; font-weight: 700; font-size: 24px; }
+      .standing .score { text-align: right; white-space: nowrap; }
+      .standing .bar { height: 16px; border-radius: 8px; background: #182642; overflow: hidden; display: block; }
+      .standing .bar i { display: block; height: 100%; }
+      .pennant { width: 22px; height: 22px; clip-path: polygon(0 0, 100% 50%, 0 100%); display: inline-block; }
+      .prompts { display: grid; gap: 10px; font-size: 20px; margin: 0; padding-left: 1.3em; }
+      .steps { display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px; color: #aab6cc; }
+      .steps span { border: 1px solid #243352; border-radius: 999px; padding: 3px 12px; } .steps span.on { border-color: #ffd166; color: #ffd166; }
+      .px { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+      .notice { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; font-size: 20px; }
+      .status { position: fixed; right: 16px; bottom: 16px; background: #1b2330; color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; }
+      .status[hidden] { display: none; }
+      @keyframes head-rest { 0% { background-position: 0% 0%; } 18.75% { background-position: 33.333% 0%; } 22.5% { background-position: 0% 0%; } 26.25% { background-position: 66.667% 0%; } 30% { background-position: 0% 0%; } 50% { background-position: 33.333% 0%; } 53.75% { background-position: 66.667% 0%; } 57.5% { background-position: 100% 0%; } 61.25% { background-position: 0% 0%; } 77.5% { background-position: 100% 0%; } 81.25% { background-position: 33.333% 0%; } 85% { background-position: 0% 0%; } 100% { background-position: 0% 0%; } }
+      @keyframes head-talk { 0% { background-position: 0% 100%; } 18% { background-position: 66.667% 100%; } 32% { background-position: 33.333% 100%; } 48% { background-position: 0% 0%; } 60% { background-position: 100% 100%; } 76% { background-position: 0% 100%; } 90% { background-position: 66.667% 100%; } 100% { background-position: 0% 100%; } }
+      @keyframes head-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+      @keyframes caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { .head, .head.talking, .bubble .caret { animation: none; } }
+    </style>
+</head>
+<body>
+<div class="viewport" id="viewport"><div class="frame" id="frame"><div class="projector" id="projector"></div></div></div>
+<div id="notice" class="notice" hidden></div>
+<div id="status" class="status" role="status" hidden></div>
+
+<script src="../../shared/js/api-config.js"></script>
+<script src="js/team-play-client.js"></script>
+<script src="js/team-play-views.js"></script>
+<script>
+(function () {
+  'use strict';
+  var V = window.TeamPlayViews, TP = window.TeamPlay;
+  var params = new URLSearchParams(location.search);
+  var room = (params.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  var el = document.getElementById('projector'), frame = document.getElementById('frame'), viewport = document.getElementById('viewport');
+  var notice = document.getElementById('notice'), statusEl = document.getElementById('status');
+  var token = null; try { token = localStorage.getItem('auth_token'); } catch (e) {}
+  var hashParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+  var hashPt = hashParams.get('pt') || '';
+  var hashPin = hashParams.get('pin') || params.get('pin') || '';
+  if (room && hashPt) {
+    try { TP.saveProjectorToken(sessionStorage, room, hashPt); TP.saveProjectorToken(localStorage, room, hashPt); } catch (e) {}
+  }
+  var projToken = room ? (hashPt || TP.loadProjectorToken(sessionStorage, room) || TP.loadProjectorToken(localStorage, room)) : null;
+  var client = null, host = null, clockTimer = null, lastKey = '', spoken = {}, runs = {};
+  var JOIN_URL = window.TEAM_PLAY_JOIN_URL;   // from shared/js/api-config.js, the one place that knows local from production
+
+  function fit() {
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w / 1280, h / 720);
+    frame.style.transform = 'scale(' + s.toFixed(4) + ')';
+    frame.style.left = Math.max(0, (w - 1280 * s) / 2) + 'px';
+    frame.style.top = Math.max(0, (h - 720 * s) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+
+  function showPairForm(errMsg) {
+    notice.hidden = false;
+    notice.innerHTML =
+      '<div style="background:#0f1a2e;border:2px solid #243352;border-radius:16px;padding:32px 36px;max-width:460px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.5);text-align:left">' +
+        '<div style="font-family:ui-monospace,Consolas,monospace;color:#ffd166;font-weight:700;font-size:15px;letter-spacing:.08em;margin-bottom:6px">PRAXIS PLAY · CLASSROOM PROJECTOR</div>' +
+        '<h1 style="margin:0 0 8px;font-size:28px;color:#fff">Pair with Host Phone</h1>' +
+        '<p style="margin:0 0 20px;font-size:15px;color:#aab6cc;line-height:1.45">Hosting from your phone or tablet? Enter the Room Code and 4-digit Projector PIN shown on your Host screen — no login required on this computer.</p>' +
+        '<form id="pairForm" style="display:grid;gap:14px">' +
+          '<label style="display:grid;gap:6px;font-size:13px;font-weight:700;color:#aab6cc;text-transform:uppercase;letter-spacing:.06em">Room Code' +
+            '<input id="p-room" value="' + V.esc(room) + '" maxlength="8" placeholder="ABCD" required style="font:700 28px ui-monospace,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;padding:10px 14px;border-radius:10px;border:2px solid #243352;background:#060b16;color:#fff;text-align:center">' +
+          '</label>' +
+          '<label style="display:grid;gap:6px;font-size:13px;font-weight:700;color:#aab6cc;text-transform:uppercase;letter-spacing:.06em">4-Digit Projector PIN (from Host App)' +
+            '<input id="p-pin" value="' + V.esc(hashPin) + '" maxlength="6" inputmode="numeric" placeholder="1234" required style="font:700 28px ui-monospace,Consolas,monospace;letter-spacing:.25em;padding:10px 14px;border-radius:10px;border:2px solid #243352;background:#060b16;color:#ffd166;text-align:center">' +
+          '</label>' +
+          (errMsg ? '<div style="color:#ff8a7a;font-size:15px;font-weight:600">' + V.esc(errMsg) + '</div>' : '') +
+          '<button type="submit" style="margin-top:4px;padding:14px 18px;border-radius:10px;border:0;background:#ffd166;color:#060b16;font:800 17px inherit;cursor:pointer">🖥️ Connect Big Screen Projector</button>' +
+        '</form>' +
+      '</div>';
+    var f = document.getElementById('pairForm');
+    if (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var rc = (document.getElementById('p-room').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        var pinVal = (document.getElementById('p-pin').value || '').trim();
+        if (!rc || !pinVal) return;
+        pairWithPin(rc, pinVal);
+      });
+    }
+  }
+
+  function pairWithPin(rc, pinVal) {
+    fetch(window.API_BASE + '/team-play/projector-pair/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room_code: rc, pin: pinVal }),
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+      .then(function (res) {
+        if (!res.ok) { showPairForm(res.data.error || 'Invalid Room Code or Projector PIN'); return; }
+        if (res.data.edition === 'classic' && res.data.redirect_url) {
+          location.href = res.data.redirect_url;
+          return;
+        }
+        room = res.data.room_code || rc;
+        projToken = res.data.projector_token || '';
+        try { TP.saveProjectorToken(sessionStorage, room, projToken); TP.saveProjectorToken(localStorage, room, projToken); } catch (e) {}
+        try { history.replaceState(null, '', 'projector.html?room=' + encodeURIComponent(room)); } catch (e) {}
+        bootProjector();
+      }).catch(function () { showPairForm('Could not reach server. Check your connection.'); });
+  }
+
+  function bootProjector() {
+    notice.hidden = true;
+    client = new TP.TeamPlayClient({
+      room: room, apiBase: window.API_BASE, wsBase: window.WS_BASE,
+      role: 'projector', authToken: token, projectorToken: projToken, projectorPin: hashPin || null,
+      onEvent: onEvent, onStatus: onStatus
+    });
+    client.refresh().then(function (r) {
+      if (r.status === 401 || r.status === 403) { showPairForm('Enter the 4-digit Projector PIN shown on your Host screen to unlock this room.'); return; }
+      if (r.ok) render(r.data);
+      client.connect();
+    }).catch(function () { client.connect(); });
+  }
+
+  if (room && (token || projToken)) {
+    bootProjector();
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && client) client.resume(); });
+  } else if (room && hashPin) {
+    pairWithPin(room, hashPin);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && client) client.resume(); });
+  } else {
+    showPairForm('');
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && client) client.resume(); });
+  }
+
+  function onStatus(s) {
+    if (s === 'live' || s === 'connecting') { statusEl.hidden = true; return; }
+    statusEl.hidden = false; statusEl.textContent = s === 'reconnecting' ? 'Reconnecting…' : s === 'polling' ? 'Updating every few seconds' : 'Disconnected';
+  }
+  function onEvent(ev) {
+    if (ev.type === 'view') render(ev.data);
+    else if (ev.type === 'timer') updateClock();
+    else if (ev.type === 'desk_progress') updateDesk(ev);
+    else if (ev.type === 'roster' && host) { host.teams = ev.teams; host.player_count = ev.player_count; if (screenOf(host) === 'join') render(host); }
+    else if (ev.type === 'room_gone') { notice.hidden = false; notice.innerHTML = '<div><h1>This room has closed.</h1></div>'; }
+  }
+
+  function screenOf(h) {
+    if (!h.match || h.status === 'waiting') return 'join';
+    return h.match.state;
+  }
+
+  // ------------------------------------------------------------------ pieces
+  function teamsByKey(h) { var m = {}; (h.teams || []).forEach(function (t) { m[t.key] = t; }); return m; }
+  function agencyHeader(t, extra) { return '<h3>' + V.esc(t.name.toUpperCase()) + (extra ? ' · ' + extra : '') + '</h3>'; }
+  function desksRow(h, teamKey, withIcons) {
+    var map = h.team_map || [];
+    var live = (h.host && h.host.desks && h.host.desks[teamKey]) || {};
+    return '<div class="desks">' + map.map(function (d) {
+      var s = live[d.desk] || { locked: 0, holders: [] };
+      var holders = (s.holders || []).length, locked = s.locked || 0;
+      var full = holders > 0 && locked >= holders;
+      var st = holders === 0 ? 'empty' : (full ? 'locked' : (locked > 0 ? locked + ' of ' + holders : 'talking'));
+      return '<div class="desk' + (full ? ' locked' : '') + '" data-team="' + V.esc(teamKey) + '" data-desk="' + V.esc(d.desk) + '">' + (withIcons ? V.iconImg(d.icon, 96) : '') + V.esc(d.label) + '<span class="st">' + V.esc(st) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function stage(key, lines, stacked) {
+    var speaker = (host.case && host.case.situation && host.case.situation.speaker) || 'kf_director';
+    return '<div class="stage' + (stacked ? ' stacked' : '') + '"><div class="head-wrap"><div class="head" data-speaker="' + V.esc(speaker) + '" data-head="' + key + '" role="img" aria-label="The client contact"></div></div><div class="bubble" data-bubble="' + key + '" data-lines="' + V.esc(lines.join('|')) + '"></div></div>';
+  }
+  function winsLine(h) {
+    var sc = (h.case && h.case.scoring) || {};
+    return 'What wins: ' + (sc.fit_points || 1) + ' point per decision the client agrees with · +' + (sc.coherence_bonus || 2) + ' if all four fit together · +' + (sc.speed_bonus || 1) + ' first agency fully locked, with ' + (sc.speed_requires_fits || 3) + ' agreed';
+  }
+
+  var screens = {
+    join: function (h) {
+      var tk = teamsByKey(h);
+      return '<div class="top"><span class="title">BRIEF RELAY</span><span class="sub">Join at ' + V.esc(JOIN_URL.replace(/^https?:\/\/(www\.)?/, '')) + ' with the room code</span></div>' +
+        '<div class="main"><div class="split" style="grid-template-columns: minmax(0,1fr) 220px; align-items:center"><div><div class="code">' + V.esc(h.room_code) + '</div><div class="sub" style="text-align:center;margin-top:10px">' + V.esc(h.player_count || 0) + ' joined · late joiners go to the smaller team</div></div><div class="side"><div class="qr" id="qr"></div><span class="sub">Scan to join</span></div></div>' +
+        '<div class="cols">' + ['red', 'blue'].map(function (k) { var t = tk[k]; return t ? '<div class="agency ' + k + '">' + agencyHeader(t, V.esc(t.players || 0)) + '<div class="sub">waiting for the host to deal desks</div></div>' : ''; }).join('') + '</div></div>' +
+        '<div class="foot"><span>' + (h.case ? 'Tonight\'s client: ' + V.esc(h.case.client) + '. Two agencies pitch for the same account every round.' : '') + '</span><span>Waiting for the host</span></div>';
+    },
+    briefing: function (h) {
+      var tk = teamsByKey(h), m = h.match;
+      var lines = (h.case && h.case.situation && h.case.situation.lines) || [];
+      return '<div class="top"><span class="title">ROUND ' + V.esc(m.current_round) + ' · ' + V.esc((h.case && h.case.title || '').toUpperCase()) + '</span><span class="sub">' + (h.case ? 'Rung ' + V.esc(h.case.rung) + ' · ' : '') + V.esc(h.case ? h.case.client : '') + '</span></div>' +
+        '<div class="main">' + stage('briefing', lines) + '<div class="cols">' + ['red', 'blue'].map(function (k) { var t = tk[k]; return t ? '<div class="agency ' + k + '">' + agencyHeader(t) + desksRow(h, k, true) + '</div>' : ''; }).join('') + '</div></div>' +
+        '<div class="foot"><span>' + V.esc(winsLine(h)) + '</span><span class="title" style="font-size:22px">' + V.esc(V.formatClock(m.round_time_limit || (h.settings && h.settings.clock_s) || 90)) + '</span></div>';
+    },
+    round: function (h) {
+      var tk = teamsByKey(h), m = h.match;
+      return '<div class="top"><span class="title">ROUND ' + V.esc(m.current_round) + ' · ' + V.esc((h.case && h.case.title || '').toUpperCase()) + '</span><span class="sub">a hook, a channel, a creative, an offer</span></div>' +
+        '<div class="main"><div class="ring" id="ring" role="img" aria-label="time left"><b id="clock">--:--</b></div><div class="cols">' + ['red', 'blue'].map(function (k) { var t = tk[k]; return t ? '<div class="agency ' + k + '">' + agencyHeader(t, '<span id="locked-' + k + '"></span>') + desksRow(h, k, false) + '</div>' : ''; }).join('') + '</div></div>' +
+        '<div class="foot"><span>Nothing on this screen is secret.</span><span>Speed bonus goes to the first agency fully locked, if the client agrees with 3</span></div>';
+    },
+    assessment: function (h) {
+      var tk = teamsByKey(h), m = h.match, step = m.reveal_step || 0, hs = h.host || {};
+      var decisions = hs.decisions || {}, results = hs.results || {}, key = hs.key || {}, why = hs.why || {};
+      var order = ['hook', 'channel', 'creative', 'offer'].filter(function (d) { return decisions[d]; });
+      function optText(d, k) { var o = (decisions[d].options || []).filter(function (x) { return x.key === k; })[0]; return o ? k + ' · ' + o.text : (k || '—'); }
+      var rows = order.map(function (d, i) {
+        var cells = ['red', 'blue'].map(function (tkey) {
+          var r = results[tkey]; if (!r || step < 1) return '<td class="dim">…</td>';
+          var choice = r.choices[d], agreed = r.agreed[d];
+          return '<td class="' + (step >= 2 ? (agreed ? 'ok' : 'no') : '') + '">' + V.esc(optText(d, choice)) + '</td>';
+        }).join('');
+        return '<tr><td>' + V.esc(V.decisionLabel(d).replace(/^the /, '')) + '<span class="sub">' + V.esc(V.deskLabel(decisions[d].owner, h.team_map)) + '</span></td>' + cells + '<td>' + (step >= 2 ? V.esc(key[d]) : '<span class="dim">?</span>') + '</td></tr>';
+      }).join('');
+      var lines = [];
+      order.forEach(function (d, i) {
+        if (step >= 3 + i) ['red', 'blue'].forEach(function (tkey) { var r = results[tkey]; if (r && tk[tkey]) lines.push(tk[tkey].name.split(' ')[0] + ', your ' + V.decisionLabel(d).replace(/^the /, '') + ': ' + (why[d] && why[d][r.choices[d]] || '')); });
+      });
+      var scores = step >= 7 ? '<div class="cols">' + ['red', 'blue'].map(function (k) { var t = tk[k], r = results[k]; return t && r ? '<div class="agency ' + k + '">' + agencyHeader(t, r.points + ' POINTS') + '<div class="sub">Client agreed with ' + r.fits + ' of ' + order.length + (r.coherence ? ' · all four fit together +' + ((h.case && h.case.scoring && h.case.scoring.coherence_bonus) || 2) : '') + (r.speed ? ' · first to lock +' + ((h.case && h.case.scoring && h.case.scoring.speed_bonus) || 1) : '') + '</div></div>' : ''; }).join('') + '</div>' : '';
+      var lesson = step >= 8 && hs.lesson ? '<div class="lesson">' + V.esc(hs.lesson) + '</div>' : '';
+      return '<div class="top"><span class="title">THE CLIENT\'S FEEDBACK · ROUND ' + V.esc(m.current_round) + '</span><span class="steps">' + V.REVEAL_STEPS.map(function (s, i) { return '<span class="' + (step >= i + 1 ? 'on' : '') + '">' + V.esc(s) + '</span>'; }).join('') + '</span></div>' +
+        '<div class="main"><div class="split"><div class="main" style="gap:14px"><table><thead><tr><th>Decision</th><th>' + V.esc((tk.red || {}).name || 'RED') + '</th><th>' + V.esc((tk.blue || {}).name || 'BLUE') + '</th><th>Client wanted</th></tr></thead><tbody>' + rows + '</tbody></table>' + scores + lesson + '</div>' + stage('assessment-' + step, lines, true) + '</div></div>' +
+        '<div class="foot"><span>Standings: ' + (h.teams || []).map(function (t) { return '<b style="color:' + V.esc(V.teamColour(t.key)) + '">' + V.esc(t.name.split(' ')[0].toUpperCase()) + ' ' + V.esc(step >= 7 ? t.score : '…') + '</b>'; }).join(' · ') + '</span><span>' + (step >= 9 ? 'Integration: every decision needed another desk. Ask who asked first.' : 'The host reveals one step at a time') + '</span></div>';
+    },
+    rotation: function (h) {
+      var m = h.match;
+      return '<div class="top"><span class="title">STANDINGS AFTER ROUND ' + V.esc(m.current_round - 1) + '</span><span class="sub">Next: round ' + V.esc(m.current_round) + ' of ' + V.esc(m.rounds_total) + ' · worth ' + V.esc(m.multiplier) + '×</span></div>' +
+        '<div class="main">' + V.standingsHtml(h.teams) + stage('rotation', ['Same client. New situation. Desks stay where they are.', 'Decide who talks first.']) + '</div>' +
+        '<div class="foot"><span>Desks stay where they are. Slices rotate inside each desk.</span><span>Waiting for the host</span></div>';
+    },
+    final: function (h) {
+      var teams = (h.teams || []).slice().sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
+      var w = teams[0], tie = teams.length > 1 && teams[0].score === teams[1].score;
+      return '<div class="top"><span class="title">THE ACCOUNT GOES TO…</span><span class="sub">' + V.esc(h.case ? h.case.client : '') + ' · ' + V.esc(h.match.rounds_total) + ' rounds</span></div>' +
+        '<div class="main">' + V.standingsHtml(h.teams) + '<div class="split" style="grid-template-columns: minmax(0,1fr) minmax(0,1fr); margin-top: 8px">' + stage('final', [tie ? 'A tie. Both agencies get the account, and a very awkward kickoff meeting.' : (w ? w.name + ' wins the pitch.' : ''), 'Three questions before you go.']) + '<ol class="prompts"><li>Which desk did you need most, and when did you first ask for it?</li><li>When did a number and a quote disagree, and who noticed?</li><li>What would you tell a new team about the first thirty seconds?</li></ol></div></div>' +
+        '<div class="foot"><span>Participation records saved for every player.</span><span>Thank you for playing</span></div>';
+    },
+  };
+
+  function render(h) {
+    host = h;
+    var screen = screenOf(h);
+    var k = screen + ':' + (h.match ? h.match.current_round + ':' + (h.match.reveal_step || 0) + ':' + (h.match.round_instance_id || '') : '') + ':' + (h.player_count || 0) + ':' + JSON.stringify((h.teams || []).map(function (t) { return [t.players, t.score]; }));
+    if (k === lastKey) { updateDesks(h); return; }
+    lastKey = k;
+    el.innerHTML = (screens[screen] || screens.join)(h);
+    fit();
+    if (screen === 'join') drawQr();
+    attachHeads();
+    var bubble = el.querySelector('[data-bubble]');
+    if (bubble) { var key = bubble.getAttribute('data-bubble'); if (!spoken[key]) { spoken[key] = true; speak(key); } else { bubble.innerHTML = bubble.getAttribute('data-lines').split('|').map(function (l) { return '<p>' + V.esc(l) + '</p>'; }).join(''); } }
+    if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+    if (screen === 'round') { updateClock(); clockTimer = setInterval(updateClock, 500); }
+  }
+
+  function updateDesks(h) {
+    if (!h.host || !h.host.desks) return;
+    Object.keys(h.host.desks).forEach(function (tkey) {
+      Object.keys(h.host.desks[tkey]).forEach(function (d) { paintDesk(tkey, d, h.host.desks[tkey][d].locked, (h.host.desks[tkey][d].holders || []).length); });
+    });
+  }
+  function updateDesk(ev) {
+    if (host && host.host && host.host.desks && host.host.desks[ev.team] && host.host.desks[ev.team][ev.desk]) host.host.desks[ev.team][ev.desk].locked = ev.locked;
+    paintDesk(ev.team, ev.desk, ev.locked, ev.holders);
+  }
+  function paintDesk(tkey, d, locked, holders) {
+    var node = el.querySelector('.desk[data-team="' + tkey + '"][data-desk="' + d + '"]');
+    if (!node) return;
+    var full = holders > 0 && locked >= holders;
+    node.classList.toggle('locked', full);
+    node.querySelector('.st').textContent = holders === 0 ? 'empty' : (full ? 'locked' : (locked > 0 ? locked + ' of ' + holders : 'talking'));
+    var total = el.querySelector('#locked-' + tkey);
+    if (total && host && host.host && host.host.desks && host.host.desks[tkey]) {
+      var ds = host.host.desks[tkey]; var n = Object.keys(ds).filter(function (x) { return (ds[x].holders || []).length && ds[x].locked >= (ds[x].holders || []).length; }).length;
+      total.textContent = n + ' OF ' + Object.keys(ds).length + ' LOCKED';
+    }
+  }
+
+  function updateClock() {
+    if (!host || !host.match || !client) return;
+    var left = client.secondsLeft(host.match.round_ends_at);
+    var clock = document.getElementById('clock'), ring = document.getElementById('ring');
+    if (clock) clock.textContent = V.formatClock(left);
+    if (ring && host.match.round_time_limit) ring.style.setProperty('--pct', Math.max(0, Math.min(100, 100 * (left || 0) / host.match.round_time_limit)) + '%');
+  }
+
+  function drawQr() {
+    var box = document.getElementById('qr');
+    if (!box || typeof QRCode === 'undefined') return;
+    try { new QRCode(box, { text: JOIN_URL + '?room=' + room, width: 150, height: 150, correctLevel: QRCode.CorrectLevel.M }); } catch (e) {}
+  }
+
+  function attachHeads() {
+    Array.prototype.forEach.call(el.querySelectorAll('.head'), function (head) {
+      var speaker = head.getAttribute('data-speaker');
+      var sheet = '../../art_assets/pixel/' + encodeURIComponent(speaker) + '_sheet.png';
+      var probe = new Image();
+      probe.onload = function () { head.style.backgroundImage = 'url("' + sheet + '")'; };
+      probe.onerror = function () { head.classList.add('static'); head.style.backgroundImage = 'url("../../art_assets/pixel/' + encodeURIComponent(speaker) + '.png")'; };
+      probe.src = sheet;
+    });
+  }
+
+  var reduced = false; try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  function speak(key) {
+    var bubble = el.querySelector('[data-bubble="' + key + '"]'), head = el.querySelector('[data-head="' + key + '"]');
+    if (!bubble) return;
+    var lines = (bubble.getAttribute('data-lines') || '').split('|').filter(Boolean);
+    if (runs[key]) { clearTimeout(runs[key]); runs[key] = null; }
+    bubble.innerHTML = '';
+    if (reduced) { lines.forEach(function (l) { var p = document.createElement('p'); p.textContent = l; bubble.appendChild(p); }); return; }
+    var caret = document.createElement('span'); caret.className = 'caret';
+    var li = 0, ci = 0, p = null;
+    if (head) head.classList.add('talking');
+    (function step() {
+      if (!bubble.isConnected) return;
+      if (li >= lines.length) { if (head) head.classList.remove('talking'); caret.classList.add('off'); runs[key] = null; return; }
+      if (!p) { p = document.createElement('p'); bubble.appendChild(p); p.appendChild(caret); ci = 0; }
+      var line = lines[li];
+      if (ci < line.length) {
+        p.insertBefore(document.createTextNode(line.charAt(ci)), caret); ci++;
+        var ch = line.charAt(ci - 1);
+        runs[key] = setTimeout(step, ch === '.' || ch === '?' ? 220 : ch === ',' ? 120 : 28);
+      } else {
+        li++; p = null;
+        if (head) head.classList.remove('talking');
+        runs[key] = setTimeout(function () { if (head && li < lines.length) head.classList.add('talking'); step(); }, 650);
+      }
+    })();
+  }
+  fit();
+})();
+</script>
+</body>
+</html>

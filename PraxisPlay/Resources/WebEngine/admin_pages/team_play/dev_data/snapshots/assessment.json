@@ -1,0 +1,78 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "assessment",
+  "round": 2,
+  "reveal_step": 4,
+  "of": 9,
+  "assess_s": 60,
+  "key": {
+    "hook": "B",
+    "channel": "B",
+    "creative": "A",
+    "offer": "B"
+  },
+  "choices": {
+    "red": {
+      "hook": "B",
+      "channel": "A",
+      "creative": "B",
+      "offer": "B"
+    },
+    "blue": {
+      "hook": "B",
+      "channel": "B",
+      "creative": "A",
+      "offer": "B"
+    }
+  },
+  "speaker": {
+    "sprite": "kf_director_sheet",
+    "lines_by_step": {
+      "why.channel": [
+        "Red, your channel: short-form video reaches the segment least likely to buy againâ€¦",
+        "Blue, your channel: the value at risk is my existing base, who open email at 50%â€¦"
+      ],
+      "why.creative": [
+        "Red, your creative: right for short-form video, wrong for your hook and your channel."
+      ]
+    }
+  },
+  "scores": {
+    "red": {
+      "fits": 2,
+      "coherence": 0,
+      "speed": 0,
+      "total": 2
+    },
+    "blue": {
+      "fits": 4,
+      "coherence": 2,
+      "speed": 1,
+      "total": 7
+    }
+  },
+  "standings": {
+    "blue": 11,
+    "red": 6
+  },
+  "lesson": "Satisfaction and past repurchase are lagging measures. A quote about price is a leading one.",
+  "integration": {
+    "red": "2 of 4",
+    "blue": "4 of 4"
+  },
+  "me": {
+    "desk": "research",
+    "choice": "B",
+    "client_agreed": true,
+    "desk_votes": {
+      "B": 2
+    },
+    "locked_with_s_left": 41
+  }
+}

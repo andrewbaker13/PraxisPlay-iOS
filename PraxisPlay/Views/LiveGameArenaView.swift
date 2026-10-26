@@ -67,7 +67,7 @@ struct LiveGameArenaView: View {
             // Back / Leave Button
             Button {
                 HapticsManager.shared.playTap()
-                if isSoloMode {
+                if isSoloMode || isWebTool {
                     dismiss()
                 } else {
                     showLeaveConfirmation = true
@@ -76,7 +76,7 @@ struct LiveGameArenaView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 13, weight: .bold))
-                    Text(isSoloMode ? "Arcade" : "Lobby")
+                    Text(isWebTool ? "Host" : (isSoloMode ? "Arcade" : "Lobby"))
                         .font(.system(size: 13, weight: .bold))
                         .lineLimit(1)
                 }
@@ -112,45 +112,47 @@ struct LiveGameArenaView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Live Score & Rank Pill
-            HStack(spacing: 8) {
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text("SCORE")
-                        .font(.system(size: 9, weight: .heavy))
-                        .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
-                        .lineLimit(1)
-                    Text("\(telemetry.score)")
-                        .font(.system(size: 15, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(red: 0.15, green: 0.39, blue: 0.92))
-                        .lineLimit(1)
-                }
-
-                if telemetry.rank != "-" && !telemetry.rank.isEmpty {
-                    Divider()
-                        .frame(height: 22)
-                        .overlay(Color(red: 0.80, green: 0.84, blue: 0.88))
-
+            // Live Score & Rank/Agency Pill (hidden in Web Host/Projector Tool mode)
+            if !isWebTool {
+                HStack(spacing: 8) {
                     VStack(alignment: .trailing, spacing: 0) {
-                        Text("RANK")
+                        Text(isTeamEdition ? "TEAM PTS" : "SCORE")
                             .font(.system(size: 9, weight: .heavy))
                             .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
                             .lineLimit(1)
-                        Text("#\(telemetry.rank.replacingOccurrences(of: "#", with: ""))")
+                        Text("\(telemetry.score)")
                             .font(.system(size: 15, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
+                            .foregroundStyle(Color(red: 0.15, green: 0.39, blue: 0.92))
                             .lineLimit(1)
                     }
+
+                    if telemetry.rank != "-" && !telemetry.rank.isEmpty {
+                        Divider()
+                            .frame(height: 22)
+                            .overlay(Color(red: 0.80, green: 0.84, blue: 0.88))
+
+                        VStack(alignment: .trailing, spacing: 0) {
+                            Text(isTeamEdition ? "AGENCY" : "RANK")
+                                .font(.system(size: 9, weight: .heavy))
+                                .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
+                                .lineLimit(1)
+                            Text(formattedRankOrAgency)
+                                .font(.system(size: 15, weight: .black, design: .rounded))
+                                .foregroundStyle(agencyOrRankColor)
+                                .lineLimit(1)
+                        }
+                    }
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(red: 0.97, green: 0.98, blue: 0.99))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+                )
+                .fixedSize(horizontal: true, vertical: false)
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color(red: 0.97, green: 0.98, blue: 0.99))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
-            )
-            .fixedSize(horizontal: true, vertical: false)
 
             // Quick Actions Menu
             Menu {
@@ -206,10 +208,41 @@ struct LiveGameArenaView: View {
         return false
     }
 
+    private var isWebTool: Bool {
+        if case .webTool = launchMode { return true }
+        return false
+    }
+
+    private var isTeamEdition: Bool {
+        switch launchMode {
+        case .liveSession(let s): return s.isTeamPlay
+        case .soloPractice(let m, _): return m.id == "brief_relay"
+        case .webTool(_, let path): return path.contains("team_play")
+        }
+    }
+
+    private var formattedRankOrAgency: String {
+        let raw = telemetry.rank.replacingOccurrences(of: "#", with: "")
+        if isTeamEdition {
+            return raw.uppercased()
+        }
+        return "#\(raw)"
+    }
+
+    private var agencyOrRankColor: Color {
+        if isTeamEdition {
+            let up = telemetry.rank.uppercased()
+            if up.contains("RED") { return Color(red: 0.78, green: 0.25, blue: 0.18) }
+            if up.contains("BLUE") { return Color(red: 0.17, green: 0.38, blue: 0.76) }
+        }
+        return Color(red: 0.02, green: 0.59, blue: 0.41)
+    }
+
     private var roomBadgeText: String {
         switch launchMode {
-        case .liveSession(let s): return s.roomCode
+        case .liveSession(let s): return s.isTeamPlay ? "\(s.roomCode) · TEAM" : s.roomCode
         case .soloPractice(let m, _): return m.title.uppercased()
+        case .webTool(let title, _): return title.uppercased()
         }
     }
 
@@ -219,6 +252,8 @@ struct LiveGameArenaView: View {
             return "\(s.playerName) • \(s.courseName)"
         case .soloPractice(let m, _):
             return m.marketingConcept
+        case .webTool(_, _):
+            return sessionStore.accountDisplayLabel
         }
     }
 
@@ -242,11 +277,19 @@ struct LiveGameArenaView: View {
             )
         case .soloPractice(let m, _):
             telemetry = HUDTelemetryState(
-                score: 380,
-                rank: "2",
+                score: m.id == "brief_relay" ? 7 : 380,
+                rank: m.id == "brief_relay" ? "RED" : "2",
                 gameType: m.id,
                 roomCode: "SOLO",
                 connectionStatus: .solo
+            )
+        case .webTool(_, _):
+            telemetry = HUDTelemetryState(
+                score: 0,
+                rank: "-",
+                gameType: "host",
+                roomCode: "HOST",
+                connectionStatus: .connected
             )
         }
     }

@@ -1,0 +1,123 @@
+/* ── Dialog utility ───────────────────────────────────────────────
+   Usage:  DialogUtils.confirm('Delete item?', 'This cannot be undone.', { danger: true })
+   See:    shared/js/dialog_utils.js
+   ──────────────────────────────────────────────────────────────── */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 98000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: dialog-fade-in 0.18s ease forwards;
+}
+
+.dialog-backdrop.dialog-closing {
+  animation: dialog-fade-out 0.15s ease forwards;
+}
+
+.dialog-panel {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: min(460px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-text, #1f2a37);
+}
+
+.dialog-body {
+  padding: 0.5rem 1.5rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--app-muted, #5f6b7a);
+}
+
+.dialog-body p {
+  margin: 0;
+}
+
+.dialog-prompt-input {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  border: 1.5px solid var(--app-border, #d6dfea);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.dialog-prompt-input:focus {
+  border-color: var(--app-accent, #2a7de1);
+  box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.15);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.75rem 1.5rem 1.25rem;
+}
+
+.dialog-btn {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.dialog-btn:focus-visible {
+  outline: 2px solid var(--app-accent, #2a7de1);
+  outline-offset: 2px;
+}
+
+.dialog-btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+.dialog-btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.dialog-btn-confirm {
+  background: var(--app-accent, #2a7de1);
+  color: #fff;
+}
+.dialog-btn-confirm:hover {
+  background: var(--app-accent-dark, #1a5fb4);
+}
+
+.dialog-btn-danger {
+  background: var(--app-danger, #d64747);
+  color: #fff;
+}
+.dialog-btn-danger:hover {
+  background: #b91c1c;
+}
+
+@keyframes dialog-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes dialog-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}

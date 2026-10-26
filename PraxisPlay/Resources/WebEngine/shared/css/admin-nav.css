@@ -1,0 +1,745 @@
+/**
+ * Admin Navigation Styles
+ * Shared styles for the admin navigation bar across all admin pages.
+ */
+
+.admin-nav {
+    position: relative;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 0.6rem 2rem;
+    margin-bottom: 0;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* When no sub-nav follows, restore bottom margin and full rounding */
+.admin-nav:last-child,
+.admin-nav.no-sub-nav {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+.admin-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-nav-links a.nav-home {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.admin-nav-links a.nav-home:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.admin-nav-links a.nav-home.active {
+    background: rgba(59, 130, 246, 0.8);
+    color: white;
+}
+
+/* ── Site logo — pinned far left ── */
+.nav-logo {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.2rem;
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.nav-logo:hover {
+    opacity: 0.8;
+}
+
+.nav-logo-img {
+    height: 26px;
+    width: auto;
+}
+
+/* ── Dropdown containers ── */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-toggle {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.nav-dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* When dropdown is open or contains the active page */
+.nav-dropdown-toggle.open,
+.nav-dropdown.has-active > .nav-dropdown-toggle {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    margin-left: 0.2rem;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.nav-dropdown-toggle.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* ── Dropdown menu ── */
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    min-width: 180px;
+    z-index: 1000;
+    padding: 0.35rem 0;
+    animation: dropdownFade 0.15s ease;
+}
+
+.nav-dropdown-menu.open {
+    display: block;
+}
+
+/* Scrollable variant for very long dropdowns (e.g., consolidated Teaching) */
+.nav-dropdown-menu.nav-dropdown-menu--scroll {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+@keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown-menu a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.nav-dropdown-menu a.active {
+    background: rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+    font-weight: 600;
+}
+
+.nav-dropdown-hint {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* My Courses dropdown: one readable row per class. Cap the width and let long
+   course names wrap within the row instead of ballooning the menu onto one line. */
+#nav-courses-menu {
+    max-width: 320px;
+}
+#nav-courses-menu a {
+    white-space: normal;
+    line-height: 1.35;
+}
+
+/* Quiz Sub-Navigation */
+.quiz-sub-nav {
+    background: #1e293b;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #475569;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-sub-nav-links {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+}
+
+.quiz-sub-nav-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.quiz-sub-nav-links a:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom-color: #475569;
+}
+
+.quiz-sub-nav-links a.active {
+    color: #60a5fa;
+    border-bottom-color: #3b82f6;
+    font-weight: 600;
+}
+
+.quiz-sub-nav-links .sub-nav-spacer {
+    flex: 1;
+}
+
+.quiz-sub-nav-links .sub-nav-back {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
+.quiz-sub-nav-links .sub-nav-back:hover {
+    color: #e2e8f0;
+}
+
+/* ── Audience color-coding (Student / Instructor / Admin) ───────────
+   3px left-border tints each top-level menu by intended audience:
+     Blue   = Student-facing (everyone logged in sees these)
+     Green  = Instructor / staff
+     Amber  = Admin / superuser
+   Border lives on .nav-dropdown (container) so it sits on the left
+   edge of the button without affecting button internal padding.
+*/
+.nav-audience-student > .nav-dropdown-toggle,
+a.nav-audience-student {
+    border-left: 3px solid #3b82f6; /* blue */
+}
+.nav-audience-instructor > .nav-dropdown-toggle,
+a.nav-audience-instructor {
+    border-left: 3px solid #16a34a; /* green */
+}
+.nav-audience-admin > .nav-dropdown-toggle,
+a.nav-audience-admin {
+    border-left: 3px solid #f59e0b; /* amber */
+}
+
+/* Hover glow matches the audience color */
+.nav-audience-student > .nav-dropdown-toggle:hover {
+    box-shadow: inset 0 -2px 0 #3b82f6;
+}
+.nav-audience-instructor > .nav-dropdown-toggle:hover {
+    box-shadow: inset 0 -2px 0 #16a34a;
+}
+.nav-audience-admin > .nav-dropdown-toggle:hover {
+    box-shadow: inset 0 -2px 0 #f59e0b;
+}
+
+/* ── Dropdown section headers & dividers (used inside Teaching) ── */
+.nav-section-header {
+    display: block;
+    padding: 0.5rem 0.9rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.nav-section-divider {
+    display: block;
+    height: 1px;
+    background: #334155;
+    margin: 0.4rem 0;
+}
+
+/* ── Getting Started top-level link (staff-only) ── */
+.nav-getting-started {
+    color: #fde68a;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(253, 230, 138, 0.35);
+    background: rgba(253, 230, 138, 0.1);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-getting-started:hover {
+    background: rgba(253, 230, 138, 0.2);
+    color: #fff;
+}
+
+.nav-getting-started.active {
+    background: rgba(253, 230, 138, 0.25);
+    color: #fff;
+    border-color: rgba(253, 230, 138, 0.6);
+}
+
+/* ── Active course switcher pill (instructor-only) ───────────────── */
+.nav-course-switch > .nav-course-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #d1fae5;
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.85rem;
+    max-width: 280px;
+}
+
+.nav-course-switch > .nav-course-toggle:hover {
+    background: rgba(16, 185, 129, 0.28);
+    color: #fff;
+}
+
+.nav-course-switch .nav-course-label {
+    opacity: 0.8;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nav-course-switch .nav-course-name {
+    font-weight: 700;
+    color: #fff;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-course-switch .nav-course-name.is-unset {
+    color: #fde68a;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.nav-course-switch .nav-course-item.active {
+    font-weight: 700;
+    color: #047857;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.nav-course-switch > .nav-course-toggle.is-superuser-override {
+    background: rgba(245, 158, 11, 0.22);
+    border: 1px solid rgba(245, 158, 11, 0.7);
+    color: #fef3c7;
+}
+
+.nav-course-switch > .nav-course-toggle.is-superuser-override:hover {
+    background: rgba(245, 158, 11, 0.35);
+    color: #fff;
+}
+
+.nav-course-switch .nav-course-owner-tag {
+    font-size: 0.72rem;
+    color: #f59e0b;
+    font-weight: 600;
+    margin-left: 0.35rem;
+}
+
+.nav-course-switch .nav-course-item.is-override-item:hover {
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    margin-left: 0.5rem;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
+
+/* Profile menu in admin nav */
+.nav-profile-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}.nav-profile-avatar {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+.nav-profile-name {
+    font-weight: 600;
+    max-width: 12ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.nav-dropdown-menu a.nav-menu-logout {
+    color: #fca5a5;
+}
+.nav-dropdown-menu a.nav-menu-logout:hover {
+    background-color: rgba(220, 38, 38, 0.18);
+    color: #fee2e2;
+}
+
+/* Guest (logged-out) auth affordance — replaces the profile dropdown */
+.nav-guest-auth {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.25rem;
+}
+.nav-guest-login {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+.nav-guest-login:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+.nav-guest-register {
+    background: #2563eb; /* 5.2:1 with white (WCAG AA). #3b82f6 was 3.7:1. */
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+.nav-guest-register:hover {
+    background: #1d4ed8; /* 6.7:1 with white */
+}
+
+/* Breadcrumbs */
+.quiz-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.quiz-breadcrumbs a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.quiz-breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.quiz-breadcrumbs .separator {
+    color: #94a3b8;
+}
+
+.quiz-breadcrumbs .current {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .admin-nav-links {
+        gap: 0.25rem;
+    }
+
+    .nav-dropdown-toggle {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.8rem;
+    }
+
+    .nav-getting-started {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.65rem;
+    }
+
+    .nav-dropdown-menu a {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.825rem;
+    }
+}
+
+/* Hamburger toggle — hidden on desktop, shown at <=768px */
+.nav-hamburger {
+    display: none;
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: auto;
+}
+.nav-hamburger:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+    .admin-nav {
+        padding: 0.5rem 1rem;
+    }
+
+    .nav-hamburger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Collapsed (default mobile state): hide everything except logo + hamburger */
+    .admin-nav:not(.mobile-open) .admin-nav-links > :not(.nav-logo):not(.nav-hamburger) {
+        display: none;
+    }
+
+    /* Expanded mobile menu: stack items vertically */
+    .admin-nav.mobile-open .admin-nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        padding-top: 0.5rem;
+    }
+    .admin-nav.mobile-open .nav-dropdown,
+    .admin-nav.mobile-open .nav-getting-started {
+        width: 100%;
+    }
+    .admin-nav.mobile-open .nav-dropdown-toggle,
+    .admin-nav.mobile-open .nav-getting-started {
+        width: 100%;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    /* Inline (not absolute) dropdown menus in mobile-open mode */
+    .admin-nav.mobile-open .nav-dropdown-menu {
+        position: static;
+        transform: none;
+        left: auto;
+        top: auto;
+        background: rgba(0, 0, 0, 0.25);
+        border: none;
+        box-shadow: none;
+        margin: 0.25rem 0 0.25rem 1rem;
+        max-height: none;
+        animation: none;
+    }
+    .admin-nav.mobile-open .nav-dropdown-menu:not(.open) {
+        display: none;
+    }
+    .admin-nav.mobile-open .nav-dropdown-menu.open {
+        display: block;
+    }
+
+    .nav-dropdown-toggle {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .nav-getting-started {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .quiz-sub-nav {
+        padding: 0 1rem;
+    }
+
+    .quiz-sub-nav-links a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .logout-btn {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* ── Onboarding nav indicators ── */
+.nav-onboarding-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: #dbeafe;
+    color: #2563eb;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+.nav-onboarding-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: nav-onb-pulse 2s ease-in-out infinite;
+}
+
+@keyframes nav-onb-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.4); }
+}
+
+/* ── Notification bell ── */
+#nav-bell-mount { display: flex; align-items: center; }
+.nav-bell { position: relative; }
+.nav-bell-toggle {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+    line-height: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.nav-bell-toggle:hover { background: rgba(255, 255, 255, 0.12); }
+.nav-bell-icon { font-size: 1.15rem; }
+.nav-bell-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #1e293b;
+}
+.nav-bell-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 340px;
+    max-width: 90vw;
+    background: #fff;
+    color: #1f2937;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    z-index: 1200;
+}
+.nav-bell.open .nav-bell-panel { display: block; }
+.nav-bell-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 0.9rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eef2f7;
+    background: #f8fafc;
+}
+.nav-bell-clear {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+}
+.nav-bell-clear:hover { text-decoration: underline; }
+.nav-bell-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 380px;
+    overflow-y: auto;
+}
+.nav-bell-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid #f3f4f6;
+    border-left: 3px solid transparent;
+}
+.nav-bell-item.level-warning { border-left-color: #f59e0b; background: #fffbeb; }
+.nav-bell-item.level-error   { border-left-color: #ef4444; background: #fef2f2; }
+.nav-bell-item.level-success { border-left-color: #10b981; background: #f0fdf4; }
+.nav-bell-item.level-info    { border-left-color: #3b82f6; }
+.nav-bell-item-icon { flex-shrink: 0; font-size: 0.95rem; margin-top: 0.1rem; }
+.nav-bell-item-body { flex: 1; min-width: 0; }
+.nav-bell-item-title { font-weight: 600; font-size: 0.85rem; }
+.nav-bell-item-msg { font-size: 0.8rem; color: #4b5563; margin-top: 0.1rem; line-height: 1.35; }
+.nav-bell-item-dismiss {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+}
+.nav-bell-item-dismiss:hover { color: #4b5563; }
+.nav-bell-empty {
+    padding: 1.5rem 0.9rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.85rem;
+}

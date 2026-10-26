@@ -1,0 +1,217 @@
+{
+  "case_id": "kf-r2-001",
+  "game_type": "brief_relay",
+  "client": "Kestrel & Fern",
+  "title": "The Loyal Doubters",
+  "version": "0.2",
+  "rung": 2,
+  "trap": "The quote qualifies the number",
+  "round_slot": 2,
+  "lesson": "Satisfaction and past repurchase are lagging measures. A quote about price is a leading one.",
+  "situation": {
+    "speaker": "kf_director",
+    "lines": [
+      "Kestrel & Fern sells one hero serum at $48. This year the look-alikes arrived at a quarter of the price. Sales are fine.",
+      "I want next quarter's brief by the end of this round: a hook, a channel, a creative and an offer.",
+      "Each agency has four desks. Nobody has the whole picture."
+    ]
+  },
+  "desk_order": ["analytics", "research", "environment", "brand"],
+  "desks": {
+    "analytics": {
+      "label": "Internal analytics",
+      "icon": "desk_analytics",
+      "decides": "hook",
+      "card": {
+        "title": "Customer segments, last 12 months, K&F buyers only",
+        "table": {
+          "columns": ["Segment", "Share of customers", "Share of revenue", "Revenue growth, 12 mo", "Repurchase within 90 days", "Average order"],
+          "rows": [
+            ["Routine Ritualists (35 to 49)", "40%", "45%", "+5%", "60%", "$70"],
+            ["Clean Curious (22 to 29)", "25%", "20%", "+30%", "35%", "$55"],
+            ["Gift Givers (all ages)", "15%", "15%", "−5%", "10%", "$90"],
+            ["Ingredient Readers (30 to 44)", "20%", "20%", "+10%", "55%", "$65"]
+          ]
+        },
+        "notes": [
+          "Repurchase means bought again within 90 days of a purchase.",
+          "This table describes people who already bought from us. It says nothing about people who did not."
+        ]
+      },
+      "shards": [
+        {"kind": "row", "index": 0}, {"kind": "row", "index": 1}, {"kind": "row", "index": 2}, {"kind": "row", "index": 3},
+        {"kind": "notes"}
+      ]
+    },
+    "research": {
+      "label": "Market research",
+      "icon": "desk_research",
+      "decides": "channel",
+      "card": {
+        "title": "Category buyer survey, n = 1,200, fielded last month. Includes buyers of look-alikes.",
+        "table": {
+          "columns": ["Segment", "Satisfaction with K&F (0 to 10, K&F buyers)", "Considered a look-alike in the last 3 months", "Could say why K&F costs more"],
+          "rows": [
+            ["Routine Ritualists", "8.5", "60%", "30%"],
+            ["Clean Curious", "8.0", "70%", "20%"],
+            ["Gift Givers", "7.0", "40%", "20%"],
+            ["Ingredient Readers", "9.0", "20%", "80%"]
+          ]
+        },
+        "quotes": [
+          {"who": "Routine Ritualist, 44", "text": "I love it. I've just started wondering whether the $12 one is secretly the same thing.", "qualifies": "price"},
+          {"who": "Clean Curious, 24", "text": "I bought it because my roommate did. I'd try the dupe next time unless someone tells me why not.", "qualifies": "loyalty"},
+          {"who": "Ingredient Reader, 37", "text": "I read the actives. The dupes don't match the doses, and I'll pay for that.", "qualifies": "need"}
+        ],
+        "lines": {
+          "media": "Ritualists have the highest email open rate of any segment, 50%. Clean Curious discover skincare on short-form video. No segment reports podcasts or local signage as a skincare source.",
+          "price": "Among Ritualists, \"I would switch if the price gap reached $20\" is 50% this year, up from 35% last year.",
+          "sample": "Category buyer survey, n = 1,200, fielded last month. Includes buyers of look-alikes."
+        }
+      },
+      "shards": [
+        {"kind": "row", "index": 0}, {"kind": "row", "index": 1}, {"kind": "row", "index": 2}, {"kind": "row", "index": 3},
+        {"kind": "quote", "index": 0}, {"kind": "quote", "index": 1}, {"kind": "quote", "index": 2},
+        {"kind": "line", "key": "media"}, {"kind": "line", "key": "price"}, {"kind": "line", "key": "sample"}
+      ]
+    },
+    "environment": {
+      "label": "Environment",
+      "icon": "desk_environment",
+      "decides": "creative",
+      "card": {
+        "title": "This month",
+        "items": [
+          {"label": "Competitor move", "text": "Dupelle, a look-alike brand, launched \"Same actives. $15.\" on short-form video this month and is now the category's largest buyer on that platform.",
+           "creative": {"headline": "Same actives. $15.", "tone": "price", "format": "short-form video", "brand": "Dupelle"}},
+          {"label": "Category trend", "text": "Searches for \"Kestrel & Fern dupe\" are up 2.5 times year over year."},
+          {"label": "Platform note", "text": "Short-form video CPMs are up 20% this quarter."}
+        ]
+      },
+      "shards": [{"kind": "item", "index": 0}, {"kind": "item", "index": 1}, {"kind": "item", "index": 2}]
+    },
+    "brand": {
+      "label": "Brand",
+      "icon": "desk_brand",
+      "decides": "offer",
+      "card": {
+        "title": "Kestrel & Fern",
+        "positioning": "Clean that works: clinically dosed actives, and nothing you don't need.",
+        "guardrails": [
+          "We never discount the hero serum.",
+          "We never name a competitor brand, though we may talk about look-alikes as a category.",
+          "We do not sell through marketplaces.",
+          "Minimum gross margin on any offer is 40%."
+        ],
+        "cost_floor": "The hero serum's landed cost is $12.",
+        "budget": "Budget for the quarter: $250,000."
+      },
+      "shards": [
+        {"kind": "positioning"}, {"kind": "guardrail", "index": 0}, {"kind": "guardrail", "index": 1},
+        {"kind": "guardrail", "index": 2}, {"kind": "guardrail", "index": 3}, {"kind": "cost_floor"}, {"kind": "budget"}
+      ]
+    }
+  },
+  "decisions": {
+    "hook": {
+      "owner": "analytics",
+      "label": "the hook",
+      "needs_cards": ["research", "brand"],
+      "needs_decisions": [],
+      "options": [
+        {"key": "A", "text": "Still the original. Trusted by 40,000 ritualists.", "tone": "heritage",
+         "detail": "A heritage claim. It runs as the headline on every placement this quarter and points at the size of the loyal base. It says nothing about what is in the bottle. The number is real: 40,000 is the Ritualist segment."},
+        {"key": "B", "text": "Clinically dosed. Read the label.", "tone": "proof",
+         "detail": "A proof claim. Every placement leads with the actives and their doses, printed on the label, and invites a side-by-side read. It is a claim about the category without naming any look-alike, which the brand allows."},
+        {"key": "C", "text": "The glow your feed is talking about.", "tone": "trend",
+         "detail": "A trend claim. It borrows social proof from creators and friends rather than from the product, and reads naturally on short-form video. It says nothing about ingredients or price."},
+        {"key": "D", "text": "A new lower price on the serum you love.", "tone": "price",
+         "detail": "A price claim. It commits the brand to a visible cut on the hero serum for the quarter, which the guardrails forbid, and it answers the look-alikes on their own terms."}
+      ],
+      "key": "B",
+      "default": "A",
+      "why": {
+        "B": "Loyal buyers' doubt is whether the look-alike is the same thing. A proof hook answers that and matches the positioning.",
+        "A": "Heritage reassures but does not answer the doubt. Only 30% of Ritualists could say why it costs more.",
+        "C": "Trend talk speaks to Clean Curious, who are 20% of revenue and leaving regardless.",
+        "D": "A price hook breaks the brand guardrail and concedes the look-alike's argument."
+      }
+    },
+    "channel": {
+      "owner": "research",
+      "label": "the channel",
+      "needs_cards": ["analytics", "environment"],
+      "needs_decisions": [],
+      "options": [
+        {"key": "A", "text": "Short-form video",
+         "detail": "Paid placements on the platforms where Clean Curious discover skincare. The broadest reach of the four, mostly to people who have not bought from us. About $200,000 of the $250,000 budget at current CPMs, which rose 20% this quarter."},
+        {"key": "B", "text": "Email to existing customers",
+         "detail": "A four-send sequence over the quarter to the 100,000 buyers on the list, with Ritualists opening at 50%. Reaches no new customers. About $20,000 in production and tooling, leaving most of the budget."},
+        {"key": "C", "text": "Podcast sponsorship",
+         "detail": "Host-read spots on three beauty and wellness podcasts, about $100,000 for the quarter. Modest reach, and no segment in the survey names podcasts as where they learn about skincare."},
+        {"key": "D", "text": "Local out-of-home near stockists",
+         "detail": "Posters and window takeovers within a mile of the 60 stockists, about $75,000. Reaches passers-by of every segment. Measurement is weak, and the base already knows where the stockists are."}
+      ],
+      "key": "B",
+      "default": "A",
+      "why": {
+        "B": "The value at risk is the existing base, who open email at 50%. Short-form video is where the look-alike just bought the quarter, at a 20% higher price.",
+        "A": "Reaches the segment least likely to repurchase, at the highest price, against the look-alike's own campaign.",
+        "C": "No segment on the card names podcasts as a skincare source.",
+        "D": "No segment habit supports it, and the base already knows where the stockists are."
+      }
+    },
+    "creative": {
+      "owner": "environment",
+      "label": "the creative",
+      "needs_cards": ["brand"],
+      "needs_decisions": ["hook", "channel"],
+      "options": [
+        {"key": "A", "text": "Macro shot of the serum label listing the actives. Headline \"Read the label.\"", "tone": "proof", "format": "static, email",
+         "detail": "A close photograph of the serum label with the actives and doses legible, the headline above it, nothing else. Static, built for email and web. Costs little. Works only if the hook is about proof."},
+        {"key": "B", "text": "Feed-style still of friends with glowing skin. Headline \"The glow your feed is talking about.\"", "tone": "trend", "format": "short-form video",
+         "detail": "Three friends, bathroom light, phone-shot look, the headline over the image. Made for short-form video and social feeds; it would look out of place in email. Says nothing about contents."},
+        {"key": "C", "text": "Price-tag creative. Headline \"$38 this month.\"", "tone": "price", "format": "static",
+         "detail": "The bottle with a red tag over the old price. A discount creative: the brand would have to cut the hero price to run it, which the guardrails forbid. Loud, and effective at moving units once."},
+        {"key": "D", "text": "Founder in the lab. Headline \"Since 2016. The original.\"", "tone": "heritage", "format": "static",
+         "detail": "A portrait of the founder at the bench, warm and credible. A heritage creative that reassures existing buyers without answering what is different about the formula."}
+      ],
+      "key": "A",
+      "default": "B",
+      "why": {
+        "A": "Matches the proof hook and the positioning, and it is native to email.",
+        "B": "Right for short-form video, wrong for the hook and the channel.",
+        "C": "Discounting is barred, and the price cue is the look-alike's story, not ours.",
+        "D": "Heritage without proof. The doubt is about what is in the bottle, not how old the brand is."
+      }
+    },
+    "offer": {
+      "owner": "brand",
+      "label": "the offer",
+      "needs_cards": ["research", "analytics"],
+      "needs_decisions": [],
+      "options": [
+        {"key": "A", "text": "$10 off the hero serum",
+         "detail": "$38 instead of $48 for the quarter, to everyone. Margin stays above the floor, but it breaks the never-discount rule and resets what the serum is worth in buyers' minds."},
+        {"key": "B", "text": "Loyalty reward: a free travel-size serum with the third purchase in 12 months",
+         "detail": "A free 10 ml travel-size serum with a buyer's third purchase in 12 months. About $5 per reward at landed cost, reaches only repeat buyers, keeps the $48 price intact."},
+        {"key": "C", "text": "Bundle: serum plus cleanser for $65, saving $10",
+         "detail": "Saves $10 against buying both. Margin clears the 40% floor. An acquisition offer: it works best on first-time and gift buyers and does nothing for someone deciding whether to buy the serum again."},
+        {"key": "D", "text": "No offer",
+         "detail": "The campaign runs on message alone. Nothing is given away, and nothing is learned about whether a reward would have held the base."}
+      ],
+      "key": "B",
+      "default": "D",
+      "why": {
+        "B": "Rewards the repeat behaviour that carries 45% of revenue without cutting the hero's price, which the guardrail bars.",
+        "A": "Breaks the guardrail and confirms the look-alike's price frame.",
+        "C": "Clears margin, but it is an acquisition bundle. The risk this quarter is retention.",
+        "D": "Leaves a base where 50% would switch at a $20 gap with no reason to stay."
+      }
+    }
+  },
+  "scoring": {"fit_points": 1, "coherence_bonus": 2, "speed_bonus": 1, "speed_requires_fits": 3},
+  "multipliers": [1.0, 1.0, 1.5, 1.5, 2.0],
+  "clock_s": 90,
+  "assess_s": 60
+}

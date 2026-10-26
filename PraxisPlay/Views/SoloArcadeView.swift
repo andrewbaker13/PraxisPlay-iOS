@@ -5,7 +5,7 @@ struct SoloArcadeView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var selectedCategory: String = "All"
 
-    private let categories = ["All", "Quantitative", "Strategy", "Speed & Recall"]
+    private let categories = ["All", "Team Edition", "Quantitative", "Strategy", "Speed & Recall"]
 
     private var gridColumns: [GridItem] {
         if horizontalSizeClass == .regular {
@@ -20,10 +20,12 @@ struct SoloArcadeView: View {
 
     var filteredModes: [SoloGameMode] {
         switch selectedCategory {
+        case "Team Edition":
+            return SoloGameMode.allModes.filter { ["brief_relay"].contains($0.id) }
         case "Quantitative":
             return SoloGameMode.allModes.filter { ["line_fit", "budget_blitz", "closest_guess"].contains($0.id) }
         case "Strategy":
-            return SoloGameMode.allModes.filter { ["buy_a_clue", "minority_rule", "crowd_wisdom"].contains($0.id) }
+            return SoloGameMode.allModes.filter { ["brief_relay", "buy_a_clue", "minority_rule", "crowd_wisdom"].contains($0.id) }
         case "Speed & Recall":
             return SoloGameMode.allModes.filter { ["speed_tap", "push_range", "word_guess"].contains($0.id) }
         default:

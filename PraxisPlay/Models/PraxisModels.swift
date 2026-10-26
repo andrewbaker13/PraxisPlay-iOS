@@ -5,20 +5,23 @@ import SwiftUI
 enum ArenaLaunchMode: Identifiable, Equatable {
     case liveSession(RecentRoomSession)
     case soloPractice(SoloGameMode, showResults: Bool = false)
+    case webTool(title: String, relativePath: String)
 
     var id: String {
         switch self {
         case .liveSession(let session):
-            return "live-\(session.roomCode)-\(session.playerSessionId)"
+            return "live-\(session.roomCode)-\(session.playerSessionId)-\(session.isTeamPlay ? "tp" : "cl")"
         case .soloPractice(let mode, let showResults):
             return "solo-\(mode.id)-\(showResults ? "res" : "act")"
+        case .webTool(_, let relativePath):
+            return "tool-\(relativePath)"
         }
     }
 }
 
 // MARK: - Saved & Active Room Session
 struct RecentRoomSession: Identifiable, Codable, Equatable {
-    var id: String { "\(roomCode.uppercased())-\(playerSessionId)" }
+    var id: String { "\(roomCode.uppercased())-\(playerSessionId)-\(isTeamPlay ? "tp" : "cl")" }
     let roomCode: String
     let playerName: String
     let decoratedGuestName: String
@@ -33,6 +36,79 @@ struct RecentRoomSession: Identifiable, Codable, Equatable {
     let rawGameSessionJSON: String
     let rawPlayerSessionJSON: String
     var joinedAt: Date
+    var isTeamPlay: Bool
+    var playerToken: String
+    var teamKey: String
+    var teamName: String
+
+    init(
+        roomCode: String,
+        playerName: String,
+        decoratedGuestName: String,
+        playerSessionId: Int,
+        courseName: String,
+        instructorName: String,
+        gameType: String,
+        lastScore: Int,
+        lastRank: String,
+        isGuest: Bool,
+        waitingToEnter: Bool,
+        rawGameSessionJSON: String,
+        rawPlayerSessionJSON: String,
+        joinedAt: Date,
+        isTeamPlay: Bool = false,
+        playerToken: String = "",
+        teamKey: String = "",
+        teamName: String = ""
+    ) {
+        self.roomCode = roomCode
+        self.playerName = playerName
+        self.decoratedGuestName = decoratedGuestName
+        self.playerSessionId = playerSessionId
+        self.courseName = courseName
+        self.instructorName = instructorName
+        self.gameType = gameType
+        self.lastScore = lastScore
+        self.lastRank = lastRank
+        self.isGuest = isGuest
+        self.waitingToEnter = waitingToEnter
+        self.rawGameSessionJSON = rawGameSessionJSON
+        self.rawPlayerSessionJSON = rawPlayerSessionJSON
+        self.joinedAt = joinedAt
+        self.isTeamPlay = isTeamPlay
+        self.playerToken = playerToken
+        self.teamKey = teamKey
+        self.teamName = teamName
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case roomCode, playerName, decoratedGuestName, playerSessionId
+        case courseName, instructorName, gameType, lastScore, lastRank
+        case isGuest, waitingToEnter, rawGameSessionJSON, rawPlayerSessionJSON, joinedAt
+        case isTeamPlay, playerToken, teamKey, teamName
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        roomCode = try c.decode(String.self, forKey: .roomCode)
+        playerName = try c.decode(String.self, forKey: .playerName)
+        decoratedGuestName = try c.decode(String.self, forKey: .decoratedGuestName)
+        playerSessionId = try c.decode(Int.self, forKey: .playerSessionId)
+        courseName = try c.decode(String.self, forKey: .courseName)
+        instructorName = try c.decode(String.self, forKey: .instructorName)
+        gameType = try c.decode(String.self, forKey: .gameType)
+        lastScore = try c.decode(Int.self, forKey: .lastScore)
+        lastRank = try c.decode(String.self, forKey: .lastRank)
+        isGuest = try c.decode(Bool.self, forKey: .isGuest)
+        waitingToEnter = try c.decode(Bool.self, forKey: .waitingToEnter)
+        rawGameSessionJSON = try c.decode(String.self, forKey: .rawGameSessionJSON)
+        rawPlayerSessionJSON = try c.decode(String.self, forKey: .rawPlayerSessionJSON)
+        joinedAt = try c.decode(Date.self, forKey: .joinedAt)
+        isTeamPlay = try c.decodeIfPresent(Bool.self, forKey: .isTeamPlay) ?? false
+        playerToken = try c.decodeIfPresent(String.self, forKey: .playerToken) ?? ""
+        teamKey = try c.decodeIfPresent(String.self, forKey: .teamKey) ?? ""
+        teamName = try c.decodeIfPresent(String.self, forKey: .teamName) ?? ""
+    }
 }
 
 // MARK: - Active Server Game Session (from GET /api/game/my-active-sessions/)
@@ -46,6 +122,85 @@ struct ActiveServerGameSession: Identifiable, Equatable {
     let instructorName: String
     let playerSessionId: Int
     let score: Int
+}
+
+// MARK: - Instructor Management Models (Classic + Team Edition)
+struct InstructorCourseItem: Identifiable, Equatable {
+    let id: Int
+    let name: String
+}
+
+struct InstructorGameTemplateItem: Identifiable, Equatable {
+    let id: Int
+    let name: String
+    let gameType: String
+    let roundsCount: Int
+    let description: String
+}
+
+struct ActiveClassicHostRoom: Identifiable, Equatable {
+    var id: String { roomCode }
+    let roomCode: String
+    let templateName: String
+    var status: String
+    let createdAt: String
+    var currentRound: Int
+    var totalRounds: Int
+    var playerCount: Int
+    var gameType: String
+    var projectorPin: String = ""
+}
+
+struct TeamPlayCaseItem: Identifiable, Equatable {
+    var id: String { caseId }
+    let caseId: String
+    let client: String
+    let title: String
+    let rung: Int
+    let trap: String
+}
+
+struct TeamPlayHostTeamSummary: Identifiable, Equatable {
+    var id: String { key }
+    let key: String
+    let name: String
+    let colour: String
+    let score: Int
+    let players: Int
+}
+
+struct TeamPlayDeskStatus: Identifiable, Equatable {
+    var id: String { desk }
+    let desk: String
+    let label: String
+    let decides: String
+    let holders: [String]
+    let locked: Int
+    let votes: [String: Int]
+    let choice: String?
+    let agreed: Bool?
+}
+
+struct TeamPlayHostState: Equatable {
+    let roomCode: String
+    let status: String
+    let accessMode: String
+    let playerCount: Int
+    let caseId: String
+    let caseClient: String
+    let caseTitle: String
+    let matchState: String
+    let currentRound: Int
+    let roundsTotal: Int
+    let roundEndsAt: String?
+    let roundTimeLimit: Int
+    let multiplier: Double
+    let revealStep: Int
+    let teams: [TeamPlayHostTeamSummary]
+    let desksByTeam: [String: [TeamPlayDeskStatus]]
+    let clientKey: [String: String]
+    let lesson: String
+    var projectorPin: String = ""
 }
 
 // MARK: - Live HUD Telemetry State (Synced from WebEngine)
@@ -64,7 +219,7 @@ struct HUDTelemetryState: Equatable {
     var connectionStatus: ConnectionStatus = .connecting
 }
 
-// MARK: - Solo Practice Arcade Catalog (All 9 Minigames)
+// MARK: - Solo Practice Arcade Catalog (Team Edition + All 9 Classic Minigames)
 struct SoloGameMode: Identifiable, Equatable {
     let id: String
     let title: String
@@ -76,6 +231,16 @@ struct SoloGameMode: Identifiable, Equatable {
     let gradientColors: [Color]
 
     static let allModes: [SoloGameMode] = [
+        SoloGameMode(
+            id: "brief_relay",
+            title: "Brief Relay · Team Edition",
+            badge: "AGENCY PITCH",
+            marketingConcept: "Distributed Intelligence & Brand Strategy",
+            description: "Direct a 4-desk agency pitching Kestrel & Fern. Synthesize Analytics, Survey Quotes, Competitor Moves, and Brand Guardrails into one coherent brief.",
+            snapshotState: "brief_relay_active",
+            sfSymbol: "person.3.fill",
+            gradientColors: [Color(red: 0.78, green: 0.25, blue: 0.18), Color(red: 0.17, green: 0.38, blue: 0.76)]
+        ),
         SoloGameMode(
             id: "speed_tap",
             title: "Speed Tap",

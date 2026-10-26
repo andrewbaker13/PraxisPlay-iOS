@@ -1,0 +1,44 @@
+{
+  "_fixture": {
+    "game": "brief_relay",
+    "case_id": "kf-r2-001",
+    "approved_by": "Andrew",
+    "approved_on": "2026-10-25",
+    "source": "admin_pages/team_play/dev/screen_book.template.html"
+  },
+  "state": "final",
+  "winner": "blue",
+  "final": {
+    "blue": 31,
+    "red": 24
+  },
+  "integration": {
+    "blue": "17 of 20",
+    "red": "11 of 20"
+  },
+  "speaker": {
+    "sprite": "kf_director_sheet",
+    "lines": [
+      "Blue, you listened to the people who were about to leave.",
+      "Red, you found the number first every round, and by round four you had learned to ask what it meant.",
+      "Three questions before you go."
+    ]
+  },
+  "me": {
+    "desk": "research",
+    "rounds": 5,
+    "decided": 5,
+    "client_agreed": 4,
+    "card_used_rounds": 5,
+    "flows_to_history": "participation only"
+  },
+  "debrief": [
+    "Which desk did you need most, and when did you first ask for it?",
+    "When did a number and a quote disagree, and who noticed?",
+    "What would you tell a new team about the first thirty seconds?"
+  ],
+  "exports": [
+    "participation_csv",
+    "match_log"
+  ]
+}

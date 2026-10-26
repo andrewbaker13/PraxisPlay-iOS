@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praxis Play · Classroom Projector Receiver</title>
+    <link rel="icon" type="image/svg+xml" href="../art_assets/svg_logos/praxisplay_notext_logo.svg">
+    <link rel="dns-prefetch" href="https://drbaker-backend.onrender.com">
+    <link rel="preconnect" href="https://drbaker-backend.onrender.com" crossorigin>
+    <style>
+        :root {
+            --bg: #060b16;
+            --card: #0f1a2e;
+            --border: #243352;
+            --ink: #f8fafc;
+            --muted: #94a3b8;
+            --gold: #ffd166;
+            --indigo: #4f46e5;
+            --emerald: #10b981;
+            --danger: #ff8a7a;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg) 70%);
+            color: var(--ink);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+        .receiver-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 22px;
+            padding: 38px 42px;
+            max-width: 540px;
+            width: 100%;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+        }
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .brand-row img {
+            height: 44px;
+            width: auto;
+        }
+        .eyebrow {
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        h1 {
+            margin: 2px 0 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .lead {
+            margin: 0 0 26px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        form {
+            display: grid;
+            gap: 18px;
+        }
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 520px) {
+            .field-grid { grid-template-columns: 1fr; }
+        }
+        label {
+            display: grid;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        input {
+            width: 100%;
+            padding: 14px 12px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: #060b16;
+            color: #fff;
+            font: 800 32px ui-monospace, SFMono-Regular, Consolas, monospace;
+            text-align: center;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        input:focus {
+            border-color: var(--gold);
+        }
+        input.pin-input {
+            color: var(--gold);
+            letter-spacing: 0.24em;
+        }
+        .submit-btn {
+            padding: 16px 22px;
+            border-radius: 12px;
+            border: 0;
+            background: linear-gradient(135deg, #ffd166 0%, #f59e0b 100%);
+            color: #060b16;
+            font: 800 18px inherit;
+            cursor: pointer;
+            transition: transform 0.12s ease, opacity 0.12s ease;
+        }
+        .submit-btn:hover { transform: translateY(-1px); }
+        .submit-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+        .error-box {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.16);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .error-box[hidden] { display: none; }
+        .steps-box {
+            margin-top: 26px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .steps-box strong { color: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <main class="receiver-card">
+        <div class="brand-row">
+            <img src="../art_assets/svg_logos/praxisplay_notext_logo.svg" alt="Praxis Play">
+            <div>
+                <div class="eyebrow">Praxis Play · Big Screen Receiver</div>
+                <h1>Classroom Projector</h1>
+            </div>
+        </div>
+        <p class="lead">
+            Hosting from the <strong>Praxis Play</strong> mobile app on your phone or iPad?
+            Enter the <strong>Room Code</strong> and <strong>4-Digit Projector PIN</strong> shown on your Host tab. No login required on this computer.
+        </p>
+
+        <form id="receiverForm">
+            <div class="field-grid">
+                <label for="roomInput">
+                    1. Room Code
+                    <input id="roomInput" maxlength="8" placeholder="K8F2" autocomplete="off" required>
+                </label>
+                <label for="pinInput">
+                    2. Projector PIN
+                    <input id="pinInput" class="pin-input" maxlength="6" inputmode="numeric" placeholder="1234" autocomplete="off">
+                </label>
+            </div>
+            <div id="errBox" class="error-box" role="alert" hidden></div>
+            <button id="launchBtn" class="submit-btn" type="submit">🖥️ Launch Big Screen Projector</button>
+        </form>
+
+        <div class="steps-box">
+            <div>📱 <strong>Works with both game systems:</strong> Team Edition (Brief Relay) &amp; Classic Edition (9 Mini-Games).</div>
+            <div>🎛️ <strong>Phone as Remote:</strong> Once paired, tap <em>Start Round</em>, <em>+30s</em>, or <em>Reveal</em> on your phone and this screen updates live.</div>
+        </div>
+    </main>
+
+    <script src="../shared/js/api-config.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var params = new URLSearchParams(location.search);
+        var hashParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+        var roomInput = document.getElementById('roomInput');
+        var pinInput = document.getElementById('pinInput');
+        var errBox = document.getElementById('errBox');
+        var launchBtn = document.getElementById('launchBtn');
+
+        var initialRoom = (params.get('room') || hashParams.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        var initialPin = (hashParams.get('pin') || params.get('pin') || '').trim();
+        if (initialRoom) roomInput.value = initialRoom;
+        if (initialPin) pinInput.value = initialPin;
+
+        function showError(msg) {
+            errBox.textContent = msg;
+            errBox.hidden = !msg;
+        }
+
+        function saveTeamPlayToken(roomCode, token) {
+            var key = 'teamplay:' + String(roomCode).toUpperCase() + ':projector_token';
+            try { sessionStorage.setItem(key, token); } catch (e) {}
+            try { localStorage.setItem(key, token); } catch (e) {}
+        }
+
+        function connectProjector(roomCode, pin) {
+            showError('');
+            launchBtn.disabled = true;
+            launchBtn.textContent = 'Connecting to Room ' + roomCode + '…';
+
+            fetch(window.API_BASE + '/team-play/projector-pair/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ room_code: roomCode, pin: pin })
+            })
+            .then(function (r) {
+                return r.json().catch(function () { return {}; }).then(function (data) {
+                    return { ok: r.ok, status: r.status, data: data };
+                });
+            })
+            .then(function (res) {
+                if (res.ok && res.data && res.data.ok) {
+                    if (res.data.edition === 'team_play') {
+                        var pt = res.data.projector_token || '';
+                        saveTeamPlayToken(roomCode, pt);
+                        location.href = 'team_play/projector.html?room=' + encodeURIComponent(roomCode) + (pt ? '#pt=' + encodeURIComponent(pt) : '');
+                        return;
+                    }
+                    if (res.data.edition === 'classic') {
+                        location.href = 'games/game-projector.html?room=' + encodeURIComponent(roomCode);
+                        return;
+                    }
+                }
+                // Fallback: if the room is a Classic GameSession and projector-pair returned 404 on an older backend deploy
+                if (res.status === 404) {
+                    return fetch(window.API_BASE + '/game/' + encodeURIComponent(roomCode) + '/')
+                        .then(function (gr) {
+                            if (gr.ok) {
+                                location.href = 'games/game-projector.html?room=' + encodeURIComponent(roomCode);
+                                return;
+                            }
+                            throw new Error(res.data.error || 'Room ' + roomCode + ' not found. Check the 4-letter Room Code.');
+                        });
+                }
+                throw new Error(res.data.error || 'Invalid Room Code or 4-digit Projector PIN.');
+            })
+            .catch(function (err) {
+                launchBtn.disabled = false;
+                launchBtn.textContent = '🖥️ Launch Big Screen Projector';
+                showError(err && err.message ? err.message : 'Could not connect to server.');
+            });
+        }
+
+        document.getElementById('receiverForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var rc = (roomInput.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            var pin = (pinInput.value || '').trim();
+            if (!rc) { showError('Please enter a Room Code.'); return; }
+            connectProjector(rc, pin);
+        });
+
+        if (initialRoom && initialPin) {
+            connectProjector(initialRoom, initialPin);
+        } else if (initialRoom) {
+            pinInput.focus();
+        } else {
+            roomInput.focus();
+        }
+    })();
+    </script>
+</body>
+</html>
