@@ -537,7 +537,7 @@ final class PraxisSessionStore: ObservableObject {
         if code == "DEMO" {
             if let demoMode = SoloGameMode.allModes.first(where: { $0.id == "brief_relay" }) ?? SoloGameMode.allModes.first {
                 HapticsManager.shared.playNotification(.success)
-                activeArenaLaunch = .soloPractice(mode: demoMode)
+                activeArenaLaunch = .soloPractice(demoMode)
                 return
             }
         }
