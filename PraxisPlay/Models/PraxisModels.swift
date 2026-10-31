@@ -183,23 +183,23 @@ struct TeamPlayDeskStatus: Identifiable, Equatable {
 
 struct TeamPlayHostState: Equatable {
     let roomCode: String
-    let status: String
+    var status: String
     let accessMode: String
-    let playerCount: Int
+    var playerCount: Int
     let caseId: String
     let caseClient: String
     let caseTitle: String
-    let matchState: String
-    let currentRound: Int
-    let roundsTotal: Int
-    let roundEndsAt: String?
-    let roundTimeLimit: Int
-    let multiplier: Double
-    let revealStep: Int
-    let teams: [TeamPlayHostTeamSummary]
-    let desksByTeam: [String: [TeamPlayDeskStatus]]
-    let clientKey: [String: String]
-    let lesson: String
+    var matchState: String
+    var currentRound: Int
+    var roundsTotal: Int
+    var roundEndsAt: String?
+    var roundTimeLimit: Int
+    var multiplier: Double
+    var revealStep: Int
+    var teams: [TeamPlayHostTeamSummary]
+    var desksByTeam: [String: [TeamPlayDeskStatus]]
+    var clientKey: [String: String]
+    var lesson: String
     var projectorPin: String = ""
 }
 
