@@ -56,9 +56,47 @@ struct InstructorHostView: View {
 
                     editionSwitcher
 
-                    if !sessionStore.isAuthenticated {
+                    if !sessionStore.isAuthenticated && !sessionStore.isDemoHostSandboxActive {
                         instructorSignInPromptCard
                     } else {
+                        if sessionStore.isDemoHostSandboxActive {
+                            HStack(spacing: 10) {
+                                Image(systemName: "sparkles.tv.fill")
+                                    .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
+                                Text("Interactive Host Sandbox Active (Room DEMO · PIN 4821)")
+                                    .font(.system(size: 12.5, weight: .bold))
+                                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
+                                Spacer()
+                                Button("Exit Demo") {
+                                    sessionStore.deactivateDemoHostSandbox()
+                                }
+                                .font(.system(size: 12, weight: .heavy))
+                                .foregroundStyle(Color(red: 0.78, green: 0.25, blue: 0.18))
+                            }
+                            .padding(12)
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .strokeBorder(Color(red: 0.80, green: 0.84, blue: 0.88), lineWidth: 1)
+                            )
+                        } else if !sessionStore.isStaffUser && sessionStore.currentTeamHostState == nil {
+                            Button {
+                                sessionStore.activateDemoHostSandbox()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "play.tv.fill")
+                                    Text("Launch Interactive Host Console Sandbox (Room DEMO)")
+                                        .font(.system(size: 13.5, weight: .heavy))
+                                }
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color(red: 0.18, green: 0.44, blue: 0.37))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
+                        }
+
                         if let err = sessionStore.hostErrorMessage, !err.isEmpty {
                             errorBanner(err)
                         }
@@ -259,6 +297,25 @@ struct InstructorHostView: View {
                     )
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+
+            Button {
+                sessionStore.activateDemoHostSandbox()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "play.tv.fill")
+                    Text("Try Interactive Host Console Demo (No Login)")
+                }
+                .font(.system(size: 14, weight: .heavy))
+                .foregroundStyle(Color(red: 0.18, green: 0.44, blue: 0.37))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 13)
+                .background(Color(red: 0.90, green: 0.97, blue: 0.94))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color(red: 0.18, green: 0.44, blue: 0.37).opacity(0.35), lineWidth: 1)
+                )
             }
         }
         .padding(24)
@@ -814,9 +871,12 @@ struct InstructorHostView: View {
             // Full Web Console & Projector Launch Buttons
             HStack(spacing: 10) {
                 Button {
+                    let path = state.roomCode == "DEMO"
+                        ? "admin_pages/team_play/host.html?state=round"
+                        : "admin_pages/team_play/host.html?room=\(state.roomCode)"
                     sessionStore.launchWebTool(
                         title: "Host · \(state.roomCode)",
-                        relativePath: "admin_pages/team_play/host.html?room=\(state.roomCode)"
+                        relativePath: path
                     )
                 } label: {
                     Label("Full Web Host Console", systemImage: "macwindow")
@@ -829,9 +889,12 @@ struct InstructorHostView: View {
                 }
 
                 Button {
+                    let path = state.roomCode == "DEMO"
+                        ? "admin_pages/team_play/projector.html?state=round"
+                        : "admin_pages/team_play/projector.html?room=\(state.roomCode)"
                     sessionStore.launchWebTool(
                         title: "Projector · \(state.roomCode)",
-                        relativePath: "admin_pages/team_play/projector.html?room=\(state.roomCode)"
+                        relativePath: path
                     )
                 } label: {
                     Label("Projector View", systemImage: "tv.fill")

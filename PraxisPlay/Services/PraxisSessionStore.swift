@@ -58,7 +58,10 @@ final class PraxisSessionStore: ObservableObject {
     @Published var isAuthenticating: Bool = false
     @Published var authErrorMessage: String? = nil
     @Published var mfaPendingUserId: Int? = nil
+    @Published var mfaPendingToken: String? = nil
     @Published var mfaEmailHint: String = ""
+    @Published var isPendingDeletionAccount: Bool = false
+    @Published var isDemoHostSandboxActive: Bool = false
 
     // MARK: - Instructor Host Management State (Team Edition + Classic Edition)
     @Published var instructorCourses: [InstructorCourseItem] = []
@@ -150,6 +153,7 @@ final class PraxisSessionStore: ObservableObject {
 
         isAuthenticating = true
         authErrorMessage = nil
+        isPendingDeletionAccount = false
         defer { isAuthenticating = false }
 
         var req = URLRequest(url: url)
@@ -169,6 +173,9 @@ final class PraxisSessionStore: ObservableObject {
             let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
 
             guard let statusCode = http?.statusCode, (200...299).contains(statusCode) else {
+                if (json["pending_deletion"] as? Bool) == true {
+                    self.isPendingDeletionAccount = true
+                }
                 let err = (json["error"] as? String)
                     ?? (json["detail"] as? String)
                     ?? "Invalid username/email or password."
@@ -180,6 +187,7 @@ final class PraxisSessionStore: ObservableObject {
             if let mfaReq = json["mfa_required"] as? Bool, mfaReq,
                let mfaUid = json["mfa_user_id"] as? Int {
                 self.mfaPendingUserId = mfaUid
+                self.mfaPendingToken = json["mfa_token"] as? String
                 self.mfaEmailHint = (json["email_hint"] as? String) ?? "your email"
                 HapticsManager.shared.playNotification(.warning)
                 return false
@@ -213,12 +221,15 @@ final class PraxisSessionStore: ObservableObject {
         req.httpMethod = "POST"
         req.timeoutInterval = 30
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "user_id": userId,
             "mfa_code": trimmedCode,
             "remember_me": true,
             "device_label": "Praxis Play iOS/iPadOS"
         ]
+        if let mfaTok = mfaPendingToken, !mfaTok.isEmpty {
+            body["mfa_token"] = mfaTok
+        }
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         do {
@@ -236,6 +247,7 @@ final class PraxisSessionStore: ObservableObject {
             }
 
             mfaPendingUserId = nil
+            mfaPendingToken = nil
             mfaEmailHint = ""
             return await completeSignIn(with: json)
         } catch {
@@ -251,15 +263,99 @@ final class PraxisSessionStore: ObservableObject {
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpBody = try? JSONSerialization.data(withJSONObject: ["user_id": userId])
+        var payload: [String: Any] = ["user_id": userId]
+        if let mfaTok = mfaPendingToken, !mfaTok.isEmpty {
+            payload["mfa_token"] = mfaTok
+        }
+        req.httpBody = try? JSONSerialization.data(withJSONObject: payload)
         _ = try? await URLSession.shared.data(for: req)
         HapticsManager.shared.playNotification(.success)
     }
 
     func cancelMFAPrompt() {
         mfaPendingUserId = nil
+        mfaPendingToken = nil
         mfaEmailHint = ""
+        isPendingDeletionAccount = false
         authErrorMessage = nil
+    }
+
+    func requestAccountDeletion(password: String) async -> (Bool, String?) {
+        let trimmedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedPassword.isEmpty else {
+            return (false, "Please enter your password to confirm account deletion.")
+        }
+        guard !authToken.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/auth/delete-account/") else {
+            return (false, "You must be signed in to request account deletion.")
+        }
+
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 25
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: ["password": trimmedPassword])
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let http = response as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard let statusCode = http?.statusCode, (200...299).contains(statusCode) else {
+                let err = (json["error"] as? String)
+                    ?? (json["detail"] as? String)
+                    ?? "Could not delete account."
+                HapticsManager.shared.playNotification(.error)
+                return (false, err)
+            }
+            clearAuthState()
+            HapticsManager.shared.playNotification(.success)
+            return (true, nil)
+        } catch {
+            HapticsManager.shared.playNotification(.error)
+            return (false, "Network error (\(error.localizedDescription)).")
+        }
+    }
+
+    func cancelAccountDeletion(usernameOrEmail: String, password: String) async -> Bool {
+        let trimmedUser = usernameOrEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedUser.isEmpty, !password.isEmpty,
+              let url = URL(string: "\(apiBaseURL)/auth/cancel-deletion/") else {
+            authErrorMessage = "Please enter your username/email and password to restore your account."
+            return false
+        }
+
+        isAuthenticating = true
+        authErrorMessage = nil
+        defer { isAuthenticating = false }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 25
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: [
+            "username": trimmedUser,
+            "password": password
+        ])
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let http = response as? HTTPURLResponse
+            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+            guard let statusCode = http?.statusCode, (200...299).contains(statusCode) else {
+                authErrorMessage = (json["error"] as? String) ?? "Could not restore account."
+                HapticsManager.shared.playNotification(.error)
+                return false
+            }
+            isPendingDeletionAccount = false
+            return await login(usernameOrEmail: trimmedUser, password: password)
+        } catch {
+            authErrorMessage = "Network error (\(error.localizedDescription))."
+            return false
+        }
     }
 
     private func completeSignIn(with json: [String: Any]) async -> Bool {
@@ -436,6 +532,14 @@ final class PraxisSessionStore: ObservableObject {
 
         if !name.isEmpty {
             studentDisplayName = name
+        }
+
+        if code == "DEMO" {
+            if let demoMode = SoloGameMode.allModes.first(where: { $0.id == "brief_relay" }) ?? SoloGameMode.allModes.first {
+                HapticsManager.shared.playNotification(.success)
+                activeArenaLaunch = .soloPractice(mode: demoMode)
+                return
+            }
         }
 
         isJoining = true
@@ -893,8 +997,77 @@ final class PraxisSessionStore: ObservableObject {
         }
     }
 
+    func activateDemoHostSandbox() {
+        isDemoHostSandboxActive = true
+        hostErrorMessage = nil
+        let redDesks: [TeamPlayDeskStatus] = [
+            TeamPlayDeskStatus(desk: "analytics", label: "Analytics", decides: "hook", holders: ["Alex M.", "Jordan K."], locked: 2, votes: ["A": 2], choice: "A", agreed: true),
+            TeamPlayDeskStatus(desk: "research", label: "Research", decides: "channel", holders: ["Sam R."], locked: 1, votes: ["B": 1], choice: "B", agreed: true),
+            TeamPlayDeskStatus(desk: "environment", label: "Environ.", decides: "creative", holders: ["Taylor P."], locked: 1, votes: ["C": 1], choice: "C", agreed: true),
+            TeamPlayDeskStatus(desk: "brand", label: "Brand", decides: "offer", holders: ["Morgan L."], locked: 1, votes: ["A": 1], choice: "A", agreed: true)
+        ]
+        let blueDesks: [TeamPlayDeskStatus] = [
+            TeamPlayDeskStatus(desk: "analytics", label: "Analytics", decides: "hook", holders: ["Casey W."], locked: 1, votes: ["B": 1], choice: "B", agreed: false),
+            TeamPlayDeskStatus(desk: "research", label: "Research", decides: "channel", holders: ["Riley D."], locked: 1, votes: ["B": 1], choice: "B", agreed: true),
+            TeamPlayDeskStatus(desk: "environment", label: "Environ.", decides: "creative", holders: ["Jamie S."], locked: 0, votes: [:], choice: nil, agreed: nil),
+            TeamPlayDeskStatus(desk: "brand", label: "Brand", decides: "offer", holders: ["Drew T."], locked: 1, votes: ["A": 1], choice: "A", agreed: true)
+        ]
+        currentTeamHostState = TeamPlayHostState(
+            roomCode: "DEMO",
+            status: "in_progress",
+            accessMode: "open_access",
+            playerCount: 9,
+            caseId: "kf-r2-001",
+            caseClient: "Kestrel & Fern",
+            caseTitle: "The Loyal Doubters",
+            matchState: "round",
+            currentRound: 1,
+            roundsTotal: 5,
+            roundEndsAt: nil,
+            roundTimeLimit: 90,
+            multiplier: 1.0,
+            revealStep: 0,
+            teams: [
+                TeamPlayHostTeamSummary(key: "red", name: "Red Agency", colour: "#C8402F", score: 320, players: 5),
+                TeamPlayHostTeamSummary(key: "blue", name: "Blue Agency", colour: "#2B62C2", score: 260, players: 4)
+            ],
+            desksByTeam: ["red": redDesks, "blue": blueDesks],
+            clientKey: ["hook": "A", "channel": "B", "creative": "C", "offer": "A"],
+            lesson: "Notice how Research Desk's verbatim customer quote qualifies the raw survey percentage on the Analytics Desk.",
+            projectorPin: "4821"
+        )
+        currentClassicHostRoom = ActiveClassicHostRoom(
+            roomCode: "DEMO",
+            templateName: "Line Fit · OLS Regression Challenge",
+            status: "in_progress",
+            createdAt: "Live Sandbox",
+            currentRound: 2,
+            totalRounds: 5,
+            playerCount: 14,
+            gameType: "line_fit",
+            projectorPin: "4821"
+        )
+        HapticsManager.shared.playNotification(.success)
+    }
+
+    func deactivateDemoHostSandbox() {
+        isDemoHostSandboxActive = false
+        if currentTeamHostState?.roomCode == "DEMO" {
+            currentTeamHostState = nil
+        }
+        if currentClassicHostRoom?.roomCode == "DEMO" {
+            currentClassicHostRoom = nil
+        }
+    }
+
     func fetchTeamPlayHostState(roomCode rawCode: String) async -> Bool {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if code == "DEMO" {
+            if currentTeamHostState == nil {
+                activateDemoHostSandbox()
+            }
+            return true
+        }
         guard !code.isEmpty, !authToken.isEmpty,
               let url = URL(string: "\(apiBaseURL)/team-play/sessions/\(code)/host/") else {
             return false
@@ -930,6 +1103,35 @@ final class PraxisSessionStore: ObservableObject {
         body: [String: Any] = [:]
     ) async -> Bool {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if code == "DEMO", var demo = currentTeamHostState {
+            switch action {
+            case "start":
+                demo.matchState = "briefing"
+                demo.currentRound = 1
+            case "round/start":
+                demo.matchState = "round"
+            case "round/extend":
+                demo.roundTimeLimit += (body["seconds"] as? Int) ?? 30
+            case "round/end":
+                demo.matchState = "assessment"
+                demo.revealStep = 1
+            case "reveal":
+                demo.revealStep = min(9, (body["step"] as? Int) ?? (demo.revealStep + 1))
+            case "advance":
+                if demo.currentRound >= demo.roundsTotal {
+                    demo.matchState = "complete"
+                } else {
+                    demo.currentRound += 1
+                    demo.matchState = "rotation"
+                    demo.revealStep = 0
+                }
+            default:
+                break
+            }
+            currentTeamHostState = demo
+            HapticsManager.shared.playImpact(style: .medium)
+            return true
+        }
         guard !code.isEmpty, !authToken.isEmpty,
               let url = URL(string: "\(apiBaseURL)/team-play/sessions/\(code)/\(action)/") else {
             return false
@@ -1164,6 +1366,7 @@ final class PraxisSessionStore: ObservableObject {
 
     func fetchClassicHostSession(roomCode rawCode: String) async {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if code == "DEMO" { return }
         guard !code.isEmpty,
               let url = URL(string: "\(apiBaseURL)/game/\(code)/") else { return }
 
@@ -1203,6 +1406,24 @@ final class PraxisSessionStore: ObservableObject {
 
     func performClassicHostAction(roomCode rawCode: String, action: String) async -> Bool {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if code == "DEMO", var demo = currentClassicHostRoom {
+            switch action {
+            case "start":
+                demo.status = "in_progress"
+            case "end_round":
+                demo.status = "round_ended"
+            case "advance-round":
+                demo.currentRound = min(demo.totalRounds, demo.currentRound + 1)
+                demo.status = "in_progress"
+            case "end":
+                demo.status = "completed"
+            default:
+                break
+            }
+            currentClassicHostRoom = demo
+            HapticsManager.shared.playImpact(style: .medium)
+            return true
+        }
         guard !code.isEmpty, !authToken.isEmpty,
               let url = URL(string: "\(apiBaseURL)/game/\(code)/\(action)/") else { return false }
 
