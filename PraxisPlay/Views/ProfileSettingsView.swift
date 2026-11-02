@@ -362,6 +362,13 @@ struct MktPraxisDeleteAccountSheetView: View {
             }
             .navigationTitle("Delete Account")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                if CommandLine.arguments.contains("--app-review-walkthrough") {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        passwordInput = "PraxisReview2026!"
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
@@ -446,6 +453,14 @@ struct MktPraxisLoginSheetView: View {
                 .ignoresSafeArea()
             )
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                if CommandLine.arguments.contains("--app-review-walkthrough") {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        usernameInput = "apple_demo_2"
+                        passwordInput = "PraxisReview2026!"
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {

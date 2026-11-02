@@ -82,6 +82,7 @@ final class PraxisSessionStore: ObservableObject {
     @Published var isHostingBusy: Bool = false
     @Published var hostStatusMessage: String? = nil
     @Published var hostErrorMessage: String? = nil
+    @Published var lastHostActionFeedback: String? = nil
 
     var isAuthenticated: Bool {
         !authToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -1023,7 +1024,7 @@ final class PraxisSessionStore: ObservableObject {
             matchState: "round",
             currentRound: 1,
             roundsTotal: 5,
-            roundEndsAt: nil,
+            roundEndsAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(78)),
             roundTimeLimit: 90,
             multiplier: 1.0,
             revealStep: 0,
@@ -1108,23 +1109,46 @@ final class PraxisSessionStore: ObservableObject {
             case "start":
                 demo.matchState = "briefing"
                 demo.currentRound = 1
+                demo.roundEndsAt = nil
+                lastHostActionFeedback = "Dealt 4 Desks · Round 1 Briefing Live"
             case "round/start":
                 demo.matchState = "round"
+                let secs = (body["seconds"] as? Int) ?? demo.roundTimeLimit
+                demo.roundEndsAt = ISO8601DateFormatter().string(from: Date().addingTimeInterval(Double(secs)))
+                lastHostActionFeedback = "Round \(demo.currentRound) Clock Started (\(secs)s)"
             case "round/extend":
-                demo.roundTimeLimit += (body["seconds"] as? Int) ?? 30
+                let extra = (body["seconds"] as? Int) ?? 30
+                demo.roundTimeLimit += extra
+                if let endsStr = demo.roundEndsAt, let endsDate = ISO8601DateFormatter().date(from: endsStr) {
+                    demo.roundEndsAt = ISO8601DateFormatter().string(from: endsDate.addingTimeInterval(Double(extra)))
+                } else {
+                    demo.roundEndsAt = ISO8601DateFormatter().string(from: Date().addingTimeInterval(Double(extra + 45)))
+                }
+                lastHostActionFeedback = "Added +\(extra)s to Round \(demo.currentRound) Clock"
             case "round/end":
                 demo.matchState = "assessment"
+                demo.roundEndsAt = nil
                 demo.revealStep = 1
+                lastHostActionFeedback = "Round Ended · Projector Showing Step 1 (Team Choices)"
             case "reveal":
-                demo.revealStep = min(9, (body["step"] as? Int) ?? (demo.revealStep + 1))
+                let step = min(9, (body["step"] as? Int) ?? (demo.revealStep + 1))
+                demo.revealStep = step
+                lastHostActionFeedback = "Projector Advanced to Debrief Step \(step) of 9"
             case "advance":
                 if demo.currentRound >= demo.roundsTotal {
                     demo.matchState = "complete"
+                    lastHostActionFeedback = "Match Complete · Final Trophy Screen Live"
                 } else {
                     demo.currentRound += 1
                     demo.matchState = "rotation"
                     demo.revealStep = 0
+                    demo.roundEndsAt = nil
+                    lastHostActionFeedback = "Rotated Desks · Ready for Round \(demo.currentRound)"
                 }
+            case "end":
+                demo.status = "completed"
+                demo.matchState = "complete"
+                lastHostActionFeedback = "Session Ended"
             default:
                 break
             }
@@ -1137,9 +1161,48 @@ final class PraxisSessionStore: ObservableObject {
             return false
         }
 
+        // Optimistic immediate UI feedback so host buttons feel instantaneous
+        if var optimistic = currentTeamHostState, optimistic.roomCode.uppercased() == code {
+            switch action {
+            case "start":
+                optimistic.matchState = "briefing"
+                optimistic.currentRound = max(1, optimistic.currentRound)
+                hostStatusMessage = "Dealing 4 desks & starting briefing…"
+            case "round/start":
+                optimistic.matchState = "round"
+                let secs = (body["seconds"] as? Int) ?? optimistic.roundTimeLimit
+                optimistic.roundEndsAt = ISO8601DateFormatter().string(from: Date().addingTimeInterval(Double(secs)))
+                hostStatusMessage = "Starting Round \(optimistic.currentRound) clock…"
+            case "round/extend":
+                let extra = (body["seconds"] as? Int) ?? 30
+                if let endsStr = optimistic.roundEndsAt, let endsDate = ISO8601DateFormatter().date(from: endsStr) {
+                    optimistic.roundEndsAt = ISO8601DateFormatter().string(from: endsDate.addingTimeInterval(Double(extra)))
+                }
+                hostStatusMessage = "Adding +\(extra)s to clock…"
+            case "round/end":
+                optimistic.matchState = "assessment"
+                optimistic.revealStep = max(1, optimistic.revealStep)
+                optimistic.roundEndsAt = nil
+                hostStatusMessage = "Locking desks & scoring pitch…"
+            case "reveal":
+                if let step = body["step"] as? Int {
+                    optimistic.revealStep = step
+                }
+                hostStatusMessage = "Updating projector reveal step…"
+            case "advance":
+                hostStatusMessage = "Advancing to next round…"
+            default:
+                hostStatusMessage = "Updating room \(code)…"
+            }
+            currentTeamHostState = optimistic
+        }
+
         isHostingBusy = true
         hostErrorMessage = nil
-        defer { isHostingBusy = false }
+        defer {
+            isHostingBusy = false
+            hostStatusMessage = nil
+        }
 
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -1155,12 +1218,33 @@ final class PraxisSessionStore: ObservableObject {
             guard (200...299).contains(http.statusCode) else {
                 hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Action \(action) failed."
                 HapticsManager.shared.playNotification(.error)
+                _ = await fetchTeamPlayHostState(roomCode: code)
                 return false
             }
             if let parsed = parseTeamPlayHostPayload(json) {
                 self.currentTeamHostState = parsed
             } else {
                 _ = await fetchTeamPlayHostState(roomCode: code)
+            }
+            switch action {
+            case "start":
+                lastHostActionFeedback = "Dealt 4 Desks · Briefing Live on Projector"
+            case "round/start":
+                lastHostActionFeedback = "Round Clock Started · Desks Deliberating"
+            case "round/extend":
+                lastHostActionFeedback = "Added +30s to Round Clock"
+            case "round/end":
+                lastHostActionFeedback = "Round Scored · Debrief Step 1 Live"
+            case "reveal":
+                let step = currentTeamHostState?.revealStep ?? 1
+                lastHostActionFeedback = "Projector Showing Reveal Step \(step) of 9"
+            case "advance":
+                let rd = currentTeamHostState?.currentRound ?? 1
+                lastHostActionFeedback = currentTeamHostState?.matchState == "complete"
+                    ? "Match Complete · Final Standings Live"
+                    : "Advanced to Round \(rd)"
+            default:
+                lastHostActionFeedback = "Updated Room \(code)"
             }
             HapticsManager.shared.playImpact(style: .medium)
             return true
@@ -1410,13 +1494,17 @@ final class PraxisSessionStore: ObservableObject {
             switch action {
             case "start":
                 demo.status = "in_progress"
+                lastHostActionFeedback = "Round \(demo.currentRound) Live on Student Phones"
             case "end_round":
                 demo.status = "round_ended"
+                lastHostActionFeedback = "Round \(demo.currentRound) Locked · Results on Projector"
             case "advance-round":
                 demo.currentRound = min(demo.totalRounds, demo.currentRound + 1)
                 demo.status = "in_progress"
+                lastHostActionFeedback = "Started Round \(demo.currentRound) of \(demo.totalRounds)"
             case "end":
                 demo.status = "completed"
+                lastHostActionFeedback = "Session Complete · Final Podium Live"
             default:
                 break
             }
@@ -1427,9 +1515,33 @@ final class PraxisSessionStore: ObservableObject {
         guard !code.isEmpty, !authToken.isEmpty,
               let url = URL(string: "\(apiBaseURL)/game/\(code)/\(action)/") else { return false }
 
+        if var optimistic = currentClassicHostRoom, optimistic.roomCode.uppercased() == code {
+            switch action {
+            case "start":
+                optimistic.status = "in_progress"
+                hostStatusMessage = "Starting Round \(optimistic.currentRound)…"
+            case "end_round":
+                optimistic.status = "round_ended"
+                hostStatusMessage = "Locking answers & scoring round…"
+            case "advance-round":
+                optimistic.currentRound = min(optimistic.totalRounds, optimistic.currentRound + 1)
+                optimistic.status = "in_progress"
+                hostStatusMessage = "Advancing to Round \(optimistic.currentRound)…"
+            case "end":
+                optimistic.status = "completed"
+                hostStatusMessage = "Ending session & showing final podium…"
+            default:
+                hostStatusMessage = "Updating room \(code)…"
+            }
+            currentClassicHostRoom = optimistic
+        }
+
         isHostingBusy = true
         hostErrorMessage = nil
-        defer { isHostingBusy = false }
+        defer {
+            isHostingBusy = false
+            hostStatusMessage = nil
+        }
 
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -1445,9 +1557,22 @@ final class PraxisSessionStore: ObservableObject {
             guard let status = http?.statusCode, (200...299).contains(status) else {
                 hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Classic host action '\(action)' failed."
                 HapticsManager.shared.playNotification(.error)
+                await fetchClassicHostSession(roomCode: code)
                 return false
             }
             await fetchClassicHostSession(roomCode: code)
+            switch action {
+            case "start":
+                lastHostActionFeedback = "Round Started · Students Submitting Now"
+            case "end_round":
+                lastHostActionFeedback = "Round Ended · Projector Showing Results"
+            case "advance-round":
+                lastHostActionFeedback = "Advanced to Next Round"
+            case "end":
+                lastHostActionFeedback = "Session Ended · Final Leaderboard Live"
+            default:
+                lastHostActionFeedback = "Updated Room \(code)"
+            }
             HapticsManager.shared.playImpact(style: .medium)
             return true
         } catch {

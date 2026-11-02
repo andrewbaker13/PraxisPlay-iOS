@@ -68,48 +68,21 @@ jobs:
           # Clean status bar (9:41 AM, full Wi-Fi & battery for App Store quality)
           xcrun simctl status_bar "$SIM_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularMode active --cellularBars 4 || true
 
-          # Install PraxisPlay on the Home Screen first
+          # Install PraxisPlay on the Home Screen & warm up SpringBoard icon cache
           xcrun simctl install "$SIM_UDID" "$APP_PATH"
+          xcrun simctl launch "$SIM_UDID" com.mktpraxis.praxisplay
+          sleep 3
+          xcrun simctl terminate "$SIM_UDID" com.mktpraxis.praxisplay || true
           sleep 2
 
           # Record continuous App Review Walkthrough Video starting from iOS Home Screen launch
           xcrun simctl io "$SIM_UDID" recordVideo --codec=h264 --force build/PraxisPlay_AppReview_Walkthrough.mp4 &
           REC_PID=$!
-          sleep 2
+          sleep 1
 
-          # 1. Launch app from Home Screen into Join Live Tab
-          xcrun simctl launch "$SIM_UDID" com.mktpraxis.praxisplay
-          sleep 3
-
-          # 2. Enter Live Classroom Session (Room DEMO - Brief Relay Team Edition)
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=brief_relay"
-          sleep 4
-
-          # 3. Switch to Solo Practice Arcade Tab & play Line Fit OLS Regression + Results + Budget Blitz
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://tab?index=1"
-          sleep 3
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=line_fit"
-          sleep 4
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=line_fit&results=1"
-          sleep 3
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://solo?mode=budget_blitz"
-          sleep 3
-
-          # 4. Switch to Instructor Host Console Tab & run live round controls
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://host-demo?action=activate"
-          sleep 3
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://host-demo?action=round/end"
-          sleep 3
-
-          # 5. Switch to Account Tab -> Sign In Sheet -> Sign In -> Delete Account Sheet -> Confirm Deletion
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://account-demo?step=show-login"
-          sleep 3
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://account-demo?step=do-login"
-          sleep 4
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://account-demo?step=show-delete"
-          sleep 3
-          xcrun simctl openurl "$SIM_UDID" "mktpraxis://account-demo?step=do-delete"
-          sleep 4
+          # Launch app from Home Screen into automated in-app walkthrough (zero simctl openurl alerts!)
+          xcrun simctl launch "$SIM_UDID" com.mktpraxis.praxisplay --app-review-walkthrough
+          sleep 39
 
           # Finalize H.264 MP4 recording cleanly with SIGINT
           kill -INT "$REC_PID" || true
