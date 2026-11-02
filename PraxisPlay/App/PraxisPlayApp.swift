@@ -32,6 +32,28 @@ struct PraxisPlayApp: App {
             return
         }
 
+        if host == "host-demo" {
+            sessionStore.activeArenaLaunch = nil
+            NotificationCenter.default.post(name: .praxisSwitchTab, object: 2)
+            let action = queryItems.first(where: { $0.name == "action" })?.value ?? "activate"
+            if action == "activate" {
+                sessionStore.activateDemoHostSandbox()
+            } else {
+                Task {
+                    _ = await sessionStore.performTeamPlayHostAction(roomCode: "DEMO", action: action)
+                }
+            }
+            return
+        }
+
+        if host == "account-demo" {
+            sessionStore.activeArenaLaunch = nil
+            NotificationCenter.default.post(name: .praxisSwitchTab, object: 3)
+            let step = queryItems.first(where: { $0.name == "step" })?.value ?? "show-login"
+            NotificationCenter.default.post(name: .praxisAccountDemoStep, object: step)
+            return
+        }
+
         if host == "solo",
            let modeId = queryItems.first(where: { $0.name == "mode" })?.value,
            let mode = SoloGameMode.allModes.first(where: { $0.id == modeId }) {

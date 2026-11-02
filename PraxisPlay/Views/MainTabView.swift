@@ -67,4 +67,5 @@ struct MainTabView: View {
 
 extension Notification.Name {
     static let praxisSwitchTab = Notification.Name("praxisSwitchTab")
+    static let praxisAccountDemoStep = Notification.Name("praxisAccountDemoStep")
 }

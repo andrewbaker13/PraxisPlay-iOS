@@ -238,6 +238,32 @@ struct ProfileSettingsView: View {
                     deletionStatusBanner = message
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .praxisAccountDemoStep)) { note in
+                guard let step = note.object as? String else { return }
+                switch step {
+                case "show-login":
+                    showDeleteAccountSheet = false
+                    showLoginSheet = true
+                case "do-login":
+                    Task {
+                        _ = await sessionStore.login(usernameOrEmail: "apple_demo_2", password: "PraxisReview2026!")
+                        showLoginSheet = false
+                    }
+                case "show-delete":
+                    showLoginSheet = false
+                    showDeleteAccountSheet = true
+                case "do-delete":
+                    Task {
+                        let (ok, _) = await sessionStore.requestAccountDeletion(password: "PraxisReview2026!")
+                        if ok {
+                            showDeleteAccountSheet = false
+                            deletionStatusBanner = "Your account has been deactivated and scheduled for permanent deletion. You can restore it within 21 days by signing in."
+                        }
+                    }
+                default:
+                    break
+                }
+            }
         }
     }
 }
