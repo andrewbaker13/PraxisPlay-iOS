@@ -58,8 +58,9 @@ jobs:
           mkdir -p build/screenshots
           APP_PATH="build/DerivedData/Build/Products/Release-iphonesimulator/PraxisPlay.app"
 
-          # Find an available iPhone 15 Pro or iPhone 15 simulator UDID
-          SIM_UDID=$(xcrun simctl list devices available | grep -E "iPhone 15 Pro \(|iPhone 15 \(" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+          # Find an available iPhone simulator UDID (iPhone 17 Pro / 16 Pro / 15 Pro / any available iPhone)
+          xcrun simctl list devices available
+          SIM_UDID=$(xcrun simctl list devices available | grep -E "iPhone .*\([0-9A-F-]{36}\)" | head -n 1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
           echo "📱 Booting Simulator UDID: $SIM_UDID"
           xcrun simctl boot "$SIM_UDID" || true
           xcrun simctl bootstatus "$SIM_UDID" -b
