@@ -138,6 +138,15 @@ struct InstructorGameTemplateItem: Identifiable, Equatable {
     let description: String
 }
 
+struct ClassicHostPlayerItem: Identifiable, Equatable {
+    let id: Int
+    let name: String
+    let score: Int
+    let rank: Int?
+    let isConnected: Bool
+    let hasAnswered: Bool
+}
+
 struct ActiveClassicHostRoom: Identifiable, Equatable {
     var id: String { roomCode }
     let roomCode: String
@@ -149,6 +158,13 @@ struct ActiveClassicHostRoom: Identifiable, Equatable {
     var playerCount: Int
     var gameType: String
     var projectorPin: String = ""
+    var questionText: String = ""
+    var roundEndsAt: String? = nil
+    var roundTimeLimit: Int = 30
+    var roundInstanceId: String? = nil
+    var answeredCount: Int = 0
+    var players: [ClassicHostPlayerItem] = []
+    var leaderboard: [ClassicHostPlayerItem] = []
 }
 
 struct TeamPlayCaseItem: Identifiable, Equatable {

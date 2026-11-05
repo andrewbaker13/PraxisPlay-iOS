@@ -1478,6 +1478,11 @@ struct InstructorHostView: View {
 
     private func classicLiveControlDeck(_ room: ActiveClassicHostRoom) -> some View {
         let stageIdx = classicStageIndex(for: room.status)
+        let remainingSec = computeRemainingSeconds(roundEndsAt: room.roundEndsAt, limit: room.roundTimeLimit, now: nowTick)
+        let totalPlayers = max(1, room.playerCount)
+        let answeredFrac = min(1.0, max(0.0, CGFloat(room.answeredCount) / CGFloat(totalPlayers)))
+        let isPausedOrEnded = (room.status == "paused" || room.status == "round_ended")
+        let isAlreadyCuedUnstarted = isPausedOrEnded && room.roundInstanceId == nil && room.roundEndsAt == nil && room.currentRound > 1
 
         return VStack(alignment: .leading, spacing: 16) {
             // 1. Top Room Identity Bar
@@ -1542,12 +1547,78 @@ struct InstructorHostView: View {
             // 2. Classic 4-Stage Stepper
             classicStageStepper(activeStage: stageIdx)
 
-            // 3. Plain-English "WHAT'S HAPPENING NOW" Card
-            VStack(alignment: .leading, spacing: 8) {
-                Text(classicStageHeadline(for: room).uppercased())
-                    .font(.system(size: 11.5, weight: .black))
-                    .tracking(0.6)
-                    .foregroundStyle(Color(red: 0.45, green: 0.89, blue: 0.68))
+            // 3. Plain-English "WHAT'S HAPPENING NOW" Live Classroom Monitor Card
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(classicStageHeadline(for: room).uppercased())
+                        .font(.system(size: 11.5, weight: .black))
+                        .tracking(0.6)
+                        .foregroundStyle(Color(red: 0.45, green: 0.89, blue: 0.68))
+                    Spacer()
+                    if room.status == "in_progress" {
+                        Text("LIVE CLOCK")
+                            .font(.system(size: 10, weight: .black))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(remainingSec <= 10 ? Color.red : Color(red: 0.02, green: 0.59, blue: 0.41))
+                            .clipShape(Capsule())
+                    } else if isPausedOrEnded {
+                        Text(isAlreadyCuedUnstarted ? "ROUND \(room.currentRound) CUED" : "ROUND \(room.currentRound) ENDED")
+                            .font(.system(size: 10, weight: .black))
+                            .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color(red: 1.0, green: 0.82, blue: 0.40))
+                            .clipShape(Capsule())
+                    }
+                }
+
+                if room.status == "in_progress" {
+                    HStack(alignment: .center, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(formatMMSS(remainingSec))
+                                .font(.system(size: 34, weight: .black, design: .monospaced))
+                                .foregroundStyle(remainingSec <= 10 ? Color(red: 1.0, green: 0.45, blue: 0.45) : .white)
+                            Text("Remaining in Round \(room.currentRound)")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color(red: 0.67, green: 0.75, blue: 0.86))
+                        }
+
+                        Divider()
+                            .frame(height: 44)
+                            .background(Color.white.opacity(0.2))
+
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack {
+                                Text("Players Answered")
+                                    .font(.system(size: 11.5, weight: .bold))
+                                    .foregroundStyle(Color(red: 0.82, green: 0.87, blue: 0.95))
+                                Spacer()
+                                Text("\(room.answeredCount) / \(room.playerCount)")
+                                    .font(.system(size: 13, weight: .black, design: .monospaced))
+                                    .foregroundStyle(Color(red: 0.45, green: 0.89, blue: 0.68))
+                            }
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule()
+                                        .fill(Color.white.opacity(0.15))
+                                        .frame(height: 8)
+                                    Capsule()
+                                        .fill(Color(red: 0.16, green: 0.84, blue: 0.48))
+                                        .frame(width: max(6, geo.size.width * answeredFrac), height: 8)
+                                }
+                            }
+                            .frame(height: 8)
+                            Text(room.playerCount > 0 && room.answeredCount >= room.playerCount
+                                 ? "All players answered! Round ending automatically…"
+                                 : "Students are actively submitting on their phones…")
+                                .font(.system(size: 10.5, weight: .medium))
+                                .foregroundStyle(Color(red: 0.67, green: 0.75, blue: 0.86))
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
 
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "tv.fill")
@@ -1572,6 +1643,50 @@ struct InstructorHostView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(red: 0.07, green: 0.11, blue: 0.20))
             .clipShape(RoundedRectangle(cornerRadius: 16))
+
+            // 3B. Active Round Question & Mechanic Preview Card
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Text("ROUND \(room.currentRound) OF \(room.totalRounds)")
+                        .font(.system(size: 11, weight: .black, design: .monospaced))
+                        .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(red: 0.93, green: 0.95, blue: 1.0))
+                        .clipShape(Capsule())
+
+                    if !room.gameType.isEmpty {
+                        Text(classicMechanicLabel(for: room.gameType).uppercased())
+                            .font(.system(size: 10.5, weight: .black))
+                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color(red: 0.90, green: 0.98, blue: 0.94))
+                            .clipShape(Capsule())
+                    }
+
+                    Spacer()
+
+                    Text("\(room.roundTimeLimit)s Limit")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
+                }
+
+                Text(room.questionText.isEmpty
+                     ? "Question prompt will appear here as soon as the round is loaded."
+                     : room.questionText)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(red: 0.97, green: 0.98, blue: 0.99))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(Color(red: 0.86, green: 0.89, blue: 0.94), lineWidth: 1)
+            )
 
             // 4. Primary Stage-Aware Action Button + Secondary Controls
             VStack(alignment: .leading, spacing: 10) {
@@ -1634,8 +1749,34 @@ struct InstructorHostView: View {
                     }
                     .disabled(sessionStore.isHostingBusy)
 
-                } else if room.status == "round_ended" {
-                    if room.currentRound < room.totalRounds {
+                } else if isPausedOrEnded {
+                    if isAlreadyCuedUnstarted {
+                        Button {
+                            Task {
+                                _ = await sessionStore.performClassicHostAction(roomCode: room.roomCode, action: "start")
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "play.fill")
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Launch Round \(room.currentRound) of \(room.totalRounds) Now →")
+                                        .font(.system(size: 15, weight: .heavy))
+                                    Text("Round \(room.currentRound) is cued — tap to start 3-2-1 countdown on student phones")
+                                        .font(.system(size: 11, weight: .medium))
+                                        .opacity(0.9)
+                                }
+                                Spacer()
+                                Image(systemName: "play.circle.fill")
+                                    .font(.system(size: 20))
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .background(Color(red: 0.02, green: 0.59, blue: 0.41))
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .disabled(sessionStore.isHostingBusy)
+                    } else if room.currentRound < room.totalRounds {
                         Button {
                             Task {
                                 _ = await sessionStore.performClassicHostAction(roomCode: room.roomCode, action: "advance-round")
@@ -1646,7 +1787,7 @@ struct InstructorHostView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text("Start Round \(room.currentRound + 1) of \(room.totalRounds) →")
                                         .font(.system(size: 15, weight: .heavy))
-                                    Text("Pushes next round prompt to student phones and starts timer")
+                                    Text("Advances round, starts 3-2-1 countdown & pushes prompt to student phones")
                                         .font(.system(size: 11, weight: .medium))
                                         .opacity(0.9)
                                 }
@@ -1698,13 +1839,15 @@ struct InstructorHostView: View {
                             .background(Color(red: 0.93, green: 0.95, blue: 0.98))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .disabled(sessionStore.isHostingBusy || room.status != "in_progress")
 
                     Button {
                         Task {
-                            _ = await sessionStore.performClassicHostAction(roomCode: room.roomCode, action: "advance-round")
+                            let act = isAlreadyCuedUnstarted ? "start" : "advance-round"
+                            _ = await sessionStore.performClassicHostAction(roomCode: room.roomCode, action: act)
                         }
                     } label: {
-                        Text("Next Round")
+                        Text(isAlreadyCuedUnstarted ? "Start Round \(room.currentRound)" : "Next Round & Start")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
                             .frame(maxWidth: .infinity)
@@ -1712,6 +1855,7 @@ struct InstructorHostView: View {
                             .background(Color(red: 0.93, green: 0.95, blue: 0.98))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .disabled(sessionStore.isHostingBusy || (!isAlreadyCuedUnstarted && room.currentRound >= room.totalRounds))
 
                     Button {
                         Task {
@@ -1725,6 +1869,67 @@ struct InstructorHostView: View {
                             .padding(.vertical, 9)
                             .background(Color(red: 1.0, green: 0.95, blue: 0.96))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .disabled(sessionStore.isHostingBusy)
+                }
+            }
+
+            // 5. Live Player Submissions & Top Leaderboard Roster
+            if !room.leaderboard.isEmpty || !room.players.isEmpty {
+                let roster = !room.leaderboard.isEmpty ? room.leaderboard : room.players
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("LIVE CLASSROOM ROSTER & STANDINGS")
+                            .font(.system(size: 11, weight: .heavy))
+                            .tracking(0.6)
+                            .foregroundStyle(Color(red: 0.39, green: 0.45, blue: 0.55))
+                        Spacer()
+                        Text("\(room.answeredCount)/\(room.playerCount) Answered")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundStyle(Color(red: 0.02, green: 0.59, blue: 0.41))
+                    }
+
+                    ForEach(Array(roster.prefix(8))) { p in
+                        HStack(spacing: 10) {
+                            Text("#\(p.rank ?? 1)")
+                                .font(.system(size: 12, weight: .black, design: .monospaced))
+                                .foregroundStyle(Color(red: 0.31, green: 0.27, blue: 0.90))
+                                .frame(width: 28, alignment: .leading)
+
+                            Text(p.name)
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(Color(red: 0.06, green: 0.09, blue: 0.16))
+                                .lineLimit(1)
+
+                            Spacer()
+
+                            if room.status == "in_progress" {
+                                Text(p.hasAnswered ? "✓ Answered" : "⏳ Thinking")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(
+                                        p.hasAnswered
+                                            ? Color(red: 0.02, green: 0.59, blue: 0.41)
+                                            : Color(red: 0.85, green: 0.47, blue: 0.02)
+                                    )
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        p.hasAnswered
+                                            ? Color(red: 0.90, green: 0.98, blue: 0.94)
+                                            : Color(red: 1.0, green: 0.96, blue: 0.88)
+                                    )
+                                    .clipShape(Capsule())
+                            }
+
+                            Text("\(p.score) pts")
+                                .font(.system(size: 12.5, weight: .black, design: .monospaced))
+                                .foregroundStyle(Color(red: 0.28, green: 0.33, blue: 0.41))
+                                .frame(minWidth: 58, alignment: .trailing)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(Color(red: 0.97, green: 0.98, blue: 0.99))
+                        .clipShape(RoundedRectangle(cornerRadius: 9))
                     }
                 }
             }
@@ -1943,11 +2148,27 @@ struct InstructorHostView: View {
         return String(format: "%02d:%02d", mins, secs)
     }
 
+    private func classicMechanicLabel(for gameType: String) -> String {
+        switch gameType {
+        case "speed_tap": return "Speed Tap"
+        case "line_fit": return "Line Fit (OLS)"
+        case "budget_blitz": return "Budget Blitz"
+        case "buy_a_clue": return "Buy a Clue"
+        case "minority_rule": return "Minority Rule"
+        case "closest_guess": return "Closest Guess"
+        case "crowd_wisdom": return "Crowd Wisdom"
+        case "word_guess": return "Word Guess"
+        case "push_range": return "Push Range"
+        case "live_buzzer": return "Live Buzzer"
+        default: return gameType.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+
     private func classicStageIndex(for status: String) -> Int {
         switch status {
         case "waiting": return 1
         case "in_progress": return 2
-        case "round_ended": return 3
+        case "paused", "round_ended": return 3
         case "completed": return 4
         default: return 1
         }
@@ -1989,8 +2210,11 @@ struct InstructorHostView: View {
             return "Stage 1 of 4 · Lobby Open (\(room.playerCount) Joined)"
         case "in_progress":
             return "Stage 2 of 4 · Round \(room.currentRound) of \(room.totalRounds) Live"
-        case "round_ended":
-            return "Stage 3 of 4 · Round \(room.currentRound) Results & Debrief"
+        case "paused", "round_ended":
+            if room.roundInstanceId == nil && room.roundEndsAt == nil && room.currentRound > 1 {
+                return "Stage 3 of 4 · Round \(room.currentRound) of \(room.totalRounds) Cued & Ready"
+            }
+            return "Stage 3 of 4 · Round \(room.currentRound) of \(room.totalRounds) Complete"
         case "completed":
             return "Stage 4 of 4 · Final Leaderboard Podium"
         default:
@@ -2003,8 +2227,11 @@ struct InstructorHostView: View {
         case "waiting":
             return "Displaying room code \(room.roomCode), QR code, and live player counter."
         case "in_progress":
-            return "Displaying Round \(room.currentRound) prompt, live countdown, and submission counter."
-        case "round_ended":
+            return "Displaying Round \(room.currentRound) prompt, live countdown, and submission counter (\(room.answeredCount)/\(room.playerCount))."
+        case "paused", "round_ended":
+            if room.roundInstanceId == nil && room.roundEndsAt == nil && room.currentRound > 1 {
+                return "Ready to launch Round \(room.currentRound) countdown as soon as you tap Start."
+            }
             return "Displaying Round \(room.currentRound) answer distribution chart and updated top leaderboard."
         case "completed":
             return "Displaying final podium winners and overall session statistics."
@@ -2018,8 +2245,11 @@ struct InstructorHostView: View {
         case "waiting":
             return "Joined room \(room.roomCode) and waiting for you to start Round 1."
         case "in_progress":
-            return "Actively submitting their Round \(room.currentRound) response on their phones."
-        case "round_ended":
+            return "Actively submitting their Round \(room.currentRound) response (\(room.answeredCount) of \(room.playerCount) locked in)."
+        case "paused", "round_ended":
+            if room.roundInstanceId == nil && room.roundEndsAt == nil && room.currentRound > 1 {
+                return "On the Round \(room.currentRound) waiting screen — tap Launch Round \(room.currentRound) below to start their timer."
+            }
             return "Seeing their personal Round \(room.currentRound) score, accuracy feedback, and rank."
         case "completed":
             return "Viewing their final score and class rank."

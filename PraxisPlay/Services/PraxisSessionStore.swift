@@ -892,8 +892,8 @@ final class PraxisSessionStore: ObservableObject {
             }
         }
 
-        // 3. Active Classic Host Sessions (GET /api/instructor/game-history/?status=waiting,in_progress)
-        if let url = URL(string: "\(apiBaseURL)/instructor/game-history/?status=waiting,in_progress") {
+        // 3. Active Classic Host Sessions (GET /api/instructor/game-history/?status=waiting,in_progress,paused)
+        if let url = URL(string: "\(apiBaseURL)/instructor/game-history/?status=waiting,in_progress,paused") {
             var req = URLRequest(url: url)
             req.timeoutInterval = 15
             req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
@@ -1037,6 +1037,13 @@ final class PraxisSessionStore: ObservableObject {
             lesson: "Notice how Research Desk's verbatim customer quote qualifies the raw survey percentage on the Analytics Desk.",
             projectorPin: "4821"
         )
+        let demoPlayers: [ClassicHostPlayerItem] = [
+            ClassicHostPlayerItem(id: 1, name: "Alex M.", score: 290, rank: 1, isConnected: true, hasAnswered: true),
+            ClassicHostPlayerItem(id: 2, name: "Jordan K.", score: 260, rank: 2, isConnected: true, hasAnswered: true),
+            ClassicHostPlayerItem(id: 3, name: "Taylor P.", score: 245, rank: 3, isConnected: true, hasAnswered: true),
+            ClassicHostPlayerItem(id: 4, name: "Casey W.", score: 210, rank: 4, isConnected: true, hasAnswered: false),
+            ClassicHostPlayerItem(id: 5, name: "Morgan L.", score: 195, rank: 5, isConnected: true, hasAnswered: false)
+        ]
         currentClassicHostRoom = ActiveClassicHostRoom(
             roomCode: "DEMO",
             templateName: "Line Fit · OLS Regression Challenge",
@@ -1046,7 +1053,14 @@ final class PraxisSessionStore: ObservableObject {
             totalRounds: 5,
             playerCount: 14,
             gameType: "line_fit",
-            projectorPin: "4821"
+            projectorPin: "4821",
+            questionText: "Drag the two anchor handles to fit the Ordinary Least Squares (OLS) regression line predicting Ad Spend vs. Weekly Revenue.",
+            roundEndsAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(38)),
+            roundTimeLimit: 45,
+            roundInstanceId: "demo-round-2",
+            answeredCount: 9,
+            players: demoPlayers,
+            leaderboard: demoPlayers
         )
         HapticsManager.shared.playNotification(.success)
     }
@@ -1448,6 +1462,33 @@ final class PraxisSessionStore: ObservableObject {
         return nil
     }
 
+    private static func hasPlayerSubmittedInRound(gameType: String, gameState: [String: Any]) -> Bool {
+        switch gameType {
+        case "speed_tap":
+            if let arr = gameState["answers"] as? [Any], !arr.isEmpty { return true }
+            return false
+        case "crowd_wisdom":
+            return (gameState["crowd_wisdom_answered"] as? Bool) ?? false
+        case "closest_guess":
+            if let guess = gameState["guess"] as? [String: Any], !guess.isEmpty { return true }
+            return false
+        case "push_range":
+            return ((gameState["push_range_presses"] as? Int) ?? 0) > 0
+        case "word_guess":
+            return (gameState["word_guess_correct"] as? Bool) ?? false
+        case "line_fit":
+            return (gameState["line_fit_confirmed"] as? Bool) ?? false
+        case "budget_blitz":
+            return (gameState["budget_blitz_submitted"] as? Bool) ?? false
+        case "minority_rule":
+            return (gameState["minority_rule_answered"] as? Bool) ?? false
+        case "buy_a_clue":
+            return (gameState["buy_a_clue_answered"] as? Bool) ?? false
+        default:
+            return !gameState.isEmpty
+        }
+    }
+
     func fetchClassicHostSession(roomCode rawCode: String) async {
         let code = rawCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         if code == "DEMO" { return }
@@ -1466,8 +1507,72 @@ final class PraxisSessionStore: ObservableObject {
                   let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else { return }
 
             let gs = (json["game_session"] as? [String: Any]) ?? json
-            let playersArr = (gs["players"] as? [Any]) ?? (json["players"] as? [Any]) ?? []
-            let playerCount = (gs["player_count"] as? Int) ?? playersArr.count
+            let gType = (gs["game_type"] as? String) ?? ""
+            let rawPlayers = (gs["players"] as? [[String: Any]]) ?? (json["players"] as? [[String: Any]]) ?? []
+            let playerCount = (gs["player_count"] as? Int) ?? rawPlayers.count
+
+            let answeredIdsArr = (json["answered_player_ids"] as? [Int]) ?? (gs["answered_player_ids"] as? [Int]) ?? []
+            let answeredIdsSet = Set(answeredIdsArr)
+
+            let parsedPlayers: [ClassicHostPlayerItem] = rawPlayers.enumerated().map { idx, p in
+                let pid = (p["id"] as? Int) ?? (idx + 1)
+                let pName = (p["display_name"] as? String)
+                    ?? (p["guest_name"] as? String)
+                    ?? (p["username"] as? String)
+                    ?? "Player \(idx + 1)"
+                let pScore = (p["score"] as? Int) ?? 0
+                let pRank = p["rank"] as? Int
+                let isConn = (p["is_connected"] as? Bool) ?? true
+                let gsDict = (p["game_state"] as? [String: Any]) ?? [:]
+                let hasAns = answeredIdsSet.contains(pid) || Self.hasPlayerSubmittedInRound(gameType: gType, gameState: gsDict)
+                return ClassicHostPlayerItem(
+                    id: pid,
+                    name: pName,
+                    score: pScore,
+                    rank: pRank,
+                    isConnected: isConn,
+                    hasAnswered: hasAns
+                )
+            }.sorted { $0.score > $1.score }
+
+            let rawLeaderboard = (json["leaderboard"] as? [[String: Any]]) ?? (gs["leaderboard"] as? [[String: Any]]) ?? []
+            let parsedLeaderboard: [ClassicHostPlayerItem]
+            if !rawLeaderboard.isEmpty {
+                parsedLeaderboard = rawLeaderboard.enumerated().map { idx, entry in
+                    let eName = (entry["name"] as? String) ?? "Player \(idx + 1)"
+                    let eScore = (entry["score"] as? Int) ?? 0
+                    let eRank = (entry["rank"] as? Int) ?? (idx + 1)
+                    let matchedPlayer = parsedPlayers.first { $0.name == eName }
+                    return ClassicHostPlayerItem(
+                        id: matchedPlayer?.id ?? (idx + 1000),
+                        name: eName,
+                        score: eScore,
+                        rank: eRank,
+                        isConnected: matchedPlayer?.isConnected ?? true,
+                        hasAnswered: matchedPlayer?.hasAnswered ?? false
+                    )
+                }
+            } else {
+                parsedLeaderboard = parsedPlayers.enumerated().map { idx, p in
+                    ClassicHostPlayerItem(
+                        id: p.id,
+                        name: p.name,
+                        score: p.score,
+                        rank: p.rank ?? (idx + 1),
+                        isConnected: p.isConnected,
+                        hasAnswered: p.hasAnswered
+                    )
+                }
+            }
+
+            let answeredCount = (json["answered_count"] as? Int)
+                ?? (gs["answered_count"] as? Int)
+                ?? parsedPlayers.filter { $0.hasAnswered }.count
+
+            let timeLimit = (gs["round_time_limit"] as? Int)
+                ?? (gs["game_time_limit"] as? Int)
+                ?? 30
+
             let roomObj = ActiveClassicHostRoom(
                 roomCode: code,
                 templateName: (gs["template_name"] as? String) ?? (gs["course_name"] as? String) ?? "Classic Game",
@@ -1476,8 +1581,15 @@ final class PraxisSessionStore: ObservableObject {
                 currentRound: (gs["current_round"] as? Int) ?? 1,
                 totalRounds: (gs["total_rounds"] as? Int) ?? 1,
                 playerCount: playerCount,
-                gameType: (gs["game_type"] as? String) ?? "",
-                projectorPin: (json["projector_pin"] as? String) ?? (gs["projector_pin"] as? String) ?? ""
+                gameType: gType,
+                projectorPin: (json["projector_pin"] as? String) ?? (gs["projector_pin"] as? String) ?? "",
+                questionText: (gs["question_text"] as? String) ?? "",
+                roundEndsAt: gs["round_ends_at"] as? String,
+                roundTimeLimit: max(5, timeLimit),
+                roundInstanceId: gs["round_instance_id"] as? String,
+                answeredCount: answeredCount,
+                players: parsedPlayers,
+                leaderboard: parsedLeaderboard
             )
             self.currentClassicHostRoom = roomObj
             if let idx = activeClassicHostRooms.firstIndex(where: { $0.roomCode == code }) {
@@ -1494,16 +1606,23 @@ final class PraxisSessionStore: ObservableObject {
             switch action {
             case "start":
                 demo.status = "in_progress"
+                demo.roundEndsAt = ISO8601DateFormatter().string(from: Date().addingTimeInterval(Double(demo.roundTimeLimit)))
+                demo.roundInstanceId = "demo-round-\(demo.currentRound)"
                 lastHostActionFeedback = "Round \(demo.currentRound) Live on Student Phones"
             case "end_round":
-                demo.status = "round_ended"
+                demo.status = "paused"
+                demo.roundEndsAt = nil
                 lastHostActionFeedback = "Round \(demo.currentRound) Locked · Results on Projector"
             case "advance-round":
                 demo.currentRound = min(demo.totalRounds, demo.currentRound + 1)
                 demo.status = "in_progress"
+                demo.answeredCount = 0
+                demo.roundEndsAt = ISO8601DateFormatter().string(from: Date().addingTimeInterval(Double(demo.roundTimeLimit)))
+                demo.roundInstanceId = "demo-round-\(demo.currentRound)"
                 lastHostActionFeedback = "Started Round \(demo.currentRound) of \(demo.totalRounds)"
             case "end":
                 demo.status = "completed"
+                demo.roundEndsAt = nil
                 lastHostActionFeedback = "Session Complete · Final Podium Live"
             default:
                 break
@@ -1512,21 +1631,23 @@ final class PraxisSessionStore: ObservableObject {
             HapticsManager.shared.playImpact(style: .medium)
             return true
         }
-        guard !code.isEmpty, !authToken.isEmpty,
-              let url = URL(string: "\(apiBaseURL)/game/\(code)/\(action)/") else { return false }
+        guard !code.isEmpty, !authToken.isEmpty else { return false }
 
+        let initialRoom = currentClassicHostRoom
         if var optimistic = currentClassicHostRoom, optimistic.roomCode.uppercased() == code {
             switch action {
             case "start":
                 optimistic.status = "in_progress"
                 hostStatusMessage = "Starting Round \(optimistic.currentRound)…"
             case "end_round":
-                optimistic.status = "round_ended"
+                optimistic.status = "paused"
                 hostStatusMessage = "Locking answers & scoring round…"
             case "advance-round":
-                optimistic.currentRound = min(optimistic.totalRounds, optimistic.currentRound + 1)
+                let targetRound = min(optimistic.totalRounds, optimistic.currentRound + 1)
+                optimistic.currentRound = targetRound
                 optimistic.status = "in_progress"
-                hostStatusMessage = "Advancing to Round \(optimistic.currentRound)…"
+                optimistic.answeredCount = 0
+                hostStatusMessage = "Advancing & launching Round \(targetRound) of \(optimistic.totalRounds)…"
             case "end":
                 optimistic.status = "completed"
                 hostStatusMessage = "Ending session & showing final podium…"
@@ -1543,42 +1664,79 @@ final class PraxisSessionStore: ObservableObject {
             hostStatusMessage = nil
         }
 
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.timeoutInterval = 20
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
-        req.httpBody = Data("{}".utf8)
+        func postStep(_ endpointAction: String) async -> (ok: Bool, error: String?) {
+            guard let stepURL = URL(string: "\(apiBaseURL)/game/\(code)/\(endpointAction)/") else {
+                return (false, "Invalid URL for \(endpointAction)")
+            }
+            var req = URLRequest(url: stepURL)
+            req.httpMethod = "POST"
+            req.timeoutInterval = 20
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.setValue("Token \(authToken)", forHTTPHeaderField: "Authorization")
+            req.httpBody = Data("{}".utf8)
+            do {
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                let http = resp as? HTTPURLResponse
+                let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
+                guard let status = http?.statusCode, (200...299).contains(status) else {
+                    let msg = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Classic host action '\(endpointAction)' failed."
+                    return (false, msg)
+                }
+                return (true, nil)
+            } catch {
+                return (false, "Network error (\(error.localizedDescription)).")
+            }
+        }
 
-        do {
-            let (data, resp) = try await URLSession.shared.data(for: req)
-            let http = resp as? HTTPURLResponse
-            let json = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any]) ?? [:]
-            guard let status = http?.statusCode, (200...299).contains(status) else {
-                hostErrorMessage = (json["error"] as? String) ?? (json["detail"] as? String) ?? "Classic host action '\(action)' failed."
+        if action == "advance-round" {
+            // 1. If the current round was still in_progress when the host tapped Next Round, end & score it first
+            if initialRoom?.status == "in_progress" {
+                _ = await postStep("end_round")
+            }
+            // 2. Advance the round counter & load the next question
+            let advResult = await postStep("advance-round")
+            if !advResult.ok {
+                hostErrorMessage = advResult.error
                 HapticsManager.shared.playNotification(.error)
                 await fetchClassicHostSession(roomCode: code)
                 return false
             }
+            // 3. Immediately start the newly cued round so student phones receive countdown_start + game_started!
+            let startResult = await postStep("start")
             await fetchClassicHostSession(roomCode: code)
-            switch action {
-            case "start":
-                lastHostActionFeedback = "Round Started · Students Submitting Now"
-            case "end_round":
-                lastHostActionFeedback = "Round Ended · Projector Showing Results"
-            case "advance-round":
-                lastHostActionFeedback = "Advanced to Next Round"
-            case "end":
-                lastHostActionFeedback = "Session Ended · Final Leaderboard Live"
-            default:
-                lastHostActionFeedback = "Updated Room \(code)"
+            if !startResult.ok {
+                hostErrorMessage = startResult.error
+                HapticsManager.shared.playNotification(.error)
+                return false
             }
+            let rNum = currentClassicHostRoom?.currentRound ?? 1
+            let rTot = currentClassicHostRoom?.totalRounds ?? 1
+            lastHostActionFeedback = "Round \(rNum) of \(rTot) Live · Countdown & Question Sent to Student Phones"
             HapticsManager.shared.playImpact(style: .medium)
             return true
-        } catch {
-            hostErrorMessage = "Network error (\(error.localizedDescription))."
+        }
+
+        let res = await postStep(action)
+        await fetchClassicHostSession(roomCode: code)
+        guard res.ok else {
+            hostErrorMessage = res.error
+            HapticsManager.shared.playNotification(.error)
             return false
         }
+        let rNum = currentClassicHostRoom?.currentRound ?? 1
+        let rTot = currentClassicHostRoom?.totalRounds ?? 1
+        switch action {
+        case "start":
+            lastHostActionFeedback = "Round \(rNum) of \(rTot) Started · Students Submitting Now"
+        case "end_round":
+            lastHostActionFeedback = "Round \(rNum) Locked · Results & Leaderboard on Projector"
+        case "end":
+            lastHostActionFeedback = "Session Ended · Final Leaderboard Live"
+        default:
+            lastHostActionFeedback = "Updated Room \(code)"
+        }
+        HapticsManager.shared.playImpact(style: .medium)
+        return true
     }
 
     // MARK: - Solo Scores & Telemetry
