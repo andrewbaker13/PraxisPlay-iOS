@@ -35,8 +35,9 @@ jobs:
           fi
           sed -i '' "s/CURRENT_PROJECT_VERSION: \"1\"/CURRENT_PROJECT_VERSION: \"$GITHUB_RUN_NUMBER\"/g" project.yml
           xcodegen generate
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.0.1" PraxisPlay/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" PraxisPlay/Info.plist
-          echo "✅ Stamped CFBundleVersion in Info.plist: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' PraxisPlay/Info.plist)"
+          echo "✅ Stamped CFBundleShortVersionString=1.0.1 CFBundleVersion=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' PraxisPlay/Info.plist)"
 
       - name: Compile & Verify Universal iPhone + iPad App (Simulator Build)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_testflight == 'false' }}
@@ -243,6 +244,7 @@ jobs:
             -configuration Release \
             -archivePath build/PraxisPlay.xcarchive \
             CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            MARKETING_VERSION="1.0.1" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=S36NQ79D63 \
             CODE_SIGN_IDENTITY="Apple Distribution" \
